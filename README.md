@@ -24,3 +24,6 @@ A research-backed blog on AI agents for engineers building production agentic sy
 Run `make help` (GNU make) or `./make.ps1 help` (native Windows PowerShell). Targets: setup, dev, lint, format, typecheck, test, test-e2e, test-bdd, coverage, build, preview, audit, sync-agents, release, clean.
 
 Stack-specific targets are stubs until the tech stack ADR is approved.
+
+## Contributing
+Branch from `develop` as `feature/<task-id>-<slug>`, open a PR, and follow [docs/guidelines/git-workflow.md](docs/guidelines/git-workflow.md).
