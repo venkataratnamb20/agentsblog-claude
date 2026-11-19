@@ -364,3 +364,53 @@ describe('coverage config encodes the documented thresholds (vitest.config.ts)',
     }
   });
 });
+
+describe('code-quality guide is accurate about what is enforced', () => {
+  const text = read('docs/guidelines/code-quality.md');
+
+  it('names the full path of the PATTERNS list', () => {
+    expect(text).toContain('`.claude/hooks/lib/secrets.mjs`');
+  });
+
+  it('names where strict comes from and says return types are a review convention', () => {
+    expect(text).toContain('astro/tsconfigs/strictest');
+    expect(text).toContain('explicit return types on exported functions (a review convention');
+  });
+
+  it('has a Prettier row in the thresholds table', () => {
+    expect(text).toMatch(/\| Formatting \|[^\n]*Prettier[^\n]*\|/);
+  });
+
+  it('says Python tooling and the BDD runner are not installed yet', () => {
+    expect(text).toContain('`ruff` is not installed and has no config yet');
+    expect(text).toContain('not installed yet');
+  });
+});
+
+describe('CLAUDE.md links the quality guide without copying its numbers', () => {
+  const section = /## Coding standards\n([\s\S]*?)\n## /.exec(read('CLAUDE.md'))?.[1] ?? '';
+
+  it('has no numeric limits (they live in docs/guidelines/code-quality.md)', () => {
+    expect(section).toContain('docs/guidelines/code-quality.md');
+    expect(section).not.toMatch(/\d+\s*(lines|%)|complexity (of|at most) \d+|zero lint warnings/i);
+  });
+});
+
+describe('the review checklist exists once in the guide and once in the PR template', () => {
+  const items = (text: string) =>
+    text
+      .split('\n')
+      .filter((line) => line.startsWith('- [ ] '))
+      .map((line) => line.replace('- [ ] ', ''));
+
+  it('has the same items in both, so they cannot drift', () => {
+    const guide = items(read('docs/guidelines/code-quality.md'));
+    const template = items(read('.github/pull_request_template.md'));
+    expect(guide.length).toBeGreaterThan(0);
+    for (const item of guide) expect(template).toContain(item);
+  });
+
+  it('says the template mirrors the guide', () => {
+    expect(read('docs/guidelines/code-quality.md')).toContain('.github/pull_request_template.md');
+  });
+});
