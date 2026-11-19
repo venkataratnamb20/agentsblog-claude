@@ -10,7 +10,12 @@
     "typecheck": "astro check",
     "test": "vitest run",
     "test:watch": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "sync-agents": "node scripts/sync-agents.mjs",
+    "clean": "node scripts/clean.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.14",
@@ -20,8 +25,14 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
+    "@eslint/js": "^10.0.1",
     "@vitest/coverage-v8": "^5.1.1",
+    "eslint": "^10.15.0",
+    "eslint-plugin-astro": "^1.7.0",
+    "prettier": "^3.10.1",
+    "prettier-plugin-astro": "^0.14.1",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.73.0",
     "vitest": "^5.1.1"
   }
 }

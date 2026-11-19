@@ -2,24 +2,13 @@
 param([Parameter(Position = 0)][string]$Target = 'help')
 
 $npm = @{
-    setup = 'ci'; dev = 'run dev'; lint = 'run typecheck'; typecheck = 'run typecheck'; test = 'test'
-    coverage = 'run coverage'; build = 'run build'; preview = 'run preview'; audit = 'audit --audit-level=high'
+    setup = 'ci'; dev = 'run dev'; lint = 'run lint'; format = 'run format'; typecheck = 'run typecheck'
+    test = 'test'; coverage = 'run coverage'; build = 'run build'; preview = 'run preview'
+    audit = 'audit --audit-level=high'; 'sync-agents' = 'run sync-agents'; clean = 'run clean'
 }
-$stubs = 'format', 'test-e2e', 'test-bdd', 'release'
+$stubs = 'test-e2e', 'test-bdd', 'release'
 
-if ($Target -eq 'help') {
-    Write-Host "Targets: $(($npm.Keys + $stubs | Sort-Object) -join ' ') sync-agents clean"
-}
-elseif ($npm.ContainsKey($Target)) {
-    & npm ($npm[$Target] -split ' ')
-    exit $LASTEXITCODE
-}
-elseif ($Target -eq 'sync-agents') {
-    python -c "import shutil; shutil.copytree('.agents/skills', '.claude/skills', dirs_exist_ok=True)"
-    Write-Host 'synced .agents/skills -> .claude/skills'
-}
-elseif ($Target -eq 'clean') {
-    python -c "import shutil; [shutil.rmtree(p, ignore_errors=True) for p in ('dist','build','coverage','.astro')]"
-}
+if ($Target -eq 'help') { Write-Host "Targets: $(($npm.Keys + $stubs | Sort-Object) -join ' ')" }
+elseif ($npm.ContainsKey($Target)) { & npm ($npm[$Target] -split ' '); exit $LASTEXITCODE }
 elseif ($stubs -contains $Target) { Write-Host "[$Target] not configured yet" }
 else { Write-Error "Unknown target '$Target'. Run ./make.ps1 help"; exit 1 }

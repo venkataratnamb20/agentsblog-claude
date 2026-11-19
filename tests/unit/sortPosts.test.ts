@@ -5,7 +5,11 @@ const post = (slug: string, date: string) => ({ slug, date: new Date(date) });
 
 describe('sortPostsByDateDesc', () => {
   it('orders newest first', () => {
-    const sorted = sortPostsByDateDesc([post('a', '2026-12-14'), post('c', '2027-01-04'), post('b', '2026-12-21')]);
+    const sorted = sortPostsByDateDesc([
+      post('a', '2026-12-14'),
+      post('c', '2027-01-04'),
+      post('b', '2026-12-21'),
+    ]);
     expect(sorted.map((p) => p.slug)).toEqual(['c', 'b', 'a']);
   });
   it('does not mutate the input', () => {
