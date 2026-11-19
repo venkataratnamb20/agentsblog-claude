@@ -1,6 +1,6 @@
 # Capability matrix: Claude Code (primary harness)
 
-- **Status:** complete for Claude Code; awaiting review. Date: 19 Nov 2026.
+- **Status:** audit closed 19 Nov 2026 (Venkat confirmed the setup and waived the review). Gap status updated after the harness build (see the end of this file).
 - **Asana task:** Audit AI team & harness capabilities (gid 1220694720088833).
 - **Owner decision (Venkat, chat, 19 Nov 2026):** Claude Code is the only tool for this project. Nothing is set up for Cursor, Codex or Antigravity, so they are not in this matrix.
 
@@ -52,29 +52,31 @@ Observation: the hooks that fire during Claude Code work here (the "Fact-Forcing
 
 ## Role × Claude Code feature matrix
 
-| Role | A | S | C | MCP | H | P | M |
-|---|---|---|---|---|---|---|---|
-| PM Orchestrator | Re | Re | Re | Av | Av | Mi | Av |
-| Product Strategist | Mi | Re | Re | Av | Av | Mi | Av |
-| Solution Architect | Re | Re | Re | Av | Av | Mi | Av |
-| UX/UI Designer | Re | Re | Re | Re | Av | Mi | Av |
-| Frontend Engineer | Re | Re | Re | Av | Av | Mi | Av |
-| DevOps & SRE | Mi | Re | Mi | Re | Mi | Mi | Av |
-| QA Engineer | Re | Re | Re | Av | Av | Mi | Av |
-| Security Engineer | Re | Re | Re | Mi | Mi | Mi | Av |
-| Code Reviewer | Re | Re | Re | Re | Mi | Mi | Av |
-| SEO & Analytics | Re | Re | Mi | Re | Av | Mi | Av |
-| Research Analyst | Mi | Re | Mi | Re | Av | Mi | Av |
-| Technical Writer | Mi | Re | Mi | Av | Av | Mi | Av |
-| Technical Editor | Mi | Mi | Mi | Mi | Av | Mi | Av |
-| Growth & Community | Re | Re | Re | Re | Av | Mi | Av |
+| Role | Av | S | C | MCP | Av | Av | M |
+| --- | Av | --- | --- | --- | Av | Av | --- |
+| PM Orchestrator | Av | Re | Re | Av | Av | Av | Av |
+| Product Strategist | Av | Re | Re | Av | Av | Av | Av |
+| Solution Architect | Av | Re | Re | Av | Av | Av | Av |
+| UX/UI Designer | Av | Re | Re | Re | Av | Av | Av |
+| Frontend Engineer | Av | Re | Re | Av | Av | Av | Av |
+| DevOps & SRE | Av | Re | Mi | Re | Av | Av | Av |
+| QA Engineer | Av | Re | Re | Av | Av | Av | Av |
+| Security Engineer | Av | Re | Re | Mi | Av | Av | Av |
+| Code Reviewer | Av | Re | Re | Re | Av | Av | Av |
+| SEO & Analytics | Av | Re | Mi | Re | Av | Av | Av |
+| Research Analyst | Av | Re | Mi | Re | Av | Av | Av |
+| Technical Writer | Av | Re | Mi | Av | Av | Av | Av |
+| Technical Editor | Av | Mi | Mi | Mi | Av | Av | Av |
+| Growth & Community | Av | Re | Re | Re | Av | Av | Av |
 | Venkat (human approver) | NA | NA | NA | Av | NA | NA | NA |
 
 Notes on the cells:
 
-- **H = Av** means the git-level `commit-msg` hook and CI apply to the role; they are the only hooks in the repo. **H = Mi** means the role needs a role-specific guard that does not exist yet.
-- **P = Mi** for every role: there is no project `.claude/settings.json`, and the user settings carry no permission rules. Per-role permission needs are in the next table.
-- **M = Av** means the default model is usable by every role. Pinning a model per role needs a subagent definition (**A**), so it follows from gap 1.
+- **A = Av**: each role has a project subagent in `.claude/agents/` (provisional until the roster and RACI are approved).
+- **H = Av**: repo-level hooks exist (`.claude/hooks/`: secret blocking and a pre-commit gate) plus the git `commit-msg` hook and CI. Hooks for deploy, DNS, publish, spend and post do not exist because that tooling does not exist yet.
+- **P = Av**: `.claude/settings.json` has allow, ask and deny rules. Per-role limits come from each subagent's tools allow-list; path-level limits (for example the writer touching only `content/posts/`) are by instruction only.
+- **M = Av**: all roles use `model: inherit`, the default model Venkat confirmed.
+- **S, C, MCP**: unchanged; **Re** still means reuse from a plugin or connector, and the 7 project skills and 2 commands are listed in the gap status below.
 
 ## What each role needs, and what exists to reuse
 
@@ -110,3 +112,20 @@ Notes on the cells:
 10. **Install note:** `ecc@ecc` reports that its `package.json` sets overrides which this install does not apply. It is enabled; confirm nothing it lists is needed.
 
 Other tools (Cursor, Codex, Antigravity) are out of scope by decision; no gaps are raised for them.
+
+## Gap status after the harness build
+
+| # | Gap | Status | Evidence and what remains |
+|---|---|---|---|
+| 1 | Subagents | Closed | 14 files in `.claude/agents/` with name, trigger description, tools allow-list and `model: inherit`; shape enforced by `tests/unit/claudeConfig.test.ts`. Provisional until the roster and RACI (stage 0B) are approved. MCP tools are not in the allow-lists because their ids differ per machine. |
+| 2 | Project skills | Partly | 7 skills: `new-post`, `review-pr`, `security-check`, `seo-audit`, `gate-check`, `release`, `hotfix`. Still missing: fact-check and source-verification skill and style guide, research pipeline and reference library, editorial QA checklist, agent completion protocol. They belong to the stage 6 and 0B tasks. |
+| 3 | Slash commands | Closed | `/status` and `/handoff`; skills cover everything else. |
+| 4 | Permissions | Closed | `.claude/settings.json` allow, ask and deny rules (denies `.env`, keys, force pushes; asks before merge, tag and release). |
+| 5 | Model per role | Closed | `model: inherit` for all 14 roles, the default model. |
+| 6 | Repo-level hooks | Partly | `block-secrets` and `pre-commit-gate` are registered and their logic is unit-tested. Not covered: deploy, DNS, publish, spend and post guards (no tooling yet); the Code Reviewer gate is a skill, not a hook. Unverified: Claude Code invoking the hooks in a fresh session. |
+| 7 | MCP | Open | Needs Venkat: which services to authorise (GitHub connector, Figma, Canva, Datadog, PagerDuty, Ahrefs, Similarweb, Amplitude, Klaviyo, Slack), and the analytics and newsletter ADRs. |
+| 8 | Playwright, Cucumber | Open | Belongs to the QA tasks. |
+| 9 | Fresh-session load of `CLAUDE.md` | Open | Manual check: new session, ask for the commit convention. |
+| 10 | `ecc@ecc` install note | Open | Confirm nothing it lists is needed. |
+
+Open and partial items need Venkat's acceptance, or they stay on their owning tasks.

@@ -8,8 +8,8 @@ export default [
   ...tseslint.configs.recommended,
   ...astro.configs.recommended,
   {
-    files: ['scripts/**/*.mjs', 'astro.config.mjs'],
-    languageOptions: { globals: { console: 'readonly', process: 'readonly' } },
+    files: ['scripts/**/*.mjs', 'astro.config.mjs', '.claude/hooks/**/*.mjs'],
+    languageOptions: { globals: { console: 'readonly', process: 'readonly', Buffer: 'readonly' } },
   },
   {
     rules: {
