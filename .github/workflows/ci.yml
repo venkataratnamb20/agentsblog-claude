@@ -1,0 +1,13 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [develop, main]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Placeholder until the tech stack ADR is approved; replace with real steps.
+      - run: make lint typecheck test
