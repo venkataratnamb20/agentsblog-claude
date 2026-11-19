@@ -344,3 +344,23 @@ describe('the guardrail docs state their limits', () => {
     expect(read('docs/guidelines/secrets-and-access.md')).toContain('common variants');
   });
 });
+
+describe('coverage config encodes the documented thresholds (vitest.config.ts)', () => {
+  const text = read('vitest.config.ts');
+
+  it('measures all of src, so the 80% floor is overall and not only src/lib', () => {
+    expect(text).toContain("include: ['src/**/*.ts']");
+  });
+
+  it('excludes only the Astro-only glue file, with a reason', () => {
+    expect(text).toContain("exclude: ['src/content.config.ts']");
+    expect(text).toContain('CI');
+  });
+
+  it('keeps 100% on src/lib and an 80% floor', () => {
+    expect(text).toContain("'src/lib/**': { lines: 100, functions: 100, branches: 100");
+    for (const metric of ['lines', 'functions', 'branches', 'statements']) {
+      expect(text).toContain(`${metric}: 80`);
+    }
+  });
+});
