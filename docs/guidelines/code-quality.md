@@ -8,7 +8,7 @@ How code is written and reviewed on this project. `CLAUDE.md` holds the short su
 |---|---|---|
 | Names | Name things for what they mean (`readingTime`, `sortPostsByDateDesc`) | `calc2`, `data`, `tmp` |
 | Single responsibility | `slugify` only slugifies; titles are built in `seo.ts` | One function that slugifies, validates and writes files |
-| Open for extension | Add a pattern to the `PATTERNS` list in `secrets.mjs` | Edit the matching loop for every new token type |
+| Open for extension | Add a pattern to the `PATTERNS` list in `.claude/hooks/lib/secrets.mjs` | Edit the matching loop for every new token type |
 | Liskov | A function that takes `DatedPost` works for any post-like object | Sub-types that throw when `date` is read |
 | Interface segregation | `DraftAware` needs only `data.draft` | One giant `Post` type passed everywhere |
 | Dependency inversion | `src/lib` functions take data in; the page reads the collection and passes it | `src/lib` code that calls `getCollection` itself |
@@ -25,7 +25,7 @@ Also: return early instead of nesting, keep I/O out of pure helpers, and extract
 
 ## BDD
 
-User journeys get a Gherkin file in `tests/features/` once the BDD runner is installed (Cucumber, planned in ADR-001). Example:
+User journeys get a Gherkin file in `tests/features/` once the BDD runner is installed (Cucumber is not installed yet; ADR-001 lists it as still to confirm). Example:
 
 ```gherkin
 Feature: Draft posts stay private
@@ -43,8 +43,8 @@ Feature: Draft posts stay private
 
 ## Language standards
 
-- TypeScript: `strict` on, no `any`, explicit return types on exported functions, ESLint and Prettier clean.
-- Python, only if it is ever added: PEP 8, type hints, Google-style docstrings and `ruff`.
+- TypeScript: `strict` on (inherited from `astro/tsconfigs/strictest`), no `any` (ESLint), explicit return types on exported functions (a review convention, not a lint rule), ESLint and Prettier clean.
+- Python, only if it is ever added: PEP 8, type hints, Google-style docstrings and `ruff`. `ruff` is not installed and has no config yet.
 - Node and shell scripts: fail loudly with a clear message and a non-zero exit code.
 
 ## Thresholds
@@ -56,14 +56,15 @@ Feature: Draft posts stay private
 | Lint warnings | zero lint warnings | `eslint --max-warnings 0` in CI |
 | Coverage on core logic | 100% of `src/lib` | Vitest thresholds |
 | Coverage overall | 80% floor | Vitest thresholds in CI |
+| Formatting | Prettier-clean | `prettier --check` in CI |
 | Commit messages | Conventional Commits | commitlint hook and CI |
 
 ## Review checklist
 
-Used by the `code-reviewer` subagent and the `review-pr` skill.
+Used by the `code-reviewer` subagent and the `review-pr` skill. `.github/pull_request_template.md` carries the same items (plus the PR-title line); change both together, a test checks it.
 
 - [ ] Tests came first, and a failing run is shown for new behaviour.
-- [ ] The thresholds above hold in CI.
+- [ ] The thresholds in `docs/guidelines/code-quality.md` hold in CI.
 - [ ] No unrelated changes; the scope matches the Asana task.
 - [ ] Names, comments and docs match what the code does.
 - [ ] No secrets and no new dependency without a stated reason.

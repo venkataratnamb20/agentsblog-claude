@@ -4,7 +4,9 @@ export default defineConfig({
   test: {
     include: ['tests/unit/**/*.test.ts', 'tests/content/**/*.test.ts'],
     coverage: {
-      include: ['src/lib/**'],
+      include: ['src/**/*.ts'],
+      // Astro-only glue: it imports astro:content, so CI's build exercises it instead of a unit test.
+      exclude: ['src/content.config.ts'],
       thresholds: {
         // CI floor
         lines: 80,

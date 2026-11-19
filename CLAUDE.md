@@ -37,11 +37,9 @@ Use `make <target>` (GNU make) or `./make.ps1 <target>` (Windows PowerShell), no
 - Detail: `docs/guidelines/git-workflow.md`.
 
 ## Coding standards
-- Clean Code and SOLID; functions at most 40 lines, complexity at most 10, zero lint warnings.
-- TDD: show the failing test first (red), then green, then refactor.
-- TypeScript strict; Python only if ever needed (PEP 8, type hints, Google docstrings).
-- Coverage: 100% on `src/lib`, 80% floor in CI.
+- Clean Code and SOLID, TypeScript strict, test-first: show the failing test, then green, then refactor.
 - Pick data structures by access pattern and state complexity on hot paths.
+- Every numeric limit (function length, complexity, lint warnings, coverage) is in the guide and enforced by ESLint, Vitest and CI.
 - Detail: `docs/guidelines/code-quality.md`.
 
 ## Definition of Done

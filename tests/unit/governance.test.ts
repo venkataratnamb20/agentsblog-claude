@@ -344,3 +344,73 @@ describe('the guardrail docs state their limits', () => {
     expect(read('docs/guidelines/secrets-and-access.md')).toContain('common variants');
   });
 });
+
+describe('coverage config encodes the documented thresholds (vitest.config.ts)', () => {
+  const text = read('vitest.config.ts');
+
+  it('measures all of src, so the 80% floor is overall and not only src/lib', () => {
+    expect(text).toContain("include: ['src/**/*.ts']");
+  });
+
+  it('excludes only the Astro-only glue file, with a reason', () => {
+    expect(text).toContain("exclude: ['src/content.config.ts']");
+    expect(text).toContain('CI');
+  });
+
+  it('keeps 100% on src/lib and an 80% floor', () => {
+    expect(text).toContain("'src/lib/**': { lines: 100, functions: 100, branches: 100");
+    for (const metric of ['lines', 'functions', 'branches', 'statements']) {
+      expect(text).toContain(`${metric}: 80`);
+    }
+  });
+});
+
+describe('code-quality guide is accurate about what is enforced', () => {
+  const text = read('docs/guidelines/code-quality.md');
+
+  it('names the full path of the PATTERNS list', () => {
+    expect(text).toContain('`.claude/hooks/lib/secrets.mjs`');
+  });
+
+  it('names where strict comes from and says return types are a review convention', () => {
+    expect(text).toContain('astro/tsconfigs/strictest');
+    expect(text).toContain('explicit return types on exported functions (a review convention');
+  });
+
+  it('has a Prettier row in the thresholds table', () => {
+    expect(text).toMatch(/\| Formatting \|[^\n]*Prettier[^\n]*\|/);
+  });
+
+  it('says Python tooling and the BDD runner are not installed yet', () => {
+    expect(text).toContain('`ruff` is not installed and has no config yet');
+    expect(text).toContain('not installed yet');
+  });
+});
+
+describe('CLAUDE.md links the quality guide without copying its numbers', () => {
+  const section = /## Coding standards\n([\s\S]*?)\n## /.exec(read('CLAUDE.md'))?.[1] ?? '';
+
+  it('has no numeric limits (they live in docs/guidelines/code-quality.md)', () => {
+    expect(section).toContain('docs/guidelines/code-quality.md');
+    expect(section).not.toMatch(/\d+\s*(lines|%)|complexity (of|at most) \d+|zero lint warnings/i);
+  });
+});
+
+describe('the review checklist exists once in the guide and once in the PR template', () => {
+  const items = (text: string) =>
+    text
+      .split('\n')
+      .filter((line) => line.startsWith('- [ ] '))
+      .map((line) => line.replace('- [ ] ', ''));
+
+  it('has the same items in both, so they cannot drift', () => {
+    const guide = items(read('docs/guidelines/code-quality.md'));
+    const template = items(read('.github/pull_request_template.md'));
+    expect(guide.length).toBeGreaterThan(0);
+    for (const item of guide) expect(template).toContain(item);
+  });
+
+  it('says the template mirrors the guide', () => {
+    expect(read('docs/guidelines/code-quality.md')).toContain('.github/pull_request_template.md');
+  });
+});
