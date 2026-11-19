@@ -1,5 +1,5 @@
-# Cross-platform task runner. Stack-specific targets are stubs until the tech stack ADR is approved (Asana: "Select tech stack").
-# Windows: run with GNU make (e.g. via Git Bash or `winget install GnuWin32.Make`).
+# Cross-platform task runner (stack: Astro + TypeScript, see docs/adr/0001-astro-typescript.md).
+# Windows without GNU make: use ./make.ps1 <target>.
 
 .PHONY: help setup dev lint format typecheck test test-e2e test-bdd coverage build preview audit sync-agents release clean
 
@@ -7,21 +7,31 @@ help:
 	@echo Targets: setup dev lint format typecheck test test-e2e test-bdd coverage build preview audit sync-agents release clean
 
 define TODO
-	@echo "[$(1)] not configured yet - waiting on tech stack ADR"
+	@echo "[$(1)] not configured yet"
 endef
 
-setup:      ; $(call TODO,setup)
-dev:        ; $(call TODO,dev)
-lint:       ; $(call TODO,lint)
+setup:
+	npm ci
+dev:
+	npm run dev
+lint:
+	npm run typecheck
+typecheck:
+	npm run typecheck
+test:
+	npm test
+coverage:
+	npm run coverage
+build:
+	npm run build
+preview:
+	npm run preview
+audit:
+	npm audit --audit-level=high
+
 format:     ; $(call TODO,format)
-typecheck:  ; $(call TODO,typecheck)
-test:       ; $(call TODO,test)
 test-e2e:   ; $(call TODO,test-e2e)
 test-bdd:   ; $(call TODO,test-bdd)
-coverage:   ; $(call TODO,coverage)
-build:      ; $(call TODO,build)
-preview:    ; $(call TODO,preview)
-audit:      ; $(call TODO,audit)
 release:    ; $(call TODO,release)
 
 # Copy shared skills from .agents/skills to .claude/skills (no symlinks, works on Windows).
@@ -30,4 +40,4 @@ sync-agents:
 	@echo synced .agents/skills -> .claude/skills
 
 clean:
-	@python -c "import shutil; [shutil.rmtree(p, ignore_errors=True) for p in ('dist','build','coverage')]"
+	@python -c "import shutil; [shutil.rmtree(p, ignore_errors=True) for p in ('dist','build','coverage','.astro')]"

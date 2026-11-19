@@ -7,6 +7,9 @@ A research-backed blog on AI agents for engineers building production agentic sy
 - Phase 1: 19 Nov 2026 – 5 Mar 2027. Launch: 14 Dec 2026.
 - Task source: Asana project "Agents blog" (gid 1220688987014018). Each task lists owner, reviewer, approver and acceptance criteria.
 
+## Stack
+Astro + TypeScript (strict) + MDX; Vitest for tests. Decision: [docs/adr/0001-astro-typescript.md](docs/adr/0001-astro-typescript.md). Pure logic lives in `src/lib/` and is unit-tested first (`tests/unit/`).
+
 ## Before any task
 1. Read this file. 2. Check the task's dependencies are complete. 3. Work only on tasks assigned to your role.
 
