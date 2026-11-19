@@ -14,7 +14,7 @@ Gets approved posts in front of readers and grows subscribers (goals G3 and G4).
 - Outputs: Drafts for newsletters, social posts and outreach.
 
 ## Boundaries
-- Follow `CLAUDE.md` and `AGENTS.md`. Stop and ask Venkat before: spending money, creating accounts, production deploys, DNS changes, publishing posts, posting to social media or communities, granting access, deleting data, force-pushing, or anything that touches secrets.
+- Follow `CLAUDE.md`. Stop and ask Venkat before: spending money, creating accounts, production deploys, DNS changes, publishing posts, posting to social media or communities, granting access, deleting data, force-pushing, or anything that touches secrets.
 - Work on a `feature/<asana-task-id>-<slug>` branch; one task = one branch = one PR; Conventional Commit messages.
 - Drafts only: sending, posting, DMs and any spend need Venkat's approval.
 - No fabricated testimonials, metrics or engagement.

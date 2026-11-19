@@ -103,14 +103,29 @@ describe('slash commands (.claude/commands)', () => {
   });
 });
 
-describe('settings (.claude/settings.json)', () => {
-  const settings = JSON.parse(readFileSync('.claude/settings.json', 'utf8')) as {
-    permissions: { allow: string[]; deny: string[]; ask: string[] };
-    hooks: { PreToolUse: { matcher: string; hooks: { command: string }[] }[] };
+const settings = JSON.parse(readFileSync('.claude/settings.json', 'utf8')) as {
+  permissions: { allow: string[]; deny: string[]; ask: string[] };
+  hooks: {
+    PreToolUse: { matcher: string; hooks: { command: string }[] }[];
+    PostToolUse: { matcher: string; hooks: { command: string }[] }[];
   };
+};
 
+describe('settings permissions (.claude/settings.json)', () => {
   it('denies reading .env and key files', () => {
     for (const rule of ['Read(./.env)', 'Read(./.env.local)', 'Read(./**/*.pem)']) {
+      expect(settings.permissions.deny).toContain(rule);
+    }
+  });
+
+  it('does not deny whole families of ordinary source files', () => {
+    for (const rule of ['Read(./**/secrets*)', 'Read(./**/credentials*)']) {
+      expect(settings.permissions.deny).not.toContain(rule);
+    }
+  });
+
+  it('denies specific secret file names', () => {
+    for (const rule of ['Read(./**/secrets.json)', 'Read(./**/credentials.json)']) {
       expect(settings.permissions.deny).toContain(rule);
     }
   });
@@ -119,6 +134,14 @@ describe('settings (.claude/settings.json)', () => {
     expect(settings.permissions.deny).toContain('Bash(git push --force*)');
     expect(settings.permissions.ask).toContain('Bash(gh pr merge*)');
     expect(settings.permissions.ask).toContain('Bash(git tag*)');
+  });
+});
+
+describe('settings hooks (.claude/settings.json)', () => {
+  it('registers an action-log hook that exists on disk', () => {
+    const commands = settings.hooks.PostToolUse.flatMap((e) => e.hooks.map((h) => h.command));
+    expect(commands.some((c) => c.includes('log-actions.mjs'))).toBe(true);
+    expect(existsSync('.claude/hooks/log-actions.mjs')).toBe(true);
   });
 
   it('registers a secret-blocking hook and a pre-commit test hook that exist on disk', () => {

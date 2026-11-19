@@ -6,7 +6,7 @@
 
 ## Scope
 
-Claude Code only. `AGENTS.md` stays the single source of truth and `CLAUDE.md` imports it. Other tools are not audited, set up or tested.
+Claude Code only. `CLAUDE.md` is the single rules file (the former `AGENTS.md` was merged into it). Other tools are not audited, set up or tested.
 
 ## Claude Code version and default model
 
@@ -38,8 +38,7 @@ Claude Code install checked: `ecc@ecc` plugin 2.2.3 (user scope, enabled) plus t
 
 | Asset | Status | Evidence |
 |---|---|---|
-| `CLAUDE.md` (imports `AGENTS.md`) | Av | first line is `@AGENTS.md`; target file exists (52 lines) |
-| `AGENTS.md` | Av | stack, approvals, git workflow, commands, Definition of Done |
+| `CLAUDE.md` (single rules file) | Av | purpose, stack, commands, git flow, Definition of Done, completion protocol, approval gates |
 | `.claude/skills/` | Mi | only `.gitkeep` |
 | `.claude/agents/` | Mi | only `.gitkeep` |
 | `.claude/commands/` | Mi | does not exist |
@@ -108,7 +107,7 @@ Notes on the cells:
 6. **Repo-level hooks:** secret-scan pre-commit; a guard for actions on the approval list (deploy, DNS, publish, spend, post); a Code Reviewer gate. The hooks active today live in the user-level `ecc` plugin and are not part of the repo.
 7. **MCP (`.mcp.json` missing):** GitHub connector failed to connect (use the `gh` CLI); Figma, Canva, Datadog, PagerDuty, Ahrefs, Similarweb, Amplitude, Klaviyo and Slack need authorisation; HubSpot connector failed; no Zotero or arXiv/RSS source; no analytics or Search Console source and no newsletter provider (their ADRs are not done).
 8. **Project tooling not installed:** Playwright (E2E) and Cucumber (BDD), named in ADR-001.
-9. **Unverified:** a fresh Claude Code session loading `CLAUDE.md` and `AGENTS.md`. The static check passes, but a live test could not run from this sandbox because the CLI is not logged in. Check: open a new session in this folder and ask "what is the commit convention?"; the answer should be Conventional Commits.
+9. **Unverified:** a fresh Claude Code session loading `CLAUDE.md`. The static check passes, but a live test could not run from this sandbox because the CLI is not logged in. Check: open a new session in this folder and ask "what is the commit convention?"; the answer should be Conventional Commits.
 10. **Install note:** `ecc@ecc` reports that its `package.json` sets overrides which this install does not apply. It is enabled; confirm nothing it lists is needed.
 
 Other tools (Cursor, Codex, Antigravity) are out of scope by decision; no gaps are raised for them.

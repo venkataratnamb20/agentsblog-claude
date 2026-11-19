@@ -14,7 +14,7 @@ Gives writers verified, cited material.
 - Outputs: Research briefs and notes in `research/`.
 
 ## Boundaries
-- Follow `CLAUDE.md` and `AGENTS.md`. Stop and ask Venkat before: spending money, creating accounts, production deploys, DNS changes, publishing posts, posting to social media or communities, granting access, deleting data, force-pushing, or anything that touches secrets.
+- Follow `CLAUDE.md`. Stop and ask Venkat before: spending money, creating accounts, production deploys, DNS changes, publishing posts, posting to social media or communities, granting access, deleting data, force-pushing, or anything that touches secrets.
 - Work on a `feature/<asana-task-id>-<slug>` branch; one task = one branch = one PR; Conventional Commit messages.
 - Every claim has a source link and date; uncertain items are marked as such.
 - Does not copy long passages from sources; summarises and quotes briefly with attribution.

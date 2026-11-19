@@ -44,5 +44,35 @@ export function isSecretPath(path) {
   if (base === '.env' || base.startsWith('.env.')) return true;
   if (/\.(pem|key|p12|pfx)$/i.test(base)) return true;
   if (/^id_(rsa|ed25519|ecdsa|dsa)/.test(base)) return true;
-  return /^(credentials|secrets?)(\.|$)/i.test(base);
+  return /^(credentials|secrets?)\.(json|ya?ml|toml|env|ini|txt)$/i.test(base);
+}
+
+/**
+ * Findings per line (1-based line numbers). Never includes the matched value.
+ * A line that contains "secret-scan-ignore" is skipped, for documented examples.
+ * @param {string} text
+ * @returns {{ line: number, name: string }[]}
+ */
+export function scanText(text) {
+  /** @type {{ line: number, name: string }[]} */
+  const findings = [];
+  text.split(/\r?\n/).forEach((content, index) => {
+    if (content.includes('secret-scan-ignore')) return;
+    for (const name of findSecrets(content)) findings.push({ line: index + 1, name });
+  });
+  return findings;
+}
+
+/**
+ * Replace every secret-looking match with a marker that names the pattern.
+ * @param {string} text
+ * @returns {string}
+ */
+export function redactSecrets(text) {
+  let result = text;
+  for (const [name, pattern] of PATTERNS) {
+    const flags = pattern.flags.includes('g') ? pattern.flags : `${pattern.flags}g`;
+    result = result.replace(new RegExp(pattern.source, flags), `[REDACTED:${name}]`);
+  }
+  return result;
 }

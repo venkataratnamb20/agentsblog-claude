@@ -25,6 +25,8 @@ jobs:
         run: |
           echo "$PR_TITLE" | npx --no -- commitlint
           npx --no -- commitlint --from "$BASE_SHA" --to "$HEAD_SHA"
+      - name: Secret scan
+        run: npm run secrets:scan
       - run: npm run lint
       - run: npm run format:check
       - run: npm run typecheck

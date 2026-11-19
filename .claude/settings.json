@@ -46,8 +46,6 @@
       "Read(./**/*.pem)",
       "Read(./**/*.key)",
       "Read(./**/id_rsa*)",
-      "Read(./**/credentials*)",
-      "Read(./**/secrets*)",
       "Edit(./.env)",
       "Edit(./.env.local)",
       "Edit(./.env.production)",
@@ -57,7 +55,14 @@
       "Bash(git push * develop)",
       "Bash(git reset --hard*)",
       "Bash(rm -rf*)",
-      "Bash(npm publish*)"
+      "Bash(npm publish*)",
+      "Read(./**/secrets.json)",
+      "Read(./**/secrets.yaml)",
+      "Read(./**/secrets.yml)",
+      "Read(./**/secrets.toml)",
+      "Read(./**/credentials.json)",
+      "Read(./**/credentials.yaml)",
+      "Read(./**/credentials.yml)"
     ]
   },
   "hooks": {
@@ -77,6 +82,17 @@
           {
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre-commit-gate.mjs\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash|Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/log-actions.mjs\""
           }
         ]
       }

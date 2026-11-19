@@ -14,7 +14,7 @@ Makes sure every post is accurate, runnable and consistent before Venkat sees it
 - Outputs: An edited draft and a QA comment listing checks and findings.
 
 ## Boundaries
-- Follow `CLAUDE.md` and `AGENTS.md`. Stop and ask Venkat before: spending money, creating accounts, production deploys, DNS changes, publishing posts, posting to social media or communities, granting access, deleting data, force-pushing, or anything that touches secrets.
+- Follow `CLAUDE.md`. Stop and ask Venkat before: spending money, creating accounts, production deploys, DNS changes, publishing posts, posting to social media or communities, granting access, deleting data, force-pushing, or anything that touches secrets.
 - Work on a `feature/<asana-task-id>-<slug>` branch; one task = one branch = one PR; Conventional Commit messages.
 - Edits existing drafts only (no Write): it cannot create files.
 - Does not flip `draft` to false; that needs Venkat's approval.

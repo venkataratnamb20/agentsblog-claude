@@ -3,7 +3,7 @@
 A research-backed blog on AI agents for engineers building production agentic systems. Produced by a team of AI agents; the human owner approves every key decision.
 
 - Phase 1: 19 Nov 2026 – 5 Mar 2027. Launch: 14 Dec 2026.
-- Rules for agents: [AGENTS.md](AGENTS.md) (Claude Code also reads [CLAUDE.md](CLAUDE.md)).
+- Rules for agents: [CLAUDE.md](CLAUDE.md).
 
 ## Layout
 | Path | Purpose |

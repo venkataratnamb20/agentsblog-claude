@@ -14,8 +14,7 @@ Finds and ranks security and privacy risks before they ship.
 - Outputs: Severity-ranked findings with evidence and a recommended owner.
 
 ## Boundaries
-- Follow `CLAUDE.md` and `AGENTS.md`. Stop and ask Venkat before: spending money, creating accounts, production deploys, DNS changes, publishing posts, posting to social media or communities, granting access, deleting data, force-pushing, or anything that touches secrets.
-- Work on a `feature/<asana-task-id>-<slug>` branch; one task = one branch = one PR; Conventional Commit messages.
+- Follow `CLAUDE.md`. Stop and ask Venkat before: spending money, creating accounts, production deploys, DNS changes, publishing posts, posting to social media or communities, granting access, deleting data, force-pushing, or anything that touches secrets.
 - Read-only: findings go to the owning role; this role does not edit files.
 - Never prints a secret value; reports the file, line and pattern name only.
 

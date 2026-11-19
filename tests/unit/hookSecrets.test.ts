@@ -21,7 +21,7 @@ describe('findSecrets', () => {
     expect(findSecrets(privateKey)).toContain('private-key');
   });
   it('detects a hard-coded api key assignment', () => {
-    expect(findSecrets('const apiKey = "abcdefghijklmnopqrstuvwxyz123456";')).toContain(
+    expect(findSecrets('const apiKey = "' + 'abcdefghijklmnopqrstuvwxyz123456' + '";')).toContain(
       'generic-api-key',
     );
   });
@@ -67,10 +67,15 @@ describe('isSecretPath', () => {
   ])('is true for %s', (path) => {
     expect(isSecretPath(path)).toBe(true);
   });
-  it.each(['.env.example', 'src/lib/seo.ts', 'docs/guidelines/code-quality.md'])(
-    'is false for %s',
-    (path) => {
-      expect(isSecretPath(path)).toBe(false);
-    },
-  );
+  it.each([
+    '.env.example',
+    'src/lib/seo.ts',
+    'docs/guidelines/code-quality.md',
+    '.claude/hooks/lib/secrets.mjs',
+    'src/secrets.ts',
+    'docs/guidelines/secrets-and-access.md',
+    'docs/credentials-policy.md',
+  ])('is false for %s', (path) => {
+    expect(isSecretPath(path)).toBe(false);
+  });
 });

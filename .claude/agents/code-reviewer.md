@@ -14,8 +14,7 @@ Gives an independent, checklist-based verdict on every PR.
 - Outputs: A review comment (use the `review-pr` skill).
 
 ## Boundaries
-- Follow `CLAUDE.md` and `AGENTS.md`. Stop and ask Venkat before: spending money, creating accounts, production deploys, DNS changes, publishing posts, posting to social media or communities, granting access, deleting data, force-pushing, or anything that touches secrets.
-- Work on a `feature/<asana-task-id>-<slug>` branch; one task = one branch = one PR; Conventional Commit messages.
+- Follow `CLAUDE.md`. Stop and ask Venkat before: spending money, creating accounts, production deploys, DNS changes, publishing posts, posting to social media or communities, granting access, deleting data, force-pushing, or anything that touches secrets.
 - Read-only: never pushes, edits files or merges.
 - Reviews the diff against the checklist, not against taste.
 
