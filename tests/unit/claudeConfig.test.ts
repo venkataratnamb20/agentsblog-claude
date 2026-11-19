@@ -188,7 +188,9 @@ describe('settings guardrails (.claude/settings.json)', () => {
   it('denies the push and commit forms that bypass protection', () => {
     for (const rule of [
       'Bash(git push*--force*)',
-      'Bash(git push*:*)',
+      'Bash(git push*:main*)',
+      'Bash(git push*:develop*)',
+      'Bash(git push*:refs/*)',
       'Bash(git push*+*)',
       'Bash(git push*--delete*)',
       'Bash(git commit*--no-verify*)',
@@ -214,10 +216,23 @@ describe('settings protect their own files (.claude/settings.json)', () => {
       '.github/workflows/**',
       '.claude/settings.local.json',
     ]) {
-      for (const tool of ['Edit', 'Write']) {
-        expect(settings.permissions.ask).toContain(`${tool}(./${path})`);
-      }
+      expect(settings.permissions.ask).toContain(`Edit(./${path})`);
     }
+  });
+
+  it('uses only Edit rules for file edits, because Claude Code ignores Write rules', () => {
+    const fileRules = [...settings.permissions.ask, ...settings.permissions.deny];
+    expect(fileRules.filter((rule) => rule.startsWith('Write('))).toEqual([]);
+  });
+
+  it('has no Bash rule that mixes * with the trailing :* prefix syntax', () => {
+    const all = [
+      ...settings.permissions.allow,
+      ...settings.permissions.ask,
+      ...settings.permissions.deny,
+    ];
+    const mixed = all.filter((rule) => /^Bash\(.*\*.*:\*\)$/.test(rule));
+    expect(mixed).toEqual([]);
   });
 
   it('the secret-blocking hook also covers notebooks', () => {
