@@ -1,17 +1,8 @@
 // @ts-check
-// Pure helpers for the action-log hook. Targets are redacted and truncated; file contents are never logged.
+// Pure helper for the action-log hook. Targets are redacted and truncated; file contents are never logged.
 import { redactSecrets } from './secrets.mjs';
 
 const MAX_TARGET = 300;
-
-/**
- * Replace secret-looking text with a marker that names the pattern.
- * @param {string} text
- * @returns {string}
- */
-export function redact(text) {
-  return redactSecrets(text);
-}
 
 /**
  * One action-log entry for a tool call.
@@ -27,6 +18,6 @@ export function buildLogEntry(input, now) {
   return {
     time: now.toISOString(),
     tool: input.tool_name ?? 'unknown',
-    target: redact(raw).slice(0, MAX_TARGET),
+    target: redactSecrets(raw).slice(0, MAX_TARGET),
   };
 }

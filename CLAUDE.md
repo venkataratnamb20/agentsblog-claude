@@ -27,7 +27,7 @@ Astro 5, TypeScript (strict), MDX, Vitest, ESLint, Prettier, npm, Node 22 in CI.
 ## Commands
 Use `make <target>` (GNU make) or `./make.ps1 <target>` (Windows PowerShell), not raw tool calls:
 `setup dev lint format typecheck test test-e2e test-bdd coverage build preview audit release clean`.
-Also `npm run secrets:scan` and `npm run changelog`.
+`test-e2e`, `test-bdd` and `release` print a clear message until their tools exist. Also `npm run secrets:scan` and `npm run changelog`.
 
 ## Git workflow
 - `main` is production (tagged releases); `develop` is staging; both are protected and take PRs only.
@@ -45,10 +45,7 @@ Also `npm run secrets:scan` and `npm run changelog`.
 - Detail: `docs/guidelines/code-quality.md`.
 
 ## Definition of Done
-- Every acceptance criterion is met, with evidence (commit or PR link, command output, file path).
-- Tests passed first; lint, format, typecheck, build and CI are green; no secrets.
-- The PR links the Asana task; docs are updated; the named reviewer approved (or Venkat waived it).
-- Detail and templates: `docs/guidelines/operating-model.md`.
+A task is done when every acceptance criterion has evidence, tests came first and CI is green, the PR links its Asana task, the named reviewer approved (or Venkat waived it in writing), and any `[Venkat]` subtask is complete. Evidence rules: `docs/guidelines/operating-model.md`.
 
 ## Agent completion protocol
 1. **Check dependencies first.** Start a task only when every task it depends on is complete (Asana shows open ones as "Waiting on"). Gates: 1 Specification waits for M0; 2 Design for M1; 3 Build for M2; 4 Quality for M3; 5 Deployment for M4; 6 Content and 7 Growth for M1; 8 Operations and 9 Measurement for M5. If a dependency is open, pick another ready task; if already started, stop, set Task Progress to Waiting and comment `BLOCKED: waiting on <gate or task>`.
@@ -63,7 +60,7 @@ Also `npm run secrets:scan` and `npm run changelog`.
 10. "Committed" means in git with a conventional message, through a feature branch and a PR into `develop`.
 
 ## Approval gates
-Stop and ask Venkat before: spending money, creating accounts, production deploys, DNS changes, publishing posts, posting on social media or communities, sending messages, granting access, deleting data, force-pushing, anything touching secrets. Format and guardrails: `docs/guidelines/approval-gates.md`. `.claude/settings.json` asks before merges, tags and releases and denies force pushes; hooks block secrets and run tests before commits.
+Stop and ask Venkat before any action on the list in `docs/guidelines/approval-gates.md`: money, accounts, production, DNS, publishing, social posting, sending, access, deletion and secrets. The settings ask before merges, tags, releases and edits to guardrail files and deny force pushes; hooks block secrets and run the tests before a commit.
 
 ## Do not touch
 - `.env*`, key files and `secrets.*` or `credentials.*` data files: never read, write or print them.

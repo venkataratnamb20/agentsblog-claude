@@ -27,16 +27,12 @@ Then name the next role (or Venkat) and set Task Progress to Waiting if you are 
 
 ## Definition of Done
 
-A task is done only when all of these hold.
+The checklist lives in `CLAUDE.md`. This section only says what counts as evidence.
 
-- Every acceptance criterion is met and has evidence.
-- Tests were written first and pass; lint, format, typecheck and build are clean; CI is green.
-- The PR links its Asana task and has a Conventional Commit title; no secrets are committed.
-- Documentation affected by the change is updated.
-- The named reviewer posted `REVIEW: APPROVED` (or Venkat waived the review in writing).
-- If the task has a `[Venkat]` subtask, he completed it.
-
-Evidence requirements: link, do not describe. A claim without a commit, PR, output or file path is treated as not done.
+- Evidence is a link, not a description: a commit hash, PR URL, command output, file path or screenshot.
+- Each acceptance criterion has its own piece of evidence in the `READY FOR REVIEW` comment.
+- A claim without evidence is treated as not done.
+- A review waiver counts only when Venkat's words are quoted on the task.
 
 ## Daily stand-up
 

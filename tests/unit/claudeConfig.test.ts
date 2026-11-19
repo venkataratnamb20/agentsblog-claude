@@ -162,3 +162,66 @@ describe('multi-tool leftovers', () => {
     expect(readFileSync('Makefile', 'utf8')).not.toContain('sync-agents');
   });
 });
+
+describe('settings guardrails (.claude/settings.json)', () => {
+  it('allows only narrow commands, not wildcards that can smuggle arguments', () => {
+    for (const rule of [
+      'Bash(npm run *)',
+      'Bash(git push origin feature/*)',
+      'Bash(git push -u origin feature/*)',
+    ]) {
+      expect(settings.permissions.allow).not.toContain(rule);
+    }
+    expect(settings.permissions.allow).toContain('Bash(git push -u origin HEAD)');
+    for (const script of [
+      'lint',
+      'format:check',
+      'typecheck',
+      'coverage',
+      'build',
+      'secrets:scan',
+    ]) {
+      expect(settings.permissions.allow).toContain(`Bash(npm run ${script})`);
+    }
+  });
+
+  it('denies the push and commit forms that bypass protection', () => {
+    for (const rule of [
+      'Bash(git push*--force*)',
+      'Bash(git push*:*)',
+      'Bash(git push*+*)',
+      'Bash(git push*--delete*)',
+      'Bash(git commit*--no-verify*)',
+    ]) {
+      expect(settings.permissions.deny).toContain(rule);
+    }
+  });
+
+  it('denies shell reads of env files on a best-effort basis', () => {
+    for (const rule of ['Bash(cat *.env*)', 'Bash(type *.env*)']) {
+      expect(settings.permissions.deny).toContain(rule);
+    }
+  });
+});
+
+describe('settings protect their own files (.claude/settings.json)', () => {
+  it('asks before editing its own guardrails', () => {
+    for (const path of [
+      '.claude/settings.json',
+      '.claude/hooks/**',
+      '.husky/**',
+      'scripts/scan-secrets.mjs',
+    ]) {
+      for (const tool of ['Edit', 'Write']) {
+        expect(settings.permissions.ask).toContain(`${tool}(./${path})`);
+      }
+    }
+  });
+
+  it('the secret-blocking hook also covers notebooks', () => {
+    const entry = settings.hooks.PreToolUse.find((e) =>
+      e.hooks.some((h) => h.command.includes('block-secrets.mjs')),
+    );
+    expect(entry?.matcher).toContain('NotebookEdit');
+  });
+});

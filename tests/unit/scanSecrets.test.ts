@@ -29,7 +29,9 @@ describe('scanText', () => {
     expect(scanText(`a\r\n${awsKey}\r\n`)).toEqual([{ line: 2, name: 'aws-access-key' }]);
   });
 
-  it('skips a line that opts out with secret-scan-ignore', () => {
-    expect(scanText(`${awsKey} // secret-scan-ignore: documented example`)).toEqual([]);
+  it('does not let a line opt out of the scan', () => {
+    expect(scanText(`${awsKey} // secret-scan-ignore`)).toEqual([
+      { line: 1, name: 'aws-access-key' },
+    ]);
   });
 });

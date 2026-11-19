@@ -1,15 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { buildLogEntry, redact } from '../../.claude/hooks/lib/actionLog.mjs';
+import { buildLogEntry } from '../../.claude/hooks/lib/actionLog.mjs';
+import { redactSecrets } from '../../.claude/hooks/lib/secrets.mjs';
 
 const awsKey = 'AKIA' + 'IOSFODNN7EXAMPLE';
 const now = new Date('2026-11-19T12:00:00.000Z');
 
-describe('redact', () => {
+describe('redactSecrets', () => {
   it('replaces secrets with a marker that names the pattern', () => {
-    expect(redact(`deploy --key ${awsKey}`)).toBe('deploy --key [REDACTED:aws-access-key]');
+    expect(redactSecrets(`deploy --key ${awsKey}`)).toBe('deploy --key [REDACTED:aws-access-key]');
   });
   it('leaves clean text unchanged', () => {
-    expect(redact('npm test')).toBe('npm test');
+    expect(redactSecrets('npm test')).toBe('npm test');
   });
 });
 

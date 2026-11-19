@@ -39,10 +39,10 @@ Claude Code install checked: `ecc@ecc` plugin 2.2.3 (user scope, enabled) plus t
 | Asset | Status | Evidence |
 |---|---|---|
 | `CLAUDE.md` (single rules file) | Av | purpose, stack, commands, git flow, Definition of Done, completion protocol, approval gates |
-| `.claude/skills/` | Mi | only `.gitkeep` |
-| `.claude/agents/` | Mi | only `.gitkeep` |
-| `.claude/commands/` | Mi | does not exist |
-| `.claude/settings.json` (permissions, hooks) | Mi | does not exist |
+| `.claude/skills/` | Av | 7 skills |
+| `.claude/agents/` | Av | 14 subagents |
+| `.claude/commands/` | Av | `/status`, `/handoff` |
+| `.claude/settings.json` (permissions, hooks) | Av | allow, ask and deny rules; hooks `block-secrets`, `pre-commit-gate`, `log-actions` |
 | `.mcp.json` | Mi | does not exist |
 | Git hook `commit-msg` (Conventional Commits) | Av | `.husky/commit-msg` |
 | CI, CODEOWNERS, PR template | Av | `.github/` |

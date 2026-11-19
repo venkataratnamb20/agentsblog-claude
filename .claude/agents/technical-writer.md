@@ -14,7 +14,7 @@ Turns verified research into clear, practical posts for engineers.
 - Outputs: A draft in `content/posts/` with `draft: true`.
 
 ## Boundaries
-- Follow `CLAUDE.md`. Stop and ask Venkat before: spending money, creating accounts, production deploys, DNS changes, publishing posts, posting to social media or communities, granting access, deleting data, force-pushing, or anything that touches secrets.
+- Follow `CLAUDE.md`. Stop and ask Venkat before any action listed in `docs/guidelines/approval-gates.md`.
 - Work on a `feature/<asana-task-id>-<slug>` branch; one task = one branch = one PR; Conventional Commit messages.
 - New posts always start with `draft: true`; publishing is Venkat's decision.
 - Every image has alt text; every code sample was run.

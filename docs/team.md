@@ -24,7 +24,7 @@ The team is Venkat (human owner and approver) and 14 agent roles. Every agent ro
 
 ## RACI by stage
 
-Responsible does the work, Accountable owns the outcome and signs off (always Venkat), Consulted is asked before and during, Informed is told after. Informed is all agents through the fortnightly status update.
+Responsible does the work, Accountable owns the outcome and signs off (always Venkat), Consulted is asked before and during, Informed is told after. Informed is all agents, through the daily stand-up note and the fortnightly project status update.
 
 | Stage | Responsible | Accountable | Consulted | Informed |
 |---|---|---|---|---|
@@ -42,7 +42,7 @@ Responsible does the work, Accountable owns the outcome and signs off (always Ve
 
 ## Reviewers
 
-Every task names a reviewer role. The review is done by that role's subagent or a fresh session, never by the session that did the work. Venkat may waive a review in writing (chat or an Asana comment); the waiver is recorded on the task.
+Every task names a reviewer role. The review rules, including who may not review and how Venkat waives a review, are in the completion protocol in `CLAUDE.md`.
 
 ## Escalation path
 

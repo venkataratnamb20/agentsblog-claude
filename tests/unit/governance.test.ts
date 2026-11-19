@@ -192,3 +192,128 @@ describe('secret scanning is wired in', () => {
     expect(read('.github/workflows/ci.yml')).toContain('secrets:scan');
   });
 });
+
+function tableRows(markdown: string, heading: string): string[][] {
+  const section = markdown.split(`## ${heading}`)[1]?.split('\n## ')[0] ?? '';
+  return section
+    .split('\n')
+    .filter((line) => line.startsWith('|') && !/^\|[-| ]+\|$/.test(line))
+    .slice(1)
+    .map((line) =>
+      line
+        .split('|')
+        .slice(1, -1)
+        .map((cell) => cell.trim()),
+    );
+}
+
+describe('roster and RACI are complete', () => {
+  const text = read('docs/team.md');
+
+  it('every roster row has purpose, inputs, outputs, tools and limits filled in', () => {
+    const rows = tableRows(text, 'Roster');
+    expect(rows.length).toBe(15);
+    for (const row of rows) {
+      expect(row.length, row[0]).toBe(7);
+      expect(
+        row.every((cell) => cell !== ''),
+        row[0],
+      ).toBe(true);
+    }
+  });
+
+  it('every RACI row has all four roles filled in', () => {
+    const rows = tableRows(text, 'RACI by stage');
+    expect(rows.length).toBe(11);
+    for (const row of rows) {
+      expect(row.length, row[0]).toBe(5);
+      expect(
+        row.every((cell) => cell !== ''),
+        row[0],
+      ).toBe(true);
+    }
+  });
+
+  it('uses the daily stand-up as the status channel, consistent with the operating model', () => {
+    expect(text).not.toContain('fortnightly status update');
+    expect(text).toContain('daily stand-up');
+  });
+});
+
+describe('no rule is copied between CLAUDE.md and the guidelines', () => {
+  const claude = read('CLAUDE.md')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length >= 50);
+
+  it.each([
+    'docs/guidelines/operating-model.md',
+    'docs/guidelines/approval-gates.md',
+    'docs/guidelines/secrets-and-access.md',
+    'docs/guidelines/code-quality.md',
+    'docs/guidelines/git-workflow.md',
+    'docs/team.md',
+  ])('%s shares no long line with CLAUDE.md', (path) => {
+    const lines = new Set(
+      read(path)
+        .split('\n')
+        .map((line) => line.trim()),
+    );
+    expect(claude.filter((line) => lines.has(line))).toEqual([]);
+  });
+
+  it('the subagents point at the approval doc instead of repeating the list', () => {
+    for (const slug of ROLE_SLUGS) {
+      const text = read(`.claude/agents/${slug}.md`);
+      expect(text, slug).toContain('docs/guidelines/approval-gates.md');
+      expect(text, slug).not.toContain('production deploys, DNS changes');
+    }
+  });
+});
+
+describe('docs/guidelines/code-quality.md has the numeric limits and the full structure', () => {
+  const text = read('docs/guidelines/code-quality.md');
+
+  it.each([
+    '## Clean Code and SOLID',
+    '## TDD workflow',
+    '## BDD',
+    '## Data structures and algorithms',
+    '## Language standards',
+    '## Thresholds',
+    '## Review checklist',
+  ])('has %s', (heading) => {
+    expect(text).toContain(heading);
+  });
+
+  it('states the thresholds as numbers', () => {
+    for (const phrase of ['40 lines', 'complexity of 10', '100%', '80%', 'zero lint warnings']) {
+      expect(text).toContain(phrase);
+    }
+  });
+
+  it('has one Gherkin example', () => {
+    expect(text).toContain('Feature:');
+    expect(text).toContain('Scenario:');
+  });
+});
+
+describe('the docs do not overstate what is enforced', () => {
+  it('approval-gates says read-only and logging are limited', () => {
+    const text = read('docs/guidelines/approval-gates.md');
+    expect(text).toContain('by instruction and tool list');
+    expect(text).toContain('best-effort');
+  });
+
+  it('secrets-and-access says shell access is not prevented and has no opt-out marker', () => {
+    const text = read('docs/guidelines/secrets-and-access.md');
+    expect(text).toContain('shell access is not prevented');
+    expect(text).not.toContain('secret-scan-ignore');
+  });
+
+  it('CI has least-privilege permissions', () => {
+    const ci = read('.github/workflows/ci.yml');
+    expect(ci).toContain('permissions:');
+    expect(ci).toContain('contents: read');
+  });
+});
