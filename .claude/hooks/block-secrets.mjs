@@ -1,37 +1,52 @@
 // PreToolUse hook for Write, Edit, MultiEdit and NotebookEdit: blocks secret files and secret-looking content.
 // Exit code 2 tells Claude Code to block the tool call and show stderr to the agent.
-// It fails closed: input it cannot read is blocked, not allowed.
-import { findSecrets, isSecretPath } from './lib/secrets.mjs';
+// It fails closed: input it cannot read, and any crash (even a failed import), is blocked, not allowed.
+// Claude Code lets a call through on any other non-zero exit, so every failure path ends in exit 2.
+const NAME = 'block-secrets hook';
 
-const chunks = [];
-for await (const chunk of process.stdin) chunks.push(chunk);
+function block(message) {
+  console.error(`Blocked by ${NAME}: ${message}`);
+  process.exit(2);
+}
 
-let input;
+async function readInput() {
+  const chunks = [];
+  for await (const chunk of process.stdin) chunks.push(chunk);
+  try {
+    return JSON.parse(Buffer.concat(chunks).toString('utf8'));
+  } catch {
+    return block('could not read the hook input.');
+  }
+}
+
+function textsOf(toolInput) {
+  return [
+    toolInput.content,
+    toolInput.new_string,
+    toolInput.new_source,
+    ...(Array.isArray(toolInput.edits) ? toolInput.edits.map((edit) => edit?.new_string) : []),
+  ].filter((text) => typeof text === 'string');
+}
+
+async function main() {
+  const { findSecrets, isSecretPath } = await import('./lib/secrets.mjs');
+  const toolInput = (await readInput())?.tool_input ?? {};
+  const path = String(toolInput.file_path ?? toolInput.notebook_path ?? '');
+
+  const problems = [];
+  if (path && isSecretPath(path)) problems.push(`${path} is a secret file`);
+  for (const name of new Set(textsOf(toolInput).flatMap((text) => findSecrets(text)))) {
+    problems.push(`content looks like a ${name}`);
+  }
+  if (problems.length > 0) {
+    block(`${problems.join('; ')}. Remove the secret and use an environment variable instead.`);
+  }
+}
+
 try {
-  input = JSON.parse(Buffer.concat(chunks).toString('utf8'));
-} catch {
-  console.error('Blocked by block-secrets hook: could not read the hook input.');
-  process.exit(2);
-}
-
-const toolInput = input?.tool_input ?? {};
-const path = String(toolInput.file_path ?? toolInput.notebook_path ?? '');
-const texts = [
-  toolInput.content,
-  toolInput.new_string,
-  toolInput.new_source,
-  ...(Array.isArray(toolInput.edits) ? toolInput.edits.map((edit) => edit?.new_string) : []),
-].filter((text) => typeof text === 'string');
-
-const problems = [];
-if (path && isSecretPath(path)) problems.push(`${path} is a secret file`);
-for (const name of new Set(texts.flatMap((text) => findSecrets(text)))) {
-  problems.push(`content looks like a ${name}`);
-}
-
-if (problems.length > 0) {
-  console.error(
-    `Blocked by block-secrets hook: ${problems.join('; ')}. Remove the secret and use an environment variable instead.`,
+  await main();
+} catch (error) {
+  block(
+    `unexpected error (${error instanceof Error ? error.message : 'unknown'}); failing closed.`,
   );
-  process.exit(2);
 }
