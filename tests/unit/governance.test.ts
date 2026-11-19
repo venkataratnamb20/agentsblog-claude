@@ -235,7 +235,7 @@ describe('roster and RACI are complete', () => {
   });
 
   it('uses the daily stand-up as the status channel, consistent with the operating model', () => {
-    expect(text).not.toContain('fortnightly status update');
+    expect(read('docs/guidelines/operating-model.md')).toContain('## Fortnightly status update');
     expect(text).toContain('daily stand-up');
   });
 });
@@ -315,5 +315,32 @@ describe('the docs do not overstate what is enforced', () => {
     const ci = read('.github/workflows/ci.yml');
     expect(ci).toContain('permissions:');
     expect(ci).toContain('contents: read');
+  });
+});
+
+describe('docs/agents/capability-matrix.md is current', () => {
+  const text = read('docs/agents/capability-matrix.md');
+
+  it('has an intact role-by-feature table header and separator', () => {
+    expect(text).toContain('| Role | A | S | C | MCP | H | P | M |');
+    expect(text).toContain('|---|---|---|---|---|---|---|---|');
+  });
+
+  it('no longer says the harness files do not exist', () => {
+    expect(text).not.toContain('no `.claude/agents/` definitions');
+    expect(text).not.toContain('They are not in the repo, so a fresh clone does not carry them');
+  });
+});
+
+describe('the guardrail docs state their limits', () => {
+  it('approval-gates explains server-side protection and the skip-hook limitation', () => {
+    const text = read('docs/guidelines/approval-gates.md');
+    expect(text).toContain('enforced on the server');
+    expect(text).toContain('speed bump');
+    expect(text).toContain('-F');
+  });
+
+  it('secrets-and-access says which env variants the Read tool denies', () => {
+    expect(read('docs/guidelines/secrets-and-access.md')).toContain('common variants');
   });
 });

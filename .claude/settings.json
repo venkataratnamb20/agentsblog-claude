@@ -51,7 +51,11 @@
       "Write(./.husky/**)",
       "Edit(./scripts/scan-secrets.mjs)",
       "Write(./scripts/scan-secrets.mjs)",
-      "Bash(git config alias*)"
+      "Bash(git config alias*)",
+      "Edit(./.github/workflows/**)",
+      "Write(./.github/workflows/**)",
+      "Edit(./.claude/settings.local.json)",
+      "Write(./.claude/settings.local.json)"
     ],
     "deny": [
       "Read(./.env)",

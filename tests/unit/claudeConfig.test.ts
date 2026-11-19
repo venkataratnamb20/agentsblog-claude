@@ -211,6 +211,8 @@ describe('settings protect their own files (.claude/settings.json)', () => {
       '.claude/hooks/**',
       '.husky/**',
       'scripts/scan-secrets.mjs',
+      '.github/workflows/**',
+      '.claude/settings.local.json',
     ]) {
       for (const tool of ['Edit', 'Write']) {
         expect(settings.permissions.ask).toContain(`${tool}(./${path})`);

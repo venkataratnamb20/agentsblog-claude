@@ -13,8 +13,11 @@ const PATTERNS = [
   ['google-api-key', /\bAIza[0-9A-Za-z_-]{35}/],
   ['jwt', /\beyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}/],
   ['npm-token', /\bnpm_[A-Za-z0-9]{36}\b/],
-  ['bearer-token', /\bBearer\s+[A-Za-z0-9._~+/=-]{20,}/],
-  ['env-secret', /\b[A-Z][A-Z0-9_]*(?:KEY|SECRET|TOKEN|PASSWORD)\s*=\s*[A-Za-z0-9_\-/+=]{20,}/],
+  ['bearer-token', /\bBearer\s+(?=[A-Za-z0-9._~+/=-]*[0-9])[A-Za-z0-9._~+/=-]{20,}/],
+  [
+    'env-secret',
+    /\b[A-Z][A-Z0-9_]*(?:KEY|SECRET|TOKEN|PASSWORD)\s*=\s*(?=[A-Za-z0-9_\-/+=]*[A-Z])(?=[A-Za-z0-9_\-/+=]*[a-z])(?=[A-Za-z0-9_\-/+=]*[0-9])[A-Za-z0-9_\-/+=]{20,}/,
+  ],
   [
     'generic-api-key',
     /\b(?:api[_-]?key|secret|token|password)\b\s*[:=]\s*["'][A-Za-z0-9_\-/+=]{24,}["']/i,
@@ -40,14 +43,20 @@ export function isCommitCommand(command) {
 }
 
 /**
- * True for a commit that skips the git hooks (--no-verify or -n, also inside a flag cluster).
+ * True for a commit that skips the git hooks: --no-verify and its abbreviations, -n (also inside a
+ * flag cluster), a core.hooksPath override or HUSKY=0.
  * @param {string} command
  * @returns {boolean}
  */
 export function usesNoVerify(command) {
   if (!isCommitCommand(command)) return false;
+  // Strip quoting so that --no-ve"rify" and $'--no-verify' are seen as written.
+  const plain = command.replace(/["'$\\]/g, '');
   return (
-    /\s--no-verify(?=[\s"']|$)/.test(command) || /\s-[a-zA-Z]*n[a-zA-Z]*(?=[\s"']|$)/.test(command)
+    /\s--no-v[a-z-]*(?=\s|$)/.test(plain) ||
+    /\s-[a-zA-Z]*n[a-zA-Z]*(?=\s|$)/.test(plain) ||
+    /core\.hooksPath/.test(plain) ||
+    /\bHUSKY\s*=/.test(plain)
   );
 }
 

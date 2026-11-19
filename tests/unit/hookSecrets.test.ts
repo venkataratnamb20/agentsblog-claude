@@ -169,3 +169,35 @@ describe('isSecretPath: case and more secret file names', () => {
     expect(isSecretPath('docs/service-accounts.md')).toBe(false);
   });
 });
+
+describe('usesNoVerify: abbreviations, quoting and hook overrides', () => {
+  it.each([
+    'git commit -m x --no-ver',
+    'git commit -m x --no-v',
+    'git commit --no-ve"rify" -m x',
+    "git commit $'--no-verify' -m x",
+    'git -c core.hooksPath=/x commit -m x',
+    'HUSKY=0 git commit -m x',
+  ])('is true for %s', (command) => {
+    expect(usesNoVerify(command)).toBe(true);
+  });
+  it.each(['git commit --no-edit', 'git commit --no-gpg-sign -m x', 'git commit -m "fix: x"'])(
+    'is false for %s',
+    (command) => {
+      expect(usesNoVerify(command)).toBe(false);
+    },
+  );
+});
+
+describe('findSecrets: fewer false positives', () => {
+  it.each([
+    ['CACHE_KEY=', 'build-cache-key-v1-linux-x64'],
+    ['MY_KEY=', 'abcdefghijklmnopqrstuvwxyz'],
+    ['Bearer ', 'authentication-scheme-and-more-text'],
+  ])('does not flag %s…', (name, value) => {
+    expect(findSecrets(name + value)).toEqual([]);
+  });
+  it('still flags a realistic mixed-case value', () => {
+    expect(findSecrets('MY_TOKEN=' + 'Abcdefghij0123456789KLMNOP')).toContain('env-secret');
+  });
+});

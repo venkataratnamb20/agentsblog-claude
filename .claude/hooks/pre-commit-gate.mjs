@@ -28,7 +28,7 @@ if (usesNoVerify(command)) {
 const cwd = process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
 // -a and -am stage tracked changes at commit time, so scan everything against HEAD in that case.
 const diffArgs = commitsAll(command) ? ['diff', 'HEAD', '-U0'] : ['diff', '--cached', '-U0'];
-const diff = spawnSync('git', diffArgs, { cwd, encoding: 'utf8' });
+const diff = spawnSync('git', diffArgs, { cwd, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
 if (diff.error || diff.status !== 0) {
   console.error('Blocked by pre-commit-gate: could not read the diff to scan it for secrets.');
   process.exit(2);
@@ -53,6 +53,7 @@ const tests = spawnSync('npm', ['test', '--silent'], {
   cwd,
   encoding: 'utf8',
   shell: true,
+  maxBuffer: 64 * 1024 * 1024,
   env: { ...process.env, CLAUDE_GATE_RUNNING: '1' },
 });
 if (tests.status !== 0) {

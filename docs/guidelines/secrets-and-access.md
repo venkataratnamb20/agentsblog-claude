@@ -6,7 +6,7 @@ Rules for credentials and who can touch what. Zero secrets in the repository.
 
 | Where | Store | Rule |
 |---|---|---|
-| Local development | `.env` files, gitignored | Never committed. The Read tool is denied for them in `.claude/settings.json`, and common shell reads are denied on a best-effort basis; shell access is not prevented, so keep real secrets out of this project folder. `.env.example` holds names only |
+| Local development | `.env` files, gitignored | Never committed. The Read tool is denied for the common variants (`.env`, `.env.local`, `.env.production`, `.env.staging`, `.env.development`, `.env.test`) in `.claude/settings.json`; the `block-secrets` hook blocks writes to every `.env.*` file except `.env.example`, `.env.sample` and `.env.template`; common shell reads are denied on a best-effort basis, but shell access is not prevented, so keep real secrets out of this project folder. `.env.example` holds names only |
 | CI | GitHub Actions encrypted secrets | None are used yet; add one only with a stated purpose and an owner |
 | Runtime and hosting | The hosting provider's secret store | Decided in the hosting ADR; not chosen yet |
 | People | Venkat's password manager | Passwords and recovery codes never go to agents or the repo |

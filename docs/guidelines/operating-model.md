@@ -43,3 +43,13 @@ The PM Orchestrator posts one note per working day in Asana Messages, using this
 - **Blocked:** item, who or what it waits on, since when.
 - **Needs Venkat:** approvals, decisions and accounts, oldest first.
 - **Risks:** anything that threatens the next gate date.
+
+## Fortnightly status update
+
+The PM Orchestrator posts a project status update in Asana every second Friday. Keep it to one screen.
+
+- **Goals:** G1 to G4, each with status (on track, at risk, off track) and the evidence.
+- **Gates:** the next gate, its date, what blocks it.
+- **Done and next:** tasks completed since the last update; the next two weeks.
+- **Risks:** the top three, with owner and mitigation.
+- **Decisions needed from Venkat:** with the date each is needed by.

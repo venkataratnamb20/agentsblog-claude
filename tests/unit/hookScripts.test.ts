@@ -1,5 +1,8 @@
 import { spawnSync } from 'node:child_process';
-import { describe, expect, it } from 'vitest';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 // Runs the real hook scripts the way Claude Code does: hook JSON on stdin, exit code and stderr out.
 function run(script: string, input: string) {
@@ -51,5 +54,48 @@ describe('pre-commit-gate.mjs', () => {
   });
   it('fails closed on input that is not valid JSON', () => {
     expect(run(script, 'not json').status).toBe(2);
+  });
+});
+
+describe('pre-commit-gate.mjs secret scan', () => {
+  const script = resolve('.claude/hooks/pre-commit-gate.mjs');
+  let repo = '';
+
+  const git = (...args: string[]) => spawnSync('git', args, { cwd: repo, encoding: 'utf8' });
+  const gate = (command: string) =>
+    spawnSync('node', [script], {
+      cwd: repo,
+      input: bash(command),
+      encoding: 'utf8',
+      env: { ...process.env, CLAUDE_PROJECT_DIR: repo },
+    });
+
+  beforeEach(() => {
+    repo = mkdtempSync(join(tmpdir(), 'gate-'));
+    git('init', '-q');
+    git('config', 'user.email', 'test@example.com');
+    git('config', 'user.name', 'Test');
+    writeFileSync(join(repo, 'a.ts'), 'export const a = 1;\n');
+    git('add', 'a.ts');
+    git('commit', '-q', '-m', 'init');
+  });
+
+  afterEach(() => {
+    rmSync(repo, { recursive: true, force: true });
+  });
+
+  it('blocks a commit when the staged diff contains a secret', () => {
+    writeFileSync(join(repo, 'a.ts'), `const k = "${awsKey}";\n`);
+    git('add', 'a.ts');
+    const result = gate('git commit -m "x"');
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain('aws-access-key');
+  });
+
+  it('with -am also scans changes that are not staged yet', () => {
+    writeFileSync(join(repo, 'a.ts'), `const k = "${awsKey}";\n`);
+    const result = gate('git commit -am "x"');
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain('aws-access-key');
   });
 });
