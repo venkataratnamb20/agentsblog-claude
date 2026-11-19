@@ -115,3 +115,18 @@ Found by the audit on 19 Nov 2026; status after the harness build.
 | 10 | `ecc@ecc` install note | Open | Confirm nothing it lists is needed. |
 
 Open and partial items need Venkat's acceptance, or they stay on their owning tasks.
+
+## Smoke test results
+
+Run on 19 Nov 2026 in Claude Code (Asana task "Verify harness end to end in Claude Code (smoke test)", gid 1220694803209749). A check only counts as Pass when something observable shows it.
+
+| Check | How it was checked | Result | Evidence |
+|---|---|---|---|
+| CLAUDE.md rules load | This session's context holds the project instructions; a rule was quoted from them: "Branch from `develop` as `feature/<asana-task-id>-<slug>`". | Partly | Loaded in this session. An independent fresh session could not be started: headless `claude -p` answered "Not logged in" (the desktop app's login is not shared with the CLI). Venkat can confirm with a new session (gap 9). |
+| Settings parsed | A fresh `claude -p` start in the repo parsed `.claude/settings.json` and printed 7 rule warnings. | Pass | It found real defects: the deny rule `Bash(git push*:*)` is only a literal prefix, and six `Write(...)` ask rules never apply (only `Edit(...)` does). Logged as task 1220712312159337. |
+| Skill listed and run | `gate-check` appears in the skill list and was run for M0. | Pass | Verdict NO-GO posted as a comment on the M0 gate task (gid 1220692598165987). |
+| Subagent discovered and run | `code-reviewer`, `qa-engineer` and `solution-architect` appear in the agent list; the last two reviewed PR 10. | Pass | Both returned `REVIEW:` verdicts; QA's first one found a real flaky Windows test, which was fixed. |
+| Hook fires | `block-secrets` refused a write that held a secret-shaped test value; `pre-commit-gate` refused a commit message that named a skip-hook flag; the husky pre-commit scan ran on every commit. | Pass | Seen earlier in this session while building the harness; the same logic is unit-tested in `tests/unit/hookScripts.test.ts`. |
+| Pilot | Branch `feature/1220694803209749-smoke-test`: failing test first, then code, then `make test`. | Pass | Red: `Cannot find module '../../src/lib/tags'` (exit 1). Green: 416 tests pass, coverage 100%, lint clean. PR and CI links are in the Asana comment. |
+
+Not covered (the CLI is not logged in): a fresh-session check of `CLAUDE.md` and of hooks (needs a logged-in new session), and any tool other than Claude Code (out of scope by decision).
