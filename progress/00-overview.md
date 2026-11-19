@@ -2,7 +2,7 @@
 
 Updated 2026-11-19. Source of truth for status is Asana; these files mirror it locally.
 
-**Tasks complete: 1/96.** Stack chosen (ADR-001, Astro 5 + TypeScript); scaffold, lint, format and CI are in PR #2; content model, draft flow, SEO and unstyled pages (39 tests, 100% on src/lib) are in PR #3. Design, styling, newsletter, analytics and posts are not built.
+**Tasks complete: 2/96.** Stack chosen (ADR-001, Astro 5 + TypeScript); scaffold, lint, format and CI are in PR #2; content model, draft flow, SEO and unstyled pages (39 tests, 100% on src/lib) are in PR #3. Design, styling, newsletter, analytics and posts are not built.
 
 ## Goals
 
@@ -17,7 +17,7 @@ Updated 2026-11-19. Source of truth for status is Asana; these files mirror it l
 
 | Stage | File | Done |
 |---|---|---|
-| 0A. Agent Harness & Dev Environment Setup | [01-0a-agent-harness-dev-environment-setup.md](01-0a-agent-harness-dev-environment-setup.md) | 1/9 |
+| 0A. Agent Harness & Dev Environment Setup | [01-0a-agent-harness-dev-environment-setup.md](01-0a-agent-harness-dev-environment-setup.md) | 2/9 |
 | 0B. Governance & Agent Team Setup | [02-0b-governance-agent-team-setup.md](02-0b-governance-agent-team-setup.md) | 0/5 |
 | 1. Specification & Architecture | [03-1-specification-architecture.md](03-1-specification-architecture.md) | 0/9 |
 | 2. Design (Brand, UX & IA) | [04-2-design-brand-ux-ia.md](04-2-design-brand-ux-ia.md) | 0/5 |
