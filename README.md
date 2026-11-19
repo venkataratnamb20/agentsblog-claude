@@ -17,11 +17,11 @@ A research-backed blog on AI agents for engineers building production agentic sy
 | `src/` | Site source |
 | `tests/` | `unit/`, `integration/`, `e2e/`, `bdd/` |
 | `scripts/` | Automation |
-| `.agents/`, `.claude/`, `.codex/`, `.cursor/` | Agent harness config |
+| `.claude/` | Claude Code harness config (subagents, skills, commands, settings, hooks) |
 | `.github/` | CI workflows, PR and issue templates |
 
 ## Commands
-Run `make help` (GNU make) or `./make.ps1 help` (native Windows PowerShell). Targets: setup, dev, lint, format, typecheck, test, test-e2e, test-bdd, coverage, build, preview, audit, sync-agents, release, clean.
+Run `make help` (GNU make) or `./make.ps1 help` (native Windows PowerShell). Targets: setup, dev, lint, format, typecheck, test, test-e2e, test-bdd, coverage, build, preview, audit, release, clean.
 
 Stack-specific targets are stubs until the tech stack ADR is approved.
 

@@ -1,10 +1,10 @@
 # Cross-platform task runner (stack: docs/adr/0001-core-tech-stack.md).
 # Windows without GNU make: use ./make.ps1 <target>.
 
-.PHONY: help setup dev lint format typecheck test test-e2e test-bdd coverage build preview audit sync-agents release clean
+.PHONY: help setup dev lint format typecheck test test-e2e test-bdd coverage build preview audit release clean
 
 help:
-	@echo Targets: setup dev lint format typecheck test test-e2e test-bdd coverage build preview audit sync-agents release clean
+	@echo Targets: setup dev lint format typecheck test test-e2e test-bdd coverage build preview audit release clean
 
 define TODO
 	@echo "[$(1)] not configured yet"
@@ -30,8 +30,6 @@ preview:
 	npm run preview
 audit:
 	npm audit --audit-level=high
-sync-agents:
-	npm run sync-agents
 clean:
 	npm run clean
 
