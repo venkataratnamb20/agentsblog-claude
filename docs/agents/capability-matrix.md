@@ -2,22 +2,27 @@
 
 - **Status:** complete for Claude Code; awaiting review. Date: 19 Nov 2026.
 - **Asana task:** Audit AI team & harness capabilities (gid 1220694720088833).
-- **Owner decision (Venkat, chat, 19 Nov 2026):** Claude Code is the working harness. No setup is needed for other tools, so the Codex, Cursor and Antigravity columns are N/A.
+- **Owner decision (Venkat, chat, 19 Nov 2026):** Claude Code is the only tool for this project. Nothing is set up for Cursor, Codex or Antigravity, so they are not in this matrix.
 
 ## Scope
 
-Claude Code is the only harness the team builds on. `AGENTS.md` stays the single source of truth and `CLAUDE.md` imports it, so another tool can be added later at low cost, but nothing is maintained or tested for other tools. Their installed versions are recorded below for reference only.
+Claude Code only. `AGENTS.md` stays the single source of truth and `CLAUDE.md` imports it. Other tools are not audited, set up or tested.
 
-## Tool versions
+## Claude Code version and default model
 
-| Tool | Version | How checked | Status |
-|---|---|---|---|
-| Claude Code | 2.1.328 | `claude --version` | primary, in use |
-| Codex | desktop app 26.1111.2228.0; no `codex` CLI on PATH | Windows app package list | installed, not used |
-| Cursor | 3.30.14 | `cursor --version` | installed, not used |
-| Antigravity | not determined: config folders exist under `~/.gemini`, but no executable or About screen was found | folder listing | not used |
+| Item | Value | How checked |
+|---|---|---|
+| Claude Code version | 2.1.328 | `claude --version` |
+| Default model | not pinned: `~/.claude/settings.json` has no `model` key, so the desktop app's selection applies. This session runs `claude-sonnet-5-5` (Sonnet 5.5) | user settings keys; session info |
+| Plugins enabled | `ecc@ecc` 2.2.3 (user scope) | `claude plugin list` |
 
 Also on the dev machine: Node 26.13.1 (CI uses Node 22), npm 11.20.0, Git 2.56.1.
+
+## User-level config check (`~/.claude`): no clashes
+
+- `settings.json` contains only `autoUpdatesChannel`, `enableWorkflows`, `enabledPlugins` and `extraKnownMarketplaces`: no permission rules, no hooks and no model override of its own.
+- No user-level `CLAUDE.md`, `agents/` or `commands/`. One user-level skill folder (`skills/learned`).
+- The project defines nothing that overlaps with these, so the project files take effect without conflict.
 
 ## Legend
 
@@ -25,7 +30,7 @@ Also on the dev machine: Node 26.13.1 (CI uses Node 22), npm 11.20.0, Git 2.56.1
 - **Re** Reuse: exists in a Claude plugin or connector; needs adoption, authorisation or copying into the project.
 - **Mi** Missing: nothing exists; listed as a gap below.
 - **NA** Not applicable.
-- Columns: **S** skills, **C** commands/workflows, **A** subagents, **MCP**, **H** hooks.
+- Columns: **A** subagent, **S** skills, **C** slash commands, **MCP** servers, **H** hooks, **P** permissions, **M** model.
 
 Claude Code install checked: `ecc@ecc` plugin 2.2.3 (user scope, enabled) plus the skills and connectors the claude.ai account provides in this session (engineering, design, design-skills, zizi-skills, searchfit-seo, product-management, marketing, data, social-media-skills and others).
 
@@ -45,29 +50,31 @@ Claude Code install checked: `ecc@ecc` plugin 2.2.3 (user scope, enabled) plus t
 
 Observation: the hooks that fire during Claude Code work here (the "Fact-Forcing Gate" on writes and destructive commands) come from the user-level `ecc` plugin. They are not in the repo, so a fresh clone does not carry them.
 
-## Role × tool matrix
+## Role × Claude Code feature matrix
 
-Cells show S C A MCP H for Claude Code. Codex, Cursor and Antigravity are N/A for every role (decision above). The harness is Claude Code for every role; Venkat confirmed this in chat.
+| Role | A | S | C | MCP | H | P | M |
+|---|---|---|---|---|---|---|---|
+| PM Orchestrator | Re | Re | Re | Av | Av | Mi | Av |
+| Product Strategist | Mi | Re | Re | Av | Av | Mi | Av |
+| Solution Architect | Re | Re | Re | Av | Av | Mi | Av |
+| UX/UI Designer | Re | Re | Re | Re | Av | Mi | Av |
+| Frontend Engineer | Re | Re | Re | Av | Av | Mi | Av |
+| DevOps & SRE | Mi | Re | Mi | Re | Mi | Mi | Av |
+| QA Engineer | Re | Re | Re | Av | Av | Mi | Av |
+| Security Engineer | Re | Re | Re | Mi | Mi | Mi | Av |
+| Code Reviewer | Re | Re | Re | Re | Mi | Mi | Av |
+| SEO & Analytics | Re | Re | Mi | Re | Av | Mi | Av |
+| Research Analyst | Mi | Re | Mi | Re | Av | Mi | Av |
+| Technical Writer | Mi | Re | Mi | Av | Av | Mi | Av |
+| Technical Editor | Mi | Mi | Mi | Mi | Av | Mi | Av |
+| Growth & Community | Re | Re | Re | Re | Av | Mi | Av |
+| Venkat (human approver) | NA | NA | NA | Av | NA | NA | NA |
 
-| Role | Claude Code (S C A MCP H) | Codex | Cursor | Antigravity | Harness |
-|---|---|---|---|---|---|
-| PM Orchestrator | Re Re Re Av Av | NA | NA | NA | Claude Code |
-| Product Strategist | Re Re Mi Av Av | NA | NA | NA | Claude Code |
-| Solution Architect | Re Re Re Av Av | NA | NA | NA | Claude Code |
-| UX/UI Designer | Re Re Re Re Av | NA | NA | NA | Claude Code |
-| Frontend Engineer | Re Re Re Av Av | NA | NA | NA | Claude Code |
-| DevOps & SRE | Re Mi Mi Re Mi | NA | NA | NA | Claude Code |
-| QA Engineer | Re Re Re Av Av | NA | NA | NA | Claude Code |
-| Security Engineer | Re Re Re Mi Mi | NA | NA | NA | Claude Code |
-| Code Reviewer | Re Re Re Re Mi | NA | NA | NA | Claude Code |
-| SEO & Analytics | Re Mi Re Re Av | NA | NA | NA | Claude Code |
-| Research Analyst | Re Mi Mi Re Av | NA | NA | NA | Claude Code |
-| Technical Writer | Re Mi Mi Av Av | NA | NA | NA | Claude Code |
-| Technical Editor | Mi Mi Mi Mi Av | NA | NA | NA | Claude Code |
-| Growth & Community | Re Re Re Re Av | NA | NA | NA | Claude Code |
-| Venkat (human approver) | NA NA NA Av NA | NA | NA | NA | n/a |
+Notes on the cells:
 
-H = Av means the git-level `commit-msg` hook and CI apply to the role; it is the only hook that exists in the repo. H = Mi means the role needs a role-specific guard that does not exist yet.
+- **H = Av** means the git-level `commit-msg` hook and CI apply to the role; they are the only hooks in the repo. **H = Mi** means the role needs a role-specific guard that does not exist yet.
+- **P = Mi** for every role: there is no project `.claude/settings.json`, and the user settings carry no permission rules. Per-role permission needs are in the next table.
+- **M = Av** means the default model is usable by every role. Pinning a model per role needs a subagent definition (**A**), so it follows from gap 1.
 
 ## What each role needs, and what exists to reuse
 
@@ -94,11 +101,12 @@ H = Av means the git-level `commit-msg` hook and CI apply to the role; it is the
 1. **Project subagents:** no `.claude/agents/` definitions for any of the 14 roles. Suitable generic reviewers exist (`ecc:*`) but nothing role-specific. No reusable agent at all for Product Strategist, DevOps & SRE, Research Analyst, Technical Writer and Technical Editor.
 2. **Project skills (`.claude/skills/`):** per-post workflow (brief, draft, technical edit, SEO, approval, publish, distribute); editorial and content QA checklist; fact-check and source-verification skill and style guide (Technical Editor); research pipeline (arXiv, lab blogs, GitHub trending) and reference library; agent completion protocol and handoff; release and hotfix runbook.
 3. **Project commands (`.claude/commands/`):** none exist. Candidates: status, gate check, handoff, new post, release.
-4. **`.claude/settings.json`:** no permission allowlist (npm, git, gh) or deny rules (secrets, destructive commands, pushes to protected branches).
-5. **Repo-level hooks:** secret-scan pre-commit; a guard for actions on the approval list (deploy, DNS, publish, spend, post); a Code Reviewer gate. The hooks active today live in the user-level `ecc` plugin and are not part of the repo.
-6. **MCP (`.mcp.json` missing):** GitHub connector failed to connect (use the `gh` CLI); Figma, Canva, Datadog, PagerDuty, Ahrefs, Similarweb, Amplitude, Klaviyo and Slack need authorisation; HubSpot connector failed; no Zotero or arXiv/RSS source; no analytics or Search Console source and no newsletter provider (their ADRs are not done).
-7. **Project tooling not installed:** Playwright (E2E) and Cucumber (BDD), named in ADR-001.
-8. **Unverified:** a fresh Claude Code session loading `CLAUDE.md` and `AGENTS.md`. The static check passes, but a live test could not run from this sandbox because the CLI is not logged in. Check: open a new session in this folder and ask "what is the commit convention?"; the answer should be Conventional Commits.
-9. **Install note:** `ecc@ecc` reports that its `package.json` sets overrides which this install does not apply. It is enabled; confirm nothing it lists is needed.
+4. **`.claude/settings.json` (permissions):** no permission allowlist (npm, git, gh) or deny rules (secrets, destructive commands, pushes to protected branches), and no per-role scopes (for example the Technical Writer may write only `content/posts/` as `draft: true`; the Code Reviewer may comment but not push).
+5. **Model per role:** no model is pinned anywhere; per-role model choice needs the subagent definitions from gap 1.
+6. **Repo-level hooks:** secret-scan pre-commit; a guard for actions on the approval list (deploy, DNS, publish, spend, post); a Code Reviewer gate. The hooks active today live in the user-level `ecc` plugin and are not part of the repo.
+7. **MCP (`.mcp.json` missing):** GitHub connector failed to connect (use the `gh` CLI); Figma, Canva, Datadog, PagerDuty, Ahrefs, Similarweb, Amplitude, Klaviyo and Slack need authorisation; HubSpot connector failed; no Zotero or arXiv/RSS source; no analytics or Search Console source and no newsletter provider (their ADRs are not done).
+8. **Project tooling not installed:** Playwright (E2E) and Cucumber (BDD), named in ADR-001.
+9. **Unverified:** a fresh Claude Code session loading `CLAUDE.md` and `AGENTS.md`. The static check passes, but a live test could not run from this sandbox because the CLI is not logged in. Check: open a new session in this folder and ask "what is the commit convention?"; the answer should be Conventional Commits.
+10. **Install note:** `ecc@ecc` reports that its `package.json` sets overrides which this install does not apply. It is enabled; confirm nothing it lists is needed.
 
-Codex, Cursor and Antigravity have no project assets by decision; no gaps are raised for them.
+Other tools (Cursor, Codex, Antigravity) are out of scope by decision; no gaps are raised for them.
