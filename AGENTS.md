@@ -1,6 +1,6 @@
 # AGENTS.md — Agents Blog
 
-Single source of truth for every AI agent (Claude Code, Codex, Cursor, Antigravity). `CLAUDE.md` imports this file. Detailed rules live in `docs/guidelines/` and are linked, not copied.
+Single source of truth for every AI agent on this project. Claude Code is the only tool in use; `CLAUDE.md` imports this file. Detailed rules live in `docs/guidelines/` and are linked, not copied.
 
 ## Project
 A research-backed blog on AI agents for engineers building production agentic systems. Content and site are produced by AI agents; **Venkat (human) approves every key decision**.
@@ -29,7 +29,7 @@ One task = one branch = one PR. Conventional commits. Semantic versioning. Never
 - Details: `docs/guidelines/code-quality.md`.
 
 ## Commands
-Use `make`, not raw tool calls: `setup dev lint format typecheck test test-e2e test-bdd coverage build audit sync-agents release clean`.
+Use `make`, not raw tool calls: `setup dev lint format typecheck test test-e2e test-bdd coverage build audit release clean`.
 
 ## Layout
 | Path | Purpose |
@@ -42,8 +42,7 @@ Use `make`, not raw tool calls: `setup dev lint format typecheck test test-e2e t
 | `content/posts/` | Blog posts (Markdown/MDX) |
 | `src/` | Site source |
 | `tests/{unit,e2e,bdd}/` | Tests |
-| `.agents/skills/` | Shared skills (source) |
-| `.claude/`, `.codex/` | Tool-specific agents/skills (synced via `make sync-agents`) |
+| `.claude/` | Claude Code subagents, skills, commands, settings and hooks |
 
 ## Definition of Done
 Acceptance criteria met; tests written first and passing; lint/typecheck clean; evidence linked in an Asana comment; PR opened and handed to the named reviewer.

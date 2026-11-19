@@ -14,7 +14,6 @@
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "sync-agents": "node scripts/sync-agents.mjs",
     "clean": "node scripts/clean.mjs",
     "check:content": "vitest run tests/content",
     "prebuild": "npm run check:content",
