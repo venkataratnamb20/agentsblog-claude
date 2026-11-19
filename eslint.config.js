@@ -7,7 +7,10 @@ export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
   ...astro.configs.recommended,
-  { files: ['scripts/**/*.mjs'], languageOptions: { globals: { console: 'readonly' } } },
+  {
+    files: ['scripts/**/*.mjs', 'astro.config.mjs'],
+    languageOptions: { globals: { console: 'readonly', process: 'readonly' } },
+  },
   {
     rules: {
       complexity: ['error', 10],
