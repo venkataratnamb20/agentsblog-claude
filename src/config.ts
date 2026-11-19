@@ -4,10 +4,9 @@ export const SITE_DESCRIPTION =
 const DEFAULT_SITE = 'http://localhost:4321';
 
 /** Drafts are shown in dev or when PREVIEW_DRAFTS=true; never in a normal production build. */
-export const includeDrafts: boolean =
-  import.meta.env.DEV || import.meta.env.PREVIEW_DRAFTS === 'true';
+export const includeDrafts: boolean = import.meta.env.DEV || process.env.PREVIEW_DRAFTS === 'true';
 
 /** Only the production deploy sets ALLOW_INDEXING=true; staging stays noindex. */
-export const allowIndexing: boolean = import.meta.env.ALLOW_INDEXING === 'true';
+export const allowIndexing: boolean = process.env.ALLOW_INDEXING === 'true';
 
 export const siteUrl = (site: URL | undefined): string => site?.toString() ?? DEFAULT_SITE;

@@ -7,11 +7,4 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   site: process.env.SITE_URL ?? 'http://localhost:4321',
   integrations: [mdx(), sitemap()],
-  vite: {
-    // Shell variables are not exposed through import.meta.env, so inline the build flags.
-    define: {
-      'import.meta.env.PREVIEW_DRAFTS': JSON.stringify(process.env.PREVIEW_DRAFTS ?? ''),
-      'import.meta.env.ALLOW_INDEXING': JSON.stringify(process.env.ALLOW_INDEXING ?? ''),
-    },
-  },
 });
