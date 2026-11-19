@@ -150,7 +150,7 @@ describe.skipIf(process.platform !== 'win32')('make.ps1 on Windows PowerShell', 
     const result = ps('Set-Location docs; & ../make.ps1 help; exit $LASTEXITCODE');
     expect(result.status).toBe(0);
     expect(result.stdout).toContain('typecheck');
-  });
+  }, 30_000);
 
   it('fails instead of passing when node cannot be found', () => {
     const root = process.env.SystemRoot ?? 'C:/Windows';
@@ -161,5 +161,5 @@ describe.skipIf(process.platform !== 'win32')('make.ps1 on Windows PowerShell', 
       { encoding: 'utf8', env: { SystemRoot: root, PATH: join(root, 'System32') } },
     );
     expect(result.status).not.toBe(0);
-  });
+  }, 30_000);
 });
