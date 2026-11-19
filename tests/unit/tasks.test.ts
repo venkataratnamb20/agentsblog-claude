@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { delimiter, join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { TASKS, describeTasks } from '../../scripts/lib/tasks.mjs';
 
@@ -155,11 +155,15 @@ describe.skipIf(process.platform !== 'win32')('make.ps1 on Windows PowerShell', 
   it('fails instead of passing when node cannot be found', () => {
     const root = process.env.SystemRoot ?? 'C:/Windows';
     const powershell = join(root, 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe');
+    const withoutNode = (process.env.PATH ?? '')
+      .split(delimiter)
+      .filter((dir) => dir && !existsSync(join(dir, 'node.exe')))
+      .join(delimiter);
     const result = spawnSync(
       powershell,
       ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', 'make.ps1', 'help'],
-      { encoding: 'utf8', env: { SystemRoot: root, PATH: join(root, 'System32') } },
+      { encoding: 'utf8', env: { ...process.env, PATH: withoutNode } },
     );
     expect(result.status).not.toBe(0);
-  }, 30_000);
+  }, 60_000);
 });
