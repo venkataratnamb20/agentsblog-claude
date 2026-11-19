@@ -1,0 +1,40 @@
+# CODEOWNERS: maps paths to reviewers. GitHub only accepts users and teams here, so every
+# line names the human account; the comment names the reviewer agent role from the Asana task.
+# When a separate reviewer account or team exists, replace the owner on the relevant lines.
+# "Require review from Code Owners" is intentionally off for now (single-account repo).
+
+*                           @venkataratnamb20
+
+# DevOps & SRE, Security Engineer
+/.github/                   @venkataratnamb20
+/.husky/                    @venkataratnamb20
+/scripts/                   @venkataratnamb20
+/Makefile                   @venkataratnamb20
+/make.ps1                   @venkataratnamb20
+/package.json               @venkataratnamb20
+/package-lock.json          @venkataratnamb20
+
+# Frontend Engineer, QA Engineer, Code Reviewer
+/src/                       @venkataratnamb20
+/tests/                     @venkataratnamb20
+
+# Technical Editor, Research Analyst, Technical Writer
+/content/                   @venkataratnamb20
+/research/                  @venkataratnamb20
+
+# Solution Architect
+/docs/adr/                  @venkataratnamb20
+/docs/specs/                @venkataratnamb20
+
+# Code Reviewer, Solution Architect (agent rules and guidelines)
+/AGENTS.md                  @venkataratnamb20
+/CLAUDE.md                  @venkataratnamb20
+/docs/guidelines/           @venkataratnamb20
+/docs/agents/               @venkataratnamb20
+/.agents/                   @venkataratnamb20
+/.claude/                   @venkataratnamb20
+/.codex/                    @venkataratnamb20
+/.cursor/                   @venkataratnamb20
+
+# PM Orchestrator
+/progress/                  @venkataratnamb20
