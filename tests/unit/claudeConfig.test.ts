@@ -242,3 +242,70 @@ describe('settings protect their own files (.claude/settings.json)', () => {
     expect(entry?.matcher).toContain('NotebookEdit');
   });
 });
+
+const RISKY_ALLOWS = [
+  'Bash(git diff*)',
+  'Bash(git log*)',
+  'Bash(git branch*)',
+  'Bash(git fetch*)',
+  'Bash(npx vitest *)',
+  'Bash(npx prettier *)',
+  'Bash(npx eslint *)',
+];
+const NARROW_ALLOWS = [
+  'Bash(git diff)',
+  'Bash(git diff --stat*)',
+  'Bash(git diff --cached*)',
+  'Bash(git diff HEAD*)',
+  'Bash(git diff develop*)',
+  'Bash(git log --oneline*)',
+  'Bash(git branch --show-current)',
+  'Bash(git branch --list*)',
+  'Bash(git fetch origin*)',
+  'Bash(npx vitest run*)',
+  'Bash(npx prettier --check*)',
+];
+const DANGEROUS_OPTION_DENIES = [
+  'Bash(git*--upload-pack*)',
+  'Bash(git*--output*)',
+  'Bash(git*--ext-diff*)',
+  'Bash(git branch -f*)',
+  'Bash(git branch -d*)',
+  'Bash(git branch -m*)',
+  'Bash(git branch*--delete*)',
+  'Bash(npx*--config*)',
+  'Bash(npx*--plugin*)',
+];
+
+describe('settings least privilege (security review round)', () => {
+  it.each(RISKY_ALLOWS)('does not allow the open-ended rule %s', (rule) => {
+    expect(settings.permissions.allow).not.toContain(rule);
+  });
+
+  it('still allows the narrow read-only forms agents need', () => {
+    for (const rule of NARROW_ALLOWS) expect(settings.permissions.allow).toContain(rule);
+  });
+
+  it('denies the options that run commands, write files or move branches', () => {
+    for (const rule of DANGEROUS_OPTION_DENIES) expect(settings.permissions.deny).toContain(rule);
+  });
+});
+
+describe('settings deny parity (security review round)', () => {
+  it('denies editing every file it denies reading', () => {
+    const reads = settings.permissions.deny
+      .filter((r) => r.startsWith('Read('))
+      .map((r) => r.slice(5));
+    const edits = new Set(
+      settings.permissions.deny.filter((r) => r.startsWith('Edit(')).map((r) => r.slice(5)),
+    );
+    expect(reads.length).toBeGreaterThan(0);
+    expect(reads.filter((path) => !edits.has(path))).toEqual([]);
+  });
+
+  it('denies reading git and netrc credential files', () => {
+    for (const path of ['./.git-credentials', './**/.git-credentials', './**/.netrc']) {
+      expect(settings.permissions.deny).toContain(`Read(${path})`);
+    }
+  });
+});
