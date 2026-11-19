@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { TASKS, describeTasks } from '../../scripts/lib/tasks.mjs';
 
@@ -54,10 +55,14 @@ describe('task table (scripts/lib/tasks.mjs)', () => {
     }
   });
 
-  it('describeTasks lists every target with its description', () => {
-    const text = describeTasks();
-    for (const name of REQUIRED) expect(text).toContain(name);
-    expect(text).toContain(TASKS['lint']?.description ?? 'missing');
+  it('describeTasks has one line per target: name, then its description', () => {
+    const lines = describeTasks().split('\n');
+    for (const [name, task] of Object.entries(TASKS)) {
+      const line = lines.find((l) => l.trimStart().startsWith(`${name} `));
+      expect(line, name).toBeDefined();
+      expect(line, name).toContain(task.description);
+    }
+    expect(lines.length).toBe(REQUIRED.length);
   });
 });
 
@@ -95,9 +100,66 @@ describe('Makefile and make.ps1 stay in step with the table', () => {
     for (const name of REQUIRED) expect(phony).toContain(name);
   });
 
-  it('make.ps1 passes the target to the same runner and keeps its exit code', () => {
-    expect(powershell).toContain('scripts/task.mjs');
-    expect(powershell).toContain('$LASTEXITCODE');
+  it('make.ps1 runs the runner from its own folder and passes the exit code on', () => {
+    expect(powershell).toMatch(/^node "\$PSScriptRoot\/scripts\/task\.mjs" \$Target$/m);
+    expect(powershell).toMatch(/^exit \$LASTEXITCODE$/m);
     expect(powershell).not.toContain('sync-agents');
+  });
+
+  it('make.ps1 stops on errors and never exits 0 when the runner did not run', () => {
+    expect(powershell).toMatch(/^\$ErrorActionPreference = 'Stop'$/m);
+    expect(powershell).toMatch(/^if \(\$null -eq \$LASTEXITCODE\) \{ exit 1 \}$/m);
+  });
+});
+
+describe('each target runs exactly the expected command', () => {
+  const EXPECTED: Record<string, string[]> = {
+    setup: ['ci'],
+    dev: ['run', 'dev'],
+    lint: ['run', 'lint'],
+    format: ['run', 'format'],
+    typecheck: ['run', 'typecheck'],
+    test: ['test'],
+    coverage: ['run', 'coverage'],
+    build: ['run', 'build'],
+    preview: ['run', 'preview'],
+    audit: ['audit', '--audit-level=high'],
+    clean: ['run', 'clean'],
+  };
+
+  it.each(Object.entries(EXPECTED))('%s runs npm %j', (name, args) => {
+    expect(TASKS[name]?.npm).toEqual(args);
+  });
+});
+
+describe('scripts/task.mjs rejects names that only exist on Object.prototype', () => {
+  it.each(['constructor', '__proto__', 'toString', 'hasOwnProperty'])('%s', (name) => {
+    const result = run(name);
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('Unknown target');
+  });
+});
+
+describe.skipIf(process.platform !== 'win32')('make.ps1 on Windows PowerShell', () => {
+  const ps = (command: string) =>
+    spawnSync('powershell', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', command], {
+      encoding: 'utf8',
+    });
+
+  it('works from a sub folder', () => {
+    const result = ps('Set-Location docs; & ../make.ps1 help; exit $LASTEXITCODE');
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('typecheck');
+  });
+
+  it('fails instead of passing when node cannot be found', () => {
+    const root = process.env.SystemRoot ?? 'C:/Windows';
+    const powershell = join(root, 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe');
+    const result = spawnSync(
+      powershell,
+      ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', 'make.ps1', 'help'],
+      { encoding: 'utf8', env: { SystemRoot: root, PATH: join(root, 'System32') } },
+    );
+    expect(result.status).not.toBe(0);
   });
 });

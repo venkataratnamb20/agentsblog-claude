@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
@@ -199,5 +200,74 @@ describe('CI and PR template', () => {
     for (const phrase of ['Tests came first', 'thresholds', 'No secrets']) {
       expect(text).toContain(phrase);
     }
+  });
+});
+
+describe('no tracked file points at a removed folder', () => {
+  const TEXT = /\.(md|ts|mjs|json|ya?ml|ps1|mdc)$|(^|\/)(Makefile|CODEOWNERS)$/;
+  const SKIP = /^(progress\/|package-lock\.json|CHANGELOG\.md|tests\/unit\/scaffold\.test\.ts)/;
+  const files = execFileSync('git', ['ls-files'], { encoding: 'utf8' })
+    .split('\n')
+    .filter((f) => f && TEXT.test(f) && !SKIP.test(f));
+
+  it.each(['docs/specs', 'tests/bdd'])('%s is not mentioned anywhere', (removed) => {
+    const offenders = files.filter((f) => read(f).includes(removed));
+    expect(offenders).toEqual([]);
+  });
+
+  it('CODEOWNERS covers the new docs folders', () => {
+    const text = read('.github/CODEOWNERS');
+    expect(text).toContain('/docs/prd/');
+    expect(text).toContain('/docs/srs/');
+  });
+});
+
+describe('review follow-ups', () => {
+  it('research/ has no redundant .gitkeep next to its sub folders', () => {
+    expect(existsSync('research/.gitkeep')).toBe(false);
+  });
+
+  it('the package is marked unlicensed and the README says no licence is granted yet', () => {
+    const pkg = JSON.parse(read('package.json')) as { license?: string };
+    expect(pkg.license).toBe('UNLICENSED');
+    expect(read('README.md')).toContain('all rights reserved');
+  });
+
+  it('the README documents public/, loose docs files and the PowerShell execution policy', () => {
+    const text = read('README.md');
+    expect(text).toContain('`public/`');
+    expect(text).toContain('ExecutionPolicy');
+    expect(text).toContain('cross-cutting');
+  });
+
+  it('the README says the audit target currently reports advisories', () => {
+    expect(read('README.md')).toMatch(/`audit`[\s\S]*advisories/);
+  });
+});
+
+describe('ADR 0002 weighs the simplest option and states cost and reversibility', () => {
+  const text = read('docs/adr/0002-task-runner.md');
+
+  it('lists calling npm run directly and why it was not chosen', () => {
+    expect(text).toContain('call `npm run` directly');
+  });
+
+  it('has a cost and reversibility section', () => {
+    expect(text).toContain('## Cost and reversibility');
+    expect(text).toContain('reversible');
+  });
+});
+
+describe('CI covers format, clean and the dependency audit', () => {
+  it('bootstrap-check also runs format and clean on every OS', () => {
+    const text = read('.github/workflows/bootstrap-check.yml');
+    expect(text).toContain('make setup lint format typecheck test clean');
+    expect(text).toContain("'setup', 'lint', 'format', 'typecheck', 'test', 'clean'");
+  });
+
+  it('ci.yml runs the audit as an informational step', () => {
+    const text = read('.github/workflows/ci.yml');
+    expect(text).toContain('node scripts/task.mjs audit');
+    expect(text).toContain('continue-on-error: true');
   });
 });

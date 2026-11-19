@@ -12,7 +12,7 @@ if (name === 'help') {
   process.exit(0);
 }
 
-const task = TASKS[name];
+const task = Object.hasOwn(TASKS, name) ? TASKS[name] : undefined;
 if (!task) {
   console.error(`Unknown target '${name}'. Run: make help`);
   process.exit(1);

@@ -11,6 +11,7 @@ Agents and people need one set of commands (`setup`, `lint`, `test`, ...) that b
 
 | Option | Pros | Cons |
 |---|---|---|
+| Do nothing: call `npm run` directly | Simplest; no wrapper files at all; works everywhere Node works | No `make help` list, no clear message for targets that are not ready yet, and the muscle-memory `make test` that the Asana task asks for does not exist |
 | Makefile and `make.ps1`, each with its own commands | No extra dependency | Two copies of every command that drift apart |
 | **Makefile and `make.ps1` as thin wrappers over one Node runner** | One definition of each target; no new tool; works wherever Node works | Two small wrapper files to keep in step (a test checks it) |
 | `just` | Nice syntax, cross-platform | Another binary to install on every machine and CI runner |
@@ -19,6 +20,11 @@ Agents and people need one set of commands (`setup`, `lint`, `test`, ...) that b
 ## Decision
 
 Use a **Makefile for macOS, Linux and CI** and **`make.ps1` for native Windows PowerShell**. Both only call `node scripts/task.mjs <target>`. The targets are defined once in `scripts/lib/tasks.mjs`; `npm` scripts stay the real commands (ADR 0001). A target that cannot work yet exits 1 with a message that says what it waits for (`test-e2e`, `test-bdd`, `release`).
+
+## Cost and reversibility
+
+- Cost: three small files (`Makefile`, `make.ps1`, `scripts/task.mjs`) plus one table, about 100 lines in total, and a test that keeps them in step.
+- Easily reversible: yes, it is reversible. Every target only calls an `npm` script, so removing the wrappers loses a convenience, not a capability. Switching to `just` or Task later means rewriting one table.
 
 ## Consequences
 

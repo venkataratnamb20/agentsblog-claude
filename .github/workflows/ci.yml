@@ -30,6 +30,9 @@ jobs:
           npx --no -- commitlint --from "$BASE_SHA" --to "$HEAD_SHA"
       - name: Secret scan
         run: npm run secrets:scan
+      - name: Dependency audit (informational until the Astro decision)
+        run: node scripts/task.mjs audit
+        continue-on-error: true
       - run: npm run lint
       - run: npm run format:check
       - run: npm run typecheck
