@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+import { SITE_DESCRIPTION, SITE_NAME, includeDrafts } from '../config';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { filterVisible } from '../lib/drafts';
+import { sortPostsByDateDesc } from '../lib/sortPosts';
+
+const entries = filterVisible(await getCollection('posts'), includeDrafts);
+const posts = sortPostsByDateDesc(entries.map((entry) => ({ id: entry.id, ...entry.data })));
+---
+
+<BaseLayout description={SITE_DESCRIPTION} path="/">
+  <h1>{SITE_NAME}</h1>
+  <p>{SITE_DESCRIPTION}</p>
+  {posts.length === 0 && <p>First posts land at launch.</p>}
+  <ul>
+    {
+      posts.map((post) => (
+        <li>
+          <a href={`/posts/${post.id}/`}>{post.title}</a>
+          <time datetime={post.date.toISOString()}>{post.date.toDateString()}</time>
+          <p>{post.description}</p>
+        </li>
+      ))
+    }
+  </ul>
+</BaseLayout>

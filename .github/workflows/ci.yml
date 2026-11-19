@@ -9,5 +9,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # Placeholder until the tech stack ADR is approved; replace with real steps.
-      - run: make lint typecheck test
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm run coverage
+      - name: Production-style build (drafts excluded, staging noindex)
+        run: npm run build
+      - name: Build renders draft posts and SEO output
+        run: PREVIEW_DRAFTS=true npm run build
+      - name: Verify SEO output
+        run: |
+          trap 'find dist -maxdepth 3 | head -40' ERR
+          grep -q 'noindex' dist/index.html
+          grep -q 'Disallow: /' dist/robots.txt
+          grep -q 'application/ld+json' dist/posts/welcome/index.html
+          grep -q 'rel="canonical"' dist/posts/welcome/index.html
+          test -f dist/sitemap-index.xml
+          test -f dist/rss.xml
