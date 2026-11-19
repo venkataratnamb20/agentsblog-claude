@@ -23,7 +23,7 @@ A content-led blog on AI agents: weekly posts with diagrams and runnable code, s
 | Package manager | npm (lockfile committed, `npm ci` in CI) | ships with Node |
 | Unit / integration tests | Vitest + `@vitest/coverage-v8` | 100% on `src/lib/`, 80% CI floor |
 | E2E tests | Playwright | planned; not installed yet (see Windows status) |
-| BDD | `@cucumber/cucumber` with Gherkin features in `tests/bdd/` | planned; not installed yet |
+| BDD | `@cucumber/cucumber` with Gherkin features in `tests/features/` | planned; not installed yet |
 | Linter | ESLint (flat config, `typescript-eslint`, `eslint-plugin-astro`) | zero warnings; `complexity` ≤ 10, `max-lines-per-function` ≤ 40 |
 | Formatter | Prettier (+ `prettier-plugin-astro`) | |
 | Type checker | `astro check` (wraps `tsc`) | runs in CI |

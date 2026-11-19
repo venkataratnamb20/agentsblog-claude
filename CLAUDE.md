@@ -16,16 +16,16 @@ Astro 5, TypeScript (strict), MDX, Vitest, ESLint, Prettier, npm, Node 22 in CI.
 |---|---|
 | `src/` | Site code; `src/lib/` holds pure logic |
 | `content/posts/` | Blog posts (Markdown or MDX) |
-| `tests/` | `unit/`, `integration/`, `e2e/`, `bdd/` |
-| `docs/` | `adr/`, `guidelines/`, `agents/`, `specs/`, `team.md` |
-| `research/` | Research briefs and notes |
-| `scripts/` | Automation (`scan-secrets.mjs`, `clean.mjs`) |
+| `tests/` | `unit/`, `integration/`, `e2e/`, `features/` (BDD) |
+| `docs/` | `prd/`, `srs/`, `adr/`, `guidelines/`, `runbooks/`, `agents/`, `team.md` |
+| `research/` | `sources/`, `briefs/`, `notes/` |
+| `scripts/` | Automation (`task.mjs` runner, `scan-secrets.mjs`, `clean.mjs`) |
 | `progress/` | Local mirror of Asana status |
 | `.claude/` | Subagents, skills, commands, settings, hooks |
 | `.github/` | CI, PR and issue templates, CODEOWNERS |
 
 ## Commands
-Use `make <target>` (GNU make) or `./make.ps1 <target>` (Windows PowerShell), not raw tool calls:
+Use `make <target>` (GNU make) or `./make.ps1 <target>` (Windows PowerShell), not raw tool calls; `make help` lists them:
 `setup dev lint format typecheck test test-e2e test-bdd coverage build preview audit release clean`.
 `test-e2e`, `test-bdd` and `release` print a clear message until their tools exist. Also `npm run secrets:scan` and `npm run changelog`.
 
