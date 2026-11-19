@@ -18,7 +18,7 @@ All agents run through Claude Code under Venkat's own GitHub login today, so the
 | Subagent | May touch | Must not touch |
 |---|---|---|
 | `pm-orchestrator` | Asana, `progress/`, docs | Product code, production |
-| `product-strategist` | `docs/specs/`, backlog | Code, publishing |
+| `product-strategist` | `docs/prd/`, `docs/srs/`, backlog | Code, publishing |
 | `solution-architect` | `docs/adr/`, architecture docs | Paid services without approval |
 | `ux-ui-designer` | Design docs and tokens | Paid assets without approval |
 | `frontend-engineer` | `src/`, `tests/`, feature branches | Deploys, rulesets |

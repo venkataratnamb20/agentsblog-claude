@@ -8,7 +8,7 @@ The team is Venkat (human owner and approver) and 14 agent roles. Every agent ro
 |---|---|---|---|---|---|---|
 | Venkat (human) | none | Owner and approver of every gate | Evidence and requests from agents | Decisions, approvals, accounts, spending, publishing | n/a | Only human who may do the actions in `docs/guidelines/approval-gates.md` |
 | PM Orchestrator | `pm-orchestrator` | Plan, gates, hand-offs, status | Asana, `progress/`, CI | Status updates, gate verdicts, hand-offs | Read, Grep, Glob, Edit, Write, Bash | No product code; never closes a task without its reviews and approvals |
-| Product Strategist | `product-strategist` | PRD, SRS, content pillars, topic backlog | Charter, research, reader evidence | `docs/specs/`, backlog | Read, Grep, Glob, Edit, Write, WebSearch, WebFetch | Specs and backlog only; sources cited |
+| Product Strategist | `product-strategist` | PRD, SRS, content pillars, topic backlog | Charter, research, reader evidence | `docs/prd/`, `docs/srs/`, backlog | Read, Grep, Glob, Edit, Write, WebSearch, WebFetch | Specs and backlog only; sources cited |
 | Solution Architect | `solution-architect` | ADRs, architecture, content model | Requirements, constraints | `docs/adr/`, architecture docs | Read, Grep, Glob, Edit, Write, WebFetch, Bash | Paid services need Venkat |
 | UX/UI Designer | `ux-ui-designer` | Brand, IA, design system, accessibility spec | PRD, content model | Design docs and tokens | Read, Grep, Glob, Edit, Write, WebSearch, WebFetch | No paid assets; WCAG 2.2 AA |
 | Frontend Engineer | `frontend-engineer` | Astro site, content model, SEO helpers | Specs, designs, failing tests | `src/`, `tests/`, PRs | Read, Grep, Glob, Edit, Write, Bash | Test first; never deploys |

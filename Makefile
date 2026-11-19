@@ -1,38 +1,35 @@
-# Cross-platform task runner (stack: docs/adr/0001-core-tech-stack.md).
-# Windows without GNU make: use ./make.ps1 <target>.
+# Cross-platform task runner. Every target calls scripts/task.mjs, the single definition of what
+# each target does (docs/adr/0002-task-runner.md). Windows without GNU make: use ./make.ps1 <target>.
 
 .PHONY: help setup dev lint format typecheck test test-e2e test-bdd coverage build preview audit release clean
 
 help:
-	@echo Targets: setup dev lint format typecheck test test-e2e test-bdd coverage build preview audit release clean
-
-define TODO
-	@echo "[$(1)] not configured yet"
-endef
-
+	@node scripts/task.mjs help
 setup:
-	npm ci
+	@node scripts/task.mjs setup
 dev:
-	npm run dev
+	@node scripts/task.mjs dev
 lint:
-	npm run lint
+	@node scripts/task.mjs lint
 format:
-	npm run format
+	@node scripts/task.mjs format
 typecheck:
-	npm run typecheck
+	@node scripts/task.mjs typecheck
 test:
-	npm test
+	@node scripts/task.mjs test
+test-e2e:
+	@node scripts/task.mjs test-e2e
+test-bdd:
+	@node scripts/task.mjs test-bdd
 coverage:
-	npm run coverage
+	@node scripts/task.mjs coverage
 build:
-	npm run build
+	@node scripts/task.mjs build
 preview:
-	npm run preview
+	@node scripts/task.mjs preview
 audit:
-	npm audit --audit-level=high
+	@node scripts/task.mjs audit
+release:
+	@node scripts/task.mjs release
 clean:
-	npm run clean
-
-test-e2e:   ; $(call TODO,test-e2e)
-test-bdd:   ; $(call TODO,test-bdd)
-release:    ; $(call TODO,release)
+	@node scripts/task.mjs clean

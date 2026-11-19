@@ -24,7 +24,8 @@
 
 # Solution Architect
 /docs/adr/                  @venkataratnamb20
-/docs/specs/                @venkataratnamb20
+/docs/prd/                  @venkataratnamb20
+/docs/srs/                  @venkataratnamb20
 
 # Code Reviewer, Solution Architect (agent rules and guidelines)
 /CLAUDE.md                  @venkataratnamb20

@@ -1,0 +1,34 @@
+name: bootstrap-check
+on:
+  pull_request:
+  push:
+    branches: [develop, main]
+
+permissions:
+  contents: read
+
+jobs:
+  bootstrap-check:
+    name: bootstrap-check (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - name: setup, lint, format, typecheck, test, clean with make
+        if: runner.os != 'Windows'
+        run: make setup lint format typecheck test clean
+      - name: setup, lint, format, typecheck, test, clean with make.ps1 (native PowerShell)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          foreach ($target in 'setup', 'lint', 'format', 'typecheck', 'test', 'clean') {
+            ./make.ps1 $target
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }

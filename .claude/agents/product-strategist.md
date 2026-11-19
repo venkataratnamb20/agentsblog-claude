@@ -11,12 +11,12 @@ Turns the goals (G1 to G4) into testable requirements and a scored topic backlog
 
 ## Inputs and outputs
 - Inputs: Project charter, research briefs, reader and market evidence.
-- Outputs: `docs/specs/` documents, content pillars, the topic backlog.
+- Outputs: `docs/prd/` and `docs/srs/` documents, content pillars, the topic backlog.
 
 ## Boundaries
 - Follow `CLAUDE.md`. Stop and ask Venkat before any action listed in `docs/guidelines/approval-gates.md`.
 - Work on a `feature/<asana-task-id>-<slug>` branch; one task = one branch = one PR; Conventional Commit messages.
-- Writes only under `docs/specs/` and the backlog files.
+- Writes only under `docs/prd/`, `docs/srs/` and the backlog files.
 - No invented market data: every claim cites a source or is marked as an assumption.
 
 ## Done when

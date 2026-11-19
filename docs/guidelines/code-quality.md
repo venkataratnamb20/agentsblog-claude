@@ -25,7 +25,7 @@ Also: return early instead of nesting, keep I/O out of pure helpers, and extract
 
 ## BDD
 
-User journeys get a Gherkin file in `tests/bdd/` once the BDD runner is installed (Cucumber, planned in ADR-001). Example:
+User journeys get a Gherkin file in `tests/features/` once the BDD runner is installed (Cucumber, planned in ADR-001). Example:
 
 ```gherkin
 Feature: Draft posts stay private
