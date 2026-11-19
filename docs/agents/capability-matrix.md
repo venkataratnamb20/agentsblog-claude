@@ -6,7 +6,7 @@
 
 ## Scope
 
-Claude Code only. `AGENTS.md` stays the single source of truth and `CLAUDE.md` imports it. Other tools are not audited, set up or tested.
+Claude Code only. `CLAUDE.md` is the single rules file (the former `AGENTS.md` was merged into it). Other tools are not audited, set up or tested.
 
 ## Claude Code version and default model
 
@@ -38,22 +38,21 @@ Claude Code install checked: `ecc@ecc` plugin 2.2.3 (user scope, enabled) plus t
 
 | Asset | Status | Evidence |
 |---|---|---|
-| `CLAUDE.md` (imports `AGENTS.md`) | Av | first line is `@AGENTS.md`; target file exists (52 lines) |
-| `AGENTS.md` | Av | stack, approvals, git workflow, commands, Definition of Done |
-| `.claude/skills/` | Mi | only `.gitkeep` |
-| `.claude/agents/` | Mi | only `.gitkeep` |
-| `.claude/commands/` | Mi | does not exist |
-| `.claude/settings.json` (permissions, hooks) | Mi | does not exist |
+| `CLAUDE.md` (single rules file) | Av | purpose, stack, commands, git flow, Definition of Done, completion protocol, approval gates |
+| `.claude/skills/` | Av | 7 skills |
+| `.claude/agents/` | Av | 14 subagents |
+| `.claude/commands/` | Av | `/status`, `/handoff` |
+| `.claude/settings.json` (permissions, hooks) | Av | allow, ask and deny rules; hooks `block-secrets`, `pre-commit-gate`, `log-actions` |
 | `.mcp.json` | Mi | does not exist |
 | Git hook `commit-msg` (Conventional Commits) | Av | `.husky/commit-msg` |
 | CI, CODEOWNERS, PR template | Av | `.github/` |
 
-Observation: the hooks that fire during Claude Code work here (the "Fact-Forcing Gate" on writes and destructive commands) come from the user-level `ecc` plugin. They are not in the repo, so a fresh clone does not carry them.
+Observation: the `ecc` plugin's "Fact-Forcing Gate" is user-level and not in the repo. The repo's own hooks (`block-secrets`, `pre-commit-gate`, `log-actions`) are, so a fresh clone carries them.
 
 ## Role × Claude Code feature matrix
 
-| Role | Av | S | C | MCP | Av | Av | M |
-| --- | Av | --- | --- | --- | Av | Av | --- |
+| Role | A | S | C | MCP | H | P | M |
+|---|---|---|---|---|---|---|---|
 | PM Orchestrator | Av | Re | Re | Av | Av | Av | Av |
 | Product Strategist | Av | Re | Re | Av | Av | Av | Av |
 | Solution Architect | Av | Re | Re | Av | Av | Av | Av |
@@ -98,22 +97,9 @@ Notes on the cells:
 | Growth & Community | newsletter, LinkedIn/X drafts, outreach; drafts only, sending and posting need Venkat | `social-media-skills:*`, `marketing:*`, `ecc:crosspost`, `ecc:social-publisher`, `ecc:content-engine`; `/ecc:marketing-campaign`; agent `ecc:marketing-agent`; Klaviyo needs authorisation, HubSpot connector failed, newsletter provider not chosen |
 | Venkat | approvals, accounts, spending, production deploys, publishing | Asana and GitHub web; MCP Asana connected |
 
-## Gap list (every Missing item)
+## Gaps and their status
 
-1. **Project subagents:** no `.claude/agents/` definitions for any of the 14 roles. Suitable generic reviewers exist (`ecc:*`) but nothing role-specific. No reusable agent at all for Product Strategist, DevOps & SRE, Research Analyst, Technical Writer and Technical Editor.
-2. **Project skills (`.claude/skills/`):** per-post workflow (brief, draft, technical edit, SEO, approval, publish, distribute); editorial and content QA checklist; fact-check and source-verification skill and style guide (Technical Editor); research pipeline (arXiv, lab blogs, GitHub trending) and reference library; agent completion protocol and handoff; release and hotfix runbook.
-3. **Project commands (`.claude/commands/`):** none exist. Candidates: status, gate check, handoff, new post, release.
-4. **`.claude/settings.json` (permissions):** no permission allowlist (npm, git, gh) or deny rules (secrets, destructive commands, pushes to protected branches), and no per-role scopes (for example the Technical Writer may write only `content/posts/` as `draft: true`; the Code Reviewer may comment but not push).
-5. **Model per role:** no model is pinned anywhere; per-role model choice needs the subagent definitions from gap 1.
-6. **Repo-level hooks:** secret-scan pre-commit; a guard for actions on the approval list (deploy, DNS, publish, spend, post); a Code Reviewer gate. The hooks active today live in the user-level `ecc` plugin and are not part of the repo.
-7. **MCP (`.mcp.json` missing):** GitHub connector failed to connect (use the `gh` CLI); Figma, Canva, Datadog, PagerDuty, Ahrefs, Similarweb, Amplitude, Klaviyo and Slack need authorisation; HubSpot connector failed; no Zotero or arXiv/RSS source; no analytics or Search Console source and no newsletter provider (their ADRs are not done).
-8. **Project tooling not installed:** Playwright (E2E) and Cucumber (BDD), named in ADR-001.
-9. **Unverified:** a fresh Claude Code session loading `CLAUDE.md` and `AGENTS.md`. The static check passes, but a live test could not run from this sandbox because the CLI is not logged in. Check: open a new session in this folder and ask "what is the commit convention?"; the answer should be Conventional Commits.
-10. **Install note:** `ecc@ecc` reports that its `package.json` sets overrides which this install does not apply. It is enabled; confirm nothing it lists is needed.
-
-Other tools (Cursor, Codex, Antigravity) are out of scope by decision; no gaps are raised for them.
-
-## Gap status after the harness build
+Found by the audit on 19 Nov 2026; status after the harness build.
 
 | # | Gap | Status | Evidence and what remains |
 |---|---|---|---|

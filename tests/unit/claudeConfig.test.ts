@@ -103,14 +103,29 @@ describe('slash commands (.claude/commands)', () => {
   });
 });
 
-describe('settings (.claude/settings.json)', () => {
-  const settings = JSON.parse(readFileSync('.claude/settings.json', 'utf8')) as {
-    permissions: { allow: string[]; deny: string[]; ask: string[] };
-    hooks: { PreToolUse: { matcher: string; hooks: { command: string }[] }[] };
+const settings = JSON.parse(readFileSync('.claude/settings.json', 'utf8')) as {
+  permissions: { allow: string[]; deny: string[]; ask: string[] };
+  hooks: {
+    PreToolUse: { matcher: string; hooks: { command: string }[] }[];
+    PostToolUse: { matcher: string; hooks: { command: string }[] }[];
   };
+};
 
+describe('settings permissions (.claude/settings.json)', () => {
   it('denies reading .env and key files', () => {
     for (const rule of ['Read(./.env)', 'Read(./.env.local)', 'Read(./**/*.pem)']) {
+      expect(settings.permissions.deny).toContain(rule);
+    }
+  });
+
+  it('does not deny whole families of ordinary source files', () => {
+    for (const rule of ['Read(./**/secrets*)', 'Read(./**/credentials*)']) {
+      expect(settings.permissions.deny).not.toContain(rule);
+    }
+  });
+
+  it('denies specific secret file names', () => {
+    for (const rule of ['Read(./**/secrets.json)', 'Read(./**/credentials.json)']) {
       expect(settings.permissions.deny).toContain(rule);
     }
   });
@@ -119,6 +134,14 @@ describe('settings (.claude/settings.json)', () => {
     expect(settings.permissions.deny).toContain('Bash(git push --force*)');
     expect(settings.permissions.ask).toContain('Bash(gh pr merge*)');
     expect(settings.permissions.ask).toContain('Bash(git tag*)');
+  });
+});
+
+describe('settings hooks (.claude/settings.json)', () => {
+  it('registers an action-log hook that exists on disk', () => {
+    const commands = settings.hooks.PostToolUse.flatMap((e) => e.hooks.map((h) => h.command));
+    expect(commands.some((c) => c.includes('log-actions.mjs'))).toBe(true);
+    expect(existsSync('.claude/hooks/log-actions.mjs')).toBe(true);
   });
 
   it('registers a secret-blocking hook and a pre-commit test hook that exist on disk', () => {
@@ -137,5 +160,70 @@ describe('multi-tool leftovers', () => {
 
   it('Makefile has no sync-agents target', () => {
     expect(readFileSync('Makefile', 'utf8')).not.toContain('sync-agents');
+  });
+});
+
+describe('settings guardrails (.claude/settings.json)', () => {
+  it('allows only narrow commands, not wildcards that can smuggle arguments', () => {
+    for (const rule of [
+      'Bash(npm run *)',
+      'Bash(git push origin feature/*)',
+      'Bash(git push -u origin feature/*)',
+    ]) {
+      expect(settings.permissions.allow).not.toContain(rule);
+    }
+    expect(settings.permissions.allow).toContain('Bash(git push -u origin HEAD)');
+    for (const script of [
+      'lint',
+      'format:check',
+      'typecheck',
+      'coverage',
+      'build',
+      'secrets:scan',
+    ]) {
+      expect(settings.permissions.allow).toContain(`Bash(npm run ${script})`);
+    }
+  });
+
+  it('denies the push and commit forms that bypass protection', () => {
+    for (const rule of [
+      'Bash(git push*--force*)',
+      'Bash(git push*:*)',
+      'Bash(git push*+*)',
+      'Bash(git push*--delete*)',
+      'Bash(git commit*--no-verify*)',
+    ]) {
+      expect(settings.permissions.deny).toContain(rule);
+    }
+  });
+
+  it('denies shell reads of env files on a best-effort basis', () => {
+    for (const rule of ['Bash(cat *.env*)', 'Bash(type *.env*)']) {
+      expect(settings.permissions.deny).toContain(rule);
+    }
+  });
+});
+
+describe('settings protect their own files (.claude/settings.json)', () => {
+  it('asks before editing its own guardrails', () => {
+    for (const path of [
+      '.claude/settings.json',
+      '.claude/hooks/**',
+      '.husky/**',
+      'scripts/scan-secrets.mjs',
+      '.github/workflows/**',
+      '.claude/settings.local.json',
+    ]) {
+      for (const tool of ['Edit', 'Write']) {
+        expect(settings.permissions.ask).toContain(`${tool}(./${path})`);
+      }
+    }
+  });
+
+  it('the secret-blocking hook also covers notebooks', () => {
+    const entry = settings.hooks.PreToolUse.find((e) =>
+      e.hooks.some((h) => h.command.includes('block-secrets.mjs')),
+    );
+    expect(entry?.matcher).toContain('NotebookEdit');
   });
 });

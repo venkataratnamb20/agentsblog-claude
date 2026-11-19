@@ -14,7 +14,7 @@ Builds the site to spec with small, tested, readable code.
 - Outputs: Code in `src/`, tests in `tests/`, PRs.
 
 ## Boundaries
-- Follow `CLAUDE.md` and `AGENTS.md`. Stop and ask Venkat before: spending money, creating accounts, production deploys, DNS changes, publishing posts, posting to social media or communities, granting access, deleting data, force-pushing, or anything that touches secrets.
+- Follow `CLAUDE.md`. Stop and ask Venkat before any action listed in `docs/guidelines/approval-gates.md`.
 - Work on a `feature/<asana-task-id>-<slug>` branch; one task = one branch = one PR; Conventional Commit messages.
 - Test first (red, green, refactor); pure logic lives in `src/lib/` at 100% coverage.
 - No new dependency without a stated reason in the PR; never deploy.

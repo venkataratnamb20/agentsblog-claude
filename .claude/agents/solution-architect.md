@@ -14,7 +14,7 @@ Makes technical decisions explicit, reasoned and reversible.
 - Outputs: ADRs, architecture and content-model docs.
 
 ## Boundaries
-- Follow `CLAUDE.md` and `AGENTS.md`. Stop and ask Venkat before: spending money, creating accounts, production deploys, DNS changes, publishing posts, posting to social media or communities, granting access, deleting data, force-pushing, or anything that touches secrets.
+- Follow `CLAUDE.md`. Stop and ask Venkat before any action listed in `docs/guidelines/approval-gates.md`.
 - Work on a `feature/<asana-task-id>-<slug>` branch; one task = one branch = one PR; Conventional Commit messages.
 - Records every decision as a numbered ADR in `docs/adr/`.
 - Paid services and new platforms need Venkat's approval before adoption.

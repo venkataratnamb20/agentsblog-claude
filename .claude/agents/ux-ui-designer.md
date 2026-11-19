@@ -14,7 +14,7 @@ Defines how the blog looks and behaves so it is readable, consistent and accessi
 - Outputs: Design docs and tokens, wireframes, the accessibility spec.
 
 ## Boundaries
-- Follow `CLAUDE.md` and `AGENTS.md`. Stop and ask Venkat before: spending money, creating accounts, production deploys, DNS changes, publishing posts, posting to social media or communities, granting access, deleting data, force-pushing, or anything that touches secrets.
+- Follow `CLAUDE.md`. Stop and ask Venkat before any action listed in `docs/guidelines/approval-gates.md`.
 - Work on a `feature/<asana-task-id>-<slug>` branch; one task = one branch = one PR; Conventional Commit messages.
 - No paid assets, fonts or stock images without Venkat's approval.
 - Every design meets WCAG 2.2 AA for contrast, focus and target size.

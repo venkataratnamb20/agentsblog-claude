@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { findSecrets, isCommitCommand, isSecretPath } from '../../.claude/hooks/lib/secrets.mjs';
+import {
+  commitsAll,
+  findSecrets,
+  isCommitCommand,
+  isSecretPath,
+  usesNoVerify,
+} from '../../.claude/hooks/lib/secrets.mjs';
 
 // Fake secrets are assembled at runtime so no secret-looking literal sits in the source.
 const awsKey = 'AKIA' + 'IOSFODNN7EXAMPLE';
@@ -21,7 +27,7 @@ describe('findSecrets', () => {
     expect(findSecrets(privateKey)).toContain('private-key');
   });
   it('detects a hard-coded api key assignment', () => {
-    expect(findSecrets('const apiKey = "abcdefghijklmnopqrstuvwxyz123456";')).toContain(
+    expect(findSecrets('const apiKey = "' + 'abcdefghijklmnopqrstuvwxyz123456' + '";')).toContain(
       'generic-api-key',
     );
   });
@@ -67,10 +73,131 @@ describe('isSecretPath', () => {
   ])('is true for %s', (path) => {
     expect(isSecretPath(path)).toBe(true);
   });
-  it.each(['.env.example', 'src/lib/seo.ts', 'docs/guidelines/code-quality.md'])(
-    'is false for %s',
-    (path) => {
-      expect(isSecretPath(path)).toBe(false);
+  it.each([
+    '.env.example',
+    'src/lib/seo.ts',
+    'docs/guidelines/code-quality.md',
+    '.claude/hooks/lib/secrets.mjs',
+    'src/secrets.ts',
+    'docs/guidelines/secrets-and-access.md',
+    'docs/credentials-policy.md',
+  ])('is false for %s', (path) => {
+    expect(isSecretPath(path)).toBe(false);
+  });
+});
+
+describe('findSecrets: more token formats', () => {
+  const cases: [string, string][] = [
+    ['github-token', 'github_pat_' + 'A1b2C3d4E5f6G7h8I9j0K1'],
+    ['anthropic-key', 'sk-ant-' + 'api03-abcdefghijklmnopqrst'],
+    ['openai-key', 'sk-' + 'abcdefghijklmnopqrstuvwxyz123456'],
+    ['stripe-key', 'sk_live_' + 'abcdefghijklmnop'],
+    ['google-api-key', 'AIza' + 'SyA1234567890abcdefghijklmnopqrstuv'],
+    [
+      'jwt',
+      'eyJhbGciOiJIUzI1NiJ9' +
+        '.' +
+        'eyJzdWIiOiIxMjM0NTY3ODkwIn0' +
+        '.' +
+        'abcdefghijklmnopqrstuvwx',
+    ],
+    ['npm-token', 'npm_' + 'a'.repeat(36)],
+    ['bearer-token', 'Authorization: Bearer ' + 'abcdefghijklmnopqrstuvwxyz1234'],
+    ['env-secret', 'AWS_SECRET_ACCESS_KEY=' + 'abcdefghijklmnopqrstuvwxyz0123456789ABCD'],
+  ];
+  it.each(cases)('detects %s', (name, text) => {
+    expect(findSecrets(text)).toContain(name);
+  });
+  it('does not flag short values or ordinary settings', () => {
+    expect(findSecrets('API_KEY=changeme')).toEqual([]);
+    expect(findSecrets('NODE_ENV=production')).toEqual([]);
+  });
+});
+
+describe('isCommitCommand: quoted and wrapped commits', () => {
+  it.each(['bash -c "git commit -m x"', "sh -c 'git commit'", 'eval "git commit -m x"'])(
+    'is true for %s',
+    (command) => {
+      expect(isCommitCommand(command)).toBe(true);
     },
   );
+});
+
+describe('usesNoVerify', () => {
+  it.each(['git commit --no-verify -m x', 'git commit -n -m x', 'git commit -an -m x'])(
+    'is true for %s',
+    (command) => {
+      expect(usesNoVerify(command)).toBe(true);
+    },
+  );
+  it.each(['git commit -m "fix: x"', 'git commit -am x', 'git status'])(
+    'is false for %s',
+    (command) => {
+      expect(usesNoVerify(command)).toBe(false);
+    },
+  );
+});
+
+describe('commitsAll', () => {
+  it.each(['git commit -a -m x', 'git commit -am x', 'git commit --all -m x'])(
+    'is true for %s',
+    (command) => {
+      expect(commitsAll(command)).toBe(true);
+    },
+  );
+  it.each(['git commit -m x', 'git commit --amend -m x'])('is false for %s', (command) => {
+    expect(commitsAll(command)).toBe(false);
+  });
+});
+
+describe('isSecretPath: case and more secret file names', () => {
+  it.each([
+    'C:/x/.ENV',
+    '.npmrc',
+    '.netrc',
+    '.pgpass',
+    '.git-credentials',
+    'android/release.keystore',
+    'keys/AuthKey_ABC.p8',
+    'infra/terraform.tfstate',
+    'gcp/service-account-prod.json',
+    'home/.ssh/id_custom_key',
+  ])('is true for %s', (path) => {
+    expect(isSecretPath(path)).toBe(true);
+  });
+  it('is false for a document about service accounts', () => {
+    expect(isSecretPath('docs/service-accounts.md')).toBe(false);
+  });
+});
+
+describe('usesNoVerify: abbreviations, quoting and hook overrides', () => {
+  it.each([
+    'git commit -m x --no-ver',
+    'git commit -m x --no-v',
+    'git commit --no-ve"rify" -m x',
+    "git commit $'--no-verify' -m x",
+    'git -c core.hooksPath=/x commit -m x',
+    'HUSKY=0 git commit -m x',
+  ])('is true for %s', (command) => {
+    expect(usesNoVerify(command)).toBe(true);
+  });
+  it.each(['git commit --no-edit', 'git commit --no-gpg-sign -m x', 'git commit -m "fix: x"'])(
+    'is false for %s',
+    (command) => {
+      expect(usesNoVerify(command)).toBe(false);
+    },
+  );
+});
+
+describe('findSecrets: fewer false positives', () => {
+  it.each([
+    ['CACHE_KEY=', 'build-cache-key-v1-linux-x64'],
+    ['MY_KEY=', 'abcdefghijklmnopqrstuvwxyz'],
+    ['Bearer ', 'authentication-scheme-and-more-text'],
+  ])('does not flag %s…', (name, value) => {
+    expect(findSecrets(name + value)).toEqual([]);
+  });
+  it('still flags a realistic mixed-case value', () => {
+    expect(findSecrets('MY_TOKEN=' + 'Abcdefghij0123456789KLMNOP')).toContain('env-secret');
+  });
 });
