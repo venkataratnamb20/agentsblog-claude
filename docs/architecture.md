@@ -138,3 +138,33 @@ All three are called from the reader's browser or from CI. None is called from a
 | Data | Public post text only. No query leaves the browser. |
 | Failure behaviour | If the index fails to load, the search box says so and links to the tag pages and the archive. |
 | Privacy | None. No third party. |
+
+## Routes
+
+The site is static. Every route below is built by Astro at build time.
+
+| Route | Page | Status |
+|---|---|---|
+| `/` | Home | Exists (`index`) |
+| `/posts/` | Archive: all published posts, newest first, drafts excluded | New |
+| `/posts/<slug>/` | Post | Exists (`posts/[...slug]`) |
+| `/topics/` | Index of the five pillar pages plus a Research roundups entry | New |
+| `/topics/<pillar-slug>/` | Pillar page | New |
+| `/series/` | Series index | New |
+| `/series/<slug>/` | Series page | New |
+| `/tags/` | Tag index | New |
+| `/tags/<tag>/` | Tag page, for every tag in use, including pillar tags | New |
+| `/about/` | About | New |
+| `/privacy/` | Privacy notice | New |
+| `/404` | Not found page | New |
+| `/rss.xml` | RSS feed | Exists |
+| `/robots.txt` | Robots file | Exists |
+| Sitemap | Sitemap file | New |
+
+Rules:
+
+- The pillar slug equals the pillar tag in `docs/prd/content-pillars.md`.
+- The series display name is derived from the `series` slug. There is no new field.
+- Search is post-launch (ADR 0007), so there is no search route at launch.
+- Drafts are excluded from all listings in production.
+- All new routes are work for the Frontend Engineer.
