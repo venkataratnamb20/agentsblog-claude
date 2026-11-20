@@ -1,6 +1,6 @@
 # Content pillars and topic taxonomy
 
-Status: draft, awaiting Venkat's approval. Goals come from `docs/prd/charter.md`. The planned posts 1 to 10 and the idea list come from the Asana tasks named "Post 1" to "Post 10" and the "Idea:" tasks in stage 6 (Content research and production). The charter has no post list. Asana is the source. Keywords are candidates only. No search volumes are stated, because none have been measured.
+Status: approved. Approved by Venkat, 20 Nov 2026, in chat: the five pillars as written, the roundup exception and the launch order of posts 1 to 3. His Asana approval subtask is complete. Goals come from `docs/prd/charter.md`. The planned posts 1 to 10 and the idea list come from the Asana tasks named "Post 1" to "Post 10" and the "Idea:" tasks in stage 6 (Content research and production). The charter has no post list. Asana is the source. Keywords are candidates only. No search volumes are stated, because none have been measured.
 
 Sources: topic ideas below are proposals. Items marked "needs primary source" must be backed by a primary source before a post makes the claim. This file cites none yet and invents none. The Research Analyst supplies sources.
 
@@ -138,7 +138,7 @@ Candidate, SEO to validate:
 
 ## Overlap rules
 
-- Roundups (Post 10 and later): a roundup has no pillar of its own. It carries the `research-roundup` format tag and no pillar tag. This is a documented exception to the "one pillar tag" rule. The table below lists Post 10 under Evals and safety only as a placeholder. Venkat to confirm.
+- Roundups (Post 10 and later): a roundup has no pillar of its own. It carries the `research-roundup` format tag and no pillar tag. This is a documented exception to the "one pillar tag" rule. The table below lists Post 10 under Evals and safety only as a placeholder. The roundup exception is confirmed (Venkat, 20 Nov 2026).
 - Observability and tracing belong to Pillar 5. Agent loop failure modes belong to Pillar 1. A post on one links to the other.
 - Permissions and trust boundaries for tools belong to Pillar 2. Guardrails and prompt injection belong to Pillar 5.
 - The keyword "mcp security" in Pillar 2 spills into Pillar 5. Pillar 2 owns the MCP side (servers, permissions). Pillar 5 owns attacks and defences. SEO to decide which page targets it, so two posts do not compete for it.
@@ -160,7 +160,7 @@ Source: Asana tasks "Post 1" to "Post 10".
 | 9 | Guardrails | Evals and safety |
 | 10 | Research roundup | None (exception, see Overlap rules) |
 
-Posts 1 to 3 launch on 14 Dec 2026. The order is a proposal. The Research Analyst and SEO & Analytics may reorder it with Venkat's approval.
+Posts 1 to 3 launch on 14 Dec 2026. The launch order is approved (Venkat, 20 Nov 2026). The Research Analyst and SEO & Analytics may reorder it with Venkat's approval.
 
 ## Tags and series
 

@@ -1,6 +1,6 @@
 # ADR 0008: Monthly cost estimate
 
-- **Status:** Proposed: needs Venkat's approval (it lists every paid item and every account). Prices are unverified. On 20 Nov 2026 Venkat approved the directions in ADRs 0004 to 0007 only. No spend, account, domain or DNS change is approved.
+- **Status:** Accepted by Venkat, 20 Nov 2026 as direction only: no spend is approved. It lists every paid item and every account, and each still needs his approval before it is opened or bought. Prices are unverified. On 20 Nov 2026 Venkat approved the directions in ADRs 0004 to 0007 only. No spend, account, domain or DNS change is approved.
 - **Date:** 2026-11-20
 - **Supersedes:** none
 - **Deciders:** Solution Architect Agent, Venkat (approver)
