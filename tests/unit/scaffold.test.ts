@@ -241,8 +241,10 @@ describe('review follow-ups', () => {
     expect(text).toContain('cross-cutting');
   });
 
-  it('the README says the audit target currently reports advisories', () => {
-    expect(read('README.md')).toMatch(/`audit`[\s\S]*advisories/);
+  it('the README no longer says the audit reports advisories, and names the Linux server target', () => {
+    const text = read('README.md');
+    expect(text).not.toContain('currently reports advisories');
+    expect(text).toContain('Linux server');
   });
 });
 
@@ -266,10 +268,27 @@ describe('CI covers format, clean and the dependency audit', () => {
     expect(text).toContain("'setup', 'lint', 'format', 'typecheck', 'test', 'clean'");
   });
 
-  it('ci.yml runs the audit as an informational step', () => {
+  it('ci.yml runs the dependency audit and fails the build on high severity', () => {
     const text = read('.github/workflows/ci.yml');
     expect(text).toContain('node scripts/task.mjs audit');
-    expect(text).toContain('continue-on-error: true');
+    expect(text).not.toContain('continue-on-error');
+    expect(text).not.toContain('informational');
+  });
+});
+
+describe('Astro 7 (security upgrade, Venkat approved 20 Nov 2026)', () => {
+  it('depends on Astro 7 and the matching MDX integration', () => {
+    const pkg = JSON.parse(read('package.json')) as { dependencies: Record<string, string> };
+    expect(pkg.dependencies['astro']).toMatch(/^\^7\./);
+    expect(pkg.dependencies['@astrojs/mdx']).toMatch(/^\^8\./);
+  });
+
+  it('CLAUDE.md and ADR 0001 say Astro 7 and that Linux is the target', () => {
+    expect(read('CLAUDE.md')).toContain('Astro 7');
+    const adr = read('docs/adr/0001-core-tech-stack.md');
+    expect(adr).toContain('Astro 7.4');
+    expect(adr).toContain('Update 20 Nov 2026');
+    expect(adr).toContain('Linux server');
   });
 });
 

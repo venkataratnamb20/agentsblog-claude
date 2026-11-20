@@ -18,7 +18,7 @@ A content-led blog on AI agents: weekly posts with diagrams and runnable code, s
 | Concern | Choice | Version / note |
 |---|---|---|
 | Language | TypeScript (strict, `astro/tsconfigs/strictest`) | 5.9.x |
-| Site framework | Astro with MDX, sitemap, RSS; static output | Astro 5.18.x (see version note) |
+| Site framework | Astro with MDX, sitemap, RSS; static output | Astro 7.4.x (see version note) |
 | Runtime | Node.js | 22 LTS in CI; 26 on the primary dev machine |
 | Package manager | npm (lockfile committed, `npm ci` in CI) | ships with Node |
 | Unit / integration tests | Vitest + `@vitest/coverage-v8` | 100% on `src/lib/`, 80% CI floor |
@@ -30,7 +30,9 @@ A content-led blog on AI agents: weekly posts with diagrams and runnable code, s
 | Scripts | Node (`scripts/*.mjs`) | no Python required |
 
 ## Version note (2026-11-19)
-Pinned to the Astro 5 line. Astro 7 needs native `.node` compiler binaries that Windows Application Control blocks on the primary dev machine; Rollup's native binary is blocked there too, so `astro check` and `astro build` cannot run locally on that machine. They pass in CI on Linux (PR #2, run #1). Vitest, ESLint and Prettier are pure JavaScript and run on Windows. Revisit the pin if the policy is relaxed or builds move to WSL/Docker.
+**Update 20 Nov 2026 (Venkat approved):** upgraded to Astro 7.4.x with `@astrojs/mdx` 8, because `npm audit` reported 1 critical and 3 high advisories in the Astro 5 line and the fix is only in 7. The deployment target is a Linux server, so cross-platform builds are not required. `astro check` and `astro build` still cannot run on the Windows dev machine (Application Control blocks the native modules); CI on Linux is the reference result. The `audit` step in CI now fails the build on high severity.
+
+Earlier note, kept for history: Astro was pinned to the 5 line. Astro 7 needs native `.node` compiler binaries that Windows Application Control blocks on the primary dev machine; Rollup's native binary is blocked there too, so `astro check` and `astro build` cannot run locally on that machine. They pass in CI on Linux (PR #2, run #1). Vitest, ESLint and Prettier are pure JavaScript and run on Windows. Revisit the pin if the policy is relaxed or builds move to WSL/Docker.
 
 ## Windows, macOS and Linux status (for the DevOps & SRE confirmation)
 | Tool | Linux (CI) | Windows | macOS |

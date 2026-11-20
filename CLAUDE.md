@@ -9,7 +9,7 @@ A research-backed blog on AI agents for engineers building production agentic sy
 - Task source: Asana project "Agents blog" (gid 1220688987014018). Each task lists owner, reviewer, approver and acceptance criteria.
 
 ## Stack
-Astro 5, TypeScript (strict), MDX, Vitest, ESLint, Prettier, npm, Node 22 in CI. Decision and Windows notes: `docs/adr/0001-core-tech-stack.md`. Pure logic lives in `src/lib/` and is unit-tested first. Posts live in `content/posts/` and start as `draft: true`.
+Astro 7, TypeScript (strict), MDX, Vitest, ESLint, Prettier, npm, Node 22 in CI. Decision and Windows notes: `docs/adr/0001-core-tech-stack.md`. Pure logic lives in `src/lib/` and is unit-tested first. Posts live in `content/posts/` and start as `draft: true`.
 
 ## Folder map
 | Path | Purpose |
