@@ -227,10 +227,11 @@ describe('review follow-ups', () => {
     expect(existsSync('research/.gitkeep')).toBe(false);
   });
 
-  it('the package is marked unlicensed and the README says no licence is granted yet', () => {
+  it('the package and the README say the project is under the Apache License 2.0', () => {
     const pkg = JSON.parse(read('package.json')) as { license?: string };
-    expect(pkg.license).toBe('UNLICENSED');
-    expect(read('README.md')).toContain('all rights reserved');
+    expect(pkg.license).toBe('Apache-2.0');
+    expect(read('README.md')).toContain('Apache License 2.0');
+    expect(read('README.md')).not.toContain('all rights reserved');
   });
 
   it('the README documents public/, loose docs files and the PowerShell execution policy', () => {
@@ -269,5 +270,51 @@ describe('CI covers format, clean and the dependency audit', () => {
     const text = read('.github/workflows/ci.yml');
     expect(text).toContain('node scripts/task.mjs audit');
     expect(text).toContain('continue-on-error: true');
+  });
+});
+
+describe('LICENSE (Apache License 2.0, chosen by Venkat on 20 Nov 2026)', () => {
+  const text = existsSync('LICENSE') ? read('LICENSE') : '';
+
+  it('is the unmodified standard text', () => {
+    expect(text).toContain('Apache License');
+    expect(text).toContain('Version 2.0, January 2004');
+    expect(text).toContain('TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION');
+    expect(text).toContain('APPENDIX: How to apply the Apache License to your work.');
+  });
+
+  it('is mentioned by CONTRIBUTING so contributors know what they agree to', () => {
+    expect(read('CONTRIBUTING.md')).toContain('Apache License 2.0');
+  });
+});
+
+describe('document templates and the research index', () => {
+  it.each([
+    ['docs/prd/_template.md', ['## Problem', '## Goals', '## Non-goals', '## Requirements']],
+    [
+      'docs/adr/0000-template.md',
+      ['## Context', '## Options considered', '## Decision', '## Consequences'],
+    ],
+    ['docs/runbooks/_template.md', ['## When to use', '## Steps', '## Rollback', '## Owner']],
+    [
+      '.claude/skills/new-post/post-template.md',
+      ['draft: true', 'title:', 'description:', 'tags:'],
+    ],
+    [
+      'research/README.md',
+      ['## Reference index', '| Source |', 'research/sources/', 'research/briefs/'],
+    ],
+  ])('%s exists with its required sections', (path, sections) => {
+    expect(existsSync(path), path).toBe(true);
+    const content = read(path);
+    for (const section of sections) expect(content, `${path}: ${section}`).toContain(section);
+  });
+
+  it('the new-post skill points at its template', () => {
+    expect(read('.claude/skills/new-post/SKILL.md')).toContain('post-template.md');
+  });
+
+  it('the post template is not inside content/posts, where it would be built as a post', () => {
+    expect(existsSync('content/posts/_template.md')).toBe(false);
   });
 });
