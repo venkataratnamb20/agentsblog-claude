@@ -234,3 +234,17 @@ describe('the reconciliation and the SEO findings', () => {
     expect(recon).toMatch(/launch order of posts 1 to 3 is approved/i);
   });
 });
+
+describe('the backlog records Venkat decision to keep the plan', () => {
+  const recon = section('Reconciliation with the planned posts');
+
+  it('records the decision with its date and the chosen option', () => {
+    expect(recon).toContain('Decision (Venkat, 20 Nov 2026)');
+    expect(recon).toMatch(/keep posts 4 to 10 as planned/i);
+  });
+
+  it('is approved, and still says demand is not measured', () => {
+    expect(doc).toMatch(/Status: approved/);
+    expect(doc.toLowerCase()).toContain('not measured');
+  });
+});
