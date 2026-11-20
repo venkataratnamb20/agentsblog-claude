@@ -3,7 +3,7 @@
 A research-backed blog on AI agents for engineers building production agentic systems. Produced by a team of AI agents; the human owner approves every key decision.
 
 - Phase 1: 19 Nov 2026 - 5 Mar 2027. Launch: 14 Dec 2026.
-- Licence: none granted yet, all rights reserved until Venkat chooses one.
+- Licence: [Apache License 2.0](LICENSE), for the code and the content.
 - Rules for agents: [CLAUDE.md](CLAUDE.md). Contributing: [CONTRIBUTING.md](CONTRIBUTING.md). Security: [SECURITY.md](SECURITY.md).
 
 ## Quick start

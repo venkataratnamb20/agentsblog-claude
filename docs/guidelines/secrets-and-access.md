@@ -6,10 +6,12 @@ Rules for credentials and who can touch what. Zero secrets in the repository.
 
 | Where | Store | Rule |
 |---|---|---|
-| Local development | `.env` files, gitignored | Never committed. The Read tool is denied for the common variants (`.env`, `.env.local`, `.env.production`, `.env.staging`, `.env.development`, `.env.test`) in `.claude/settings.json`; the `block-secrets` hook blocks writes to every `.env.*` file except `.env.example`, `.env.sample` and `.env.template`; common shell reads are denied on a best-effort basis, but shell access is not prevented, so keep real secrets out of this project folder. `.env.example` holds names only |
+| Local development | `.env` files, gitignored | Never committed. The Read tool is denied for the common variants (`.env`, `.env.local`, `.env.production`, `.env.staging`, `.env.development`, `.env.test`) in `.claude/settings.json`; the `block-secrets` hook blocks writes to every `.env.*` file except `.env.example`, `.env.sample` and `.env.template`; common shell reads are denied on a best-effort basis, but shell access is not prevented, so keep real secrets out of this project folder. `.env.example` holds names and placeholder values only; copy it with `cp .env.example .env` and keep real values out of the project folder |
 | CI | GitHub Actions encrypted secrets | None are used yet; add one only with a stated purpose and an owner |
 | Runtime and hosting | The hosting provider's secret store | Decided in the hosting ADR; not chosen yet |
 | People | Venkat's password manager | Passwords and recovery codes never go to agents or the repo |
+
+**Decision (Venkat, 20 Nov 2026):** develop with a local `.env` and placeholder secrets. No accounts or real secrets are created until the hosting, newsletter and analytics choices are made; until then every credential-shaped variable in `.env.example` is the placeholder `replace-me`, and nothing in the code reads one.
 
 ## Scoped access per agent
 

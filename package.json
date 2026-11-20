@@ -2,7 +2,7 @@
   "name": "agentsblog",
   "version": "0.1.0",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "type": "module",
   "scripts": {
     "dev": "astro dev",
