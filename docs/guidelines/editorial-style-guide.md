@@ -96,7 +96,23 @@ Each item says how it is checked. "By hand" means the editor reads or tests it a
 - [ ] No em dashes: by hand or search for the character.
 - [ ] British spelling is used throughout (code, API names and quotes excepted): by hand.
 - [ ] No words from the avoid list in Voice and tone: by hand or search.
-- [ ] Approval is requested from Venkat in the Asana task, which is linked in the QA comment.
+- [ ] Original writing, with no copied passages: by hand, search one sentence from each paragraph and compare it to its source.
+- [ ] Quotes are attributed, short and quoted exactly: by hand against the source.
+- [ ] Code sample dependencies are pinned and the samples pass in CI: by hand until a CI job runs the samples. That job is not built yet. It is a requirement for the QA Engineer and Frontend Engineer, not a promise that it exists.
+- [ ] Internal links go to related posts and use descriptive text: by hand.
+- [ ] AI assistance is noted at the end of the post as set out in "AI assistance": by hand.
+- [ ] Approval is requested from Venkat in the Asana task, which is linked in the QA comment: by hand, open the task and confirm the request is there.
+
+## AI assistance
+Status: proposed wording.
+
+This blog is written with AI assistance. The policy is stated, not hidden. Every post carries a one-line note saying so at the end of the post. The proposed note is:
+
+> This post was drafted with AI assistance, checked against its sources and edited by a human reviewer before publication.
+
+Venkat reviews every post before publication. The Technical Editor ticks the AI assistance item in the checklist. Sources and code are still checked by hand and by tests. An AI note does not make a claim true.
+
+Decision for Venkat: whether to disclose on every post, and the exact wording of the note. Until he decides, use the proposed note.
 
 ## Who approves what
 - The Technical Editor checks the post and posts the QA comment.
