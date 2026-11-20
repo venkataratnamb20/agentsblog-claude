@@ -236,19 +236,29 @@ Coverage check: R01 to R17 are each covered by at least one SR above.
 
 ## Accessibility requirements
 
-Standard: WCAG 2.2 AA. UX Designer to confirm details (Assumption for all AR items until confirmed). The Accessibility audit task in stage 4 checks them.
+Standard: WCAG 2.2 AA. The Accessibility audit task in stage 4 checks them.
 
-- AR-1 Contrast. Normal text shall have a contrast ratio of at least 4.5:1, large text and interface parts at least 3:1, in both themes.
-- AR-2 Keyboard. Every function shall work with the keyboard alone, with no keyboard trap, including the theme switch, the newsletter form and the code copy button (and search once it exists).
-- AR-3 Focus. Focus shall always be visible with an outline of at least 3:1 contrast, and shall not be hidden by sticky headers (WCAG 2.2 focus not obscured).
+UX review (20 Nov 2026): agreed with changes. This is a design review by the UX/UI Designer agent, not Venkat's approval, which stays open. AR-1 to AR-11 are kept and sharpened. AR-12 to AR-17 are new. Items marked "New" or "Changed" are the review's changes. Assumption: the exact colour values and the final audit result are not confirmed until the design tokens exist and the Accessibility audit task runs. Accessible authentication (WCAG 2.2 3.3.8) does not apply, because the site has no login. No automated tool proves full conformance, so the audit also needs a manual keyboard and screen reader pass.
+
+- AR-1 Contrast. Normal text shall have a contrast ratio of at least 4.5:1, large text and interface parts at least 3:1, in both themes. Changed: interface parts include input borders, icons that carry meaning, the focus ring and the current-page marker. Placeholder text and disabled-looking text still meet 4.5:1 if it carries meaning. Normal text shall have a contrast ratio of at least 4.5:1, large text and interface parts at least 3:1, in both themes.
+- AR-2 Keyboard. Every function shall work with the keyboard alone, with no keyboard trap, including the theme switch, the newsletter form and the code copy button (and search once it exists). Changed: focus order follows reading order, and scrollable code blocks are reachable by keyboard (see AR-13).
+- AR-3 Focus. Focus shall always be visible with an outline of at least 3:1 contrast, and shall not be hidden by sticky headers (WCAG 2.2 focus not obscured). Changed: the outline is at least 2 CSS px thick and sits against both the element and its background at 3:1 (WCAG 2.2 focus appearance intent), in both themes. Anchor jumps use `scroll-margin-top` so a sticky header never covers the target.
 - AR-4 Alt text. Every image shall have alt text, enforced by `npm run check:content`, which fails on images without it. Decorative images shall use empty alt text.
 - AR-5 Dark mode contrast. Dark mode shall meet AR-1 on its own. Code highlighting colours shall meet 4.5:1 in both themes.
-- AR-6 Reduced motion. The site shall respect `prefers-reduced-motion` and shall not animate when it is set.
-- AR-7 Skip link. Every page shall have a skip-to-content link as the first focusable item.
-- AR-8 Headings. Each page shall have one `h1`, and headings shall not skip levels.
-- AR-9 Targets and forms. Touch targets shall be at least 24 by 24 CSS px (WCAG 2.2). Form fields shall have visible labels and errors shall be described in text.
-- AR-10 Reflow and zoom. Pages shall reflow at 320 px wide and work at 200% zoom without loss of content.
-- AR-11 Language and landmarks. Pages shall set the `lang` attribute and use header, nav, main and footer landmarks.
+- AR-6 Reduced motion. The site shall respect `prefers-reduced-motion` and shall not animate when it is set. Changed: this includes smooth scrolling and the theme transition. Nothing flashes more than three times a second.
+- AR-7 Skip link. Every page shall have a skip-to-content link as the first focusable item. Changed: it is visible when focused, links to `main` and moves focus there. Current code gap: `src/layouts/BaseLayout.astro` has none.
+- AR-8 Headings. Each page shall have one `h1`, and headings shall not skip levels. Changed: the site name is not an `h1` on inner pages. Post content starts at `h2`. A tag page uses the tag name as its `h1`.
+- AR-9 Targets and forms. Touch targets shall be at least 24 by 24 CSS px (WCAG 2.2 target size minimum), unless spacing or an inline link exception applies. Form fields shall have visible labels and errors shall be described in text. Changed: see AR-14 for the newsletter form.
+- AR-10 Reflow and zoom. Pages shall reflow at 320 px wide and work at 200% zoom without loss of content. Changed: no two-direction scrolling except inside code blocks and tables (see AR-13), and text can be resized to 200% and spaced out (WCAG text spacing) without clipping.
+- AR-11 Language and landmarks. Pages shall set the `lang` attribute and use header, nav, main and footer landmarks. Changed: `lang="en"` is already set in `src/layouts/BaseLayout.astro`. Each `nav` has an accessible name, such as "Main" and "Breadcrumb", because a page has more than one.
+- AR-12 Links and navigation (New). Link text shall make sense out of context, so no bare "read more" or "click here". Links are told apart from text by more than colour (an underline in body text). The current page is marked with `aria-current="page"`. The main navigation, the order of items and the footer links are the same on every page (WCAG consistent navigation). Navigation follows `docs/prd/content-pillars.md`.
+- AR-13 Code blocks and tables (New). A code block that scrolls sideways shall be focusable (`tabindex="0"`), have a role and an accessible name, and scroll with the arrow keys. Its focus outline meets AR-3. Syntax colours meet AR-5. The copy button has an accessible name and a polite status message on success. Tables have header cells and scroll in a container, not the page.
+- AR-14 Newsletter form (New). The email field has a visible `label` tied to it with `for` and `id`, and `autocomplete="email"`. Placeholder text is not the label. A required field is marked in text. Errors are written in text next to the field, say what is wrong and how to fix it, and are tied to the field with `aria-describedby`. Colour is never the only cue. On submit the result (success or error) is announced in a live region. Focus moves to the first error. The consent text is a real label for its checkbox. Entering the email again is not required (WCAG redundant entry). The form works with the keyboard alone (AR-2).
+- AR-15 Theme switch (New). The theme switch is a real button with an accessible name and a state (for example `aria-pressed`) that does not rely on an icon alone. The default follows the system setting. A saved choice is kept. Both themes meet AR-1 and AR-5.
+- AR-16 Content rules for authors (New). Every post has a meaningful alt text on informative images and empty alt on decorative ones (AR-4). Diagrams that carry meaning have a text description nearby. Headings in posts follow AR-8. Link text follows AR-12. Posts do not rely on colour, or on video or audio without a transcript or captions. The Technical Editor and `npm run check:content` check these where a tool can, and the rest by hand.
+- AR-17 Pointer and dragging (New). Nothing needs a path-based gesture or dragging. Anything done on hover also works on focus, and hover content can be dismissed and stays visible while pointed at (WCAG content on hover or focus). Controls do not change context on focus alone.
+
+Test notes for a tester. Automated: axe scan on the home, post, tag, pillar, series, About, privacy and 404 pages in both themes (NFR-8), plus Lighthouse (NFR-6). Manual, per page type: keyboard only from the skip link to the footer, a screen reader pass on the navigation and the newsletter form, a check at 320 px wide and at 200% zoom, a check with reduced motion set, and a contrast check of the colour tokens.
 
 ## Traceability
 
