@@ -122,7 +122,9 @@ describe('the stage table agrees with the style guide and the approval gates', (
     expect(workflow).toContain('REVIEW: APPROVED');
     expect(workflow).toMatch(/PR reviewer/);
   });
+});
 
+describe('stages 6 and 7 keep Venkat approval per action', () => {
   it('stage 6 needs its own approval for deploy, release tag and merge into main', () => {
     const publish = row(6);
     expect(publish).toContain('APPROVAL REQUEST');
@@ -139,7 +141,9 @@ describe('the stage table agrees with the style guide and the approval gates', (
     expect(workflow).toContain('docs/guidelines/approval-gates.md');
     expect(workflow).toContain('CLAUDE.md');
   });
+});
 
+describe('the workflow is complete and in order', () => {
   it('says the editorial calendar is still to be created', () => {
     expect(workflow).toContain('editorial calendar');
     expect(workflow).toMatch(/still to be created|not written yet/);
