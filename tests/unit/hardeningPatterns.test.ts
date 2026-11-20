@@ -71,6 +71,13 @@ describe('isPushCommand', () => {
     'git -C ../other push origin x',
     'bash -c "git push origin HEAD"',
     'cd repo && git push',
+    'env git push origin HEAD',
+    'command git push',
+    'time git push',
+    'nohup git push &',
+    'echo x | xargs git push',
+    'FOO=1 env -i git push',
+    'git \\\npush origin HEAD',
   ])('detects %s', (command) => {
     expect(isPushCommand(command)).toBe(true);
   });
@@ -91,6 +98,15 @@ describe('pushesToProtectedBranch looks only at the push command itself', () => 
     'git push origin feature/x:refs/heads/main',
     'git -C ../x push origin main',
     'echo done && git push origin HEAD:main',
+    'git push origin "main"',
+    "git push origin 'develop'",
+    'git push origin HEAD:"main"',
+    "git push 'origin' 'main'",
+    'git push origin +main',
+    'git push origin ma""in',
+    'git push origin \\main',
+    'env git push origin main',
+    'git \\\npush origin main',
   ])('detects %s', (command) => {
     expect(pushesToProtectedBranch(command)).toBe(true);
   });

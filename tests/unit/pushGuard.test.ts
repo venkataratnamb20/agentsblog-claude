@@ -79,6 +79,48 @@ describe('push-guard on a feature branch', () => {
     git('checkout', '-q', '--detach');
     expect(guard('git push origin HEAD').status).toBe(2);
   });
+
+  it.each([
+    'git push --all',
+    'git push --all origin',
+    'git push origin --mirror',
+    'git push --mirror',
+    'env git push origin "main"',
+    "git push origin 'develop'",
+    'git \\\npush origin HEAD:main',
+  ])('blocks %s', (command) => {
+    expect(guard(command).status).toBe(2);
+  });
+});
+
+describe('push-guard on a feature branch that tracks a protected branch', () => {
+  let remote = '';
+
+  beforeEach(() => {
+    remote = mkdtempSync(join(tmpdir(), 'push-guard-remote-'));
+    spawnSync('git', ['init', '-q', '--bare', remote], { encoding: 'utf8' });
+    git('remote', 'add', 'origin', remote);
+    git('push', '-q', 'origin', 'main');
+    git('checkout', '-q', '-b', 'feature/456-y', '--track', 'origin/main');
+  });
+
+  afterEach(() => {
+    rmSync(remote, { recursive: true, force: true });
+  });
+
+  it.each(['git push', 'git push origin', 'env git push -v'])(
+    'blocks the bare push %s because its upstream is protected',
+    (command) => {
+      const result = guard(command);
+      expect(result.status).toBe(2);
+      expect(result.stderr).toContain('upstream');
+    },
+  );
+
+  it('still allows an explicit push of the feature branch', () => {
+    expect(guard('git push -u origin HEAD').status).toBe(0);
+    expect(guard('git push origin feature/456-y').status).toBe(0);
+  });
 });
 
 describe('push-guard fails closed', () => {

@@ -64,31 +64,79 @@ export function isCommitCommand(command) {
   return /\bgit\b[^;&|\n]*\scommit(?=[\s"'`);|&]|$)/.test(command);
 }
 
-// A git command only counts when it starts a command, so `echo git push` is not a push.
-const COMMAND_START = String.raw`(?:^|[;&|(\`"'\n])\s*(?:\w+=\S+\s+)*git\b[^;&|\n]*`;
+// A git command only counts when it starts a command, so `echo git push` is not a push. Common
+// wrappers (env, command, time, nohup, exec, sudo, nice, xargs) may sit in front of git.
+const WRAPPERS = String.raw`(?:(?:env|command|time|nohup|exec|sudo|nice|xargs)\s+(?:-\S+\s+|\w+=\S+\s+)*)*`;
+const COMMAND_START = String.raw`(?:^|[;&|(\`"'\n])\s*(?:\w+=\S+\s+)*${WRAPPERS}git\b[^;&|\n]*`;
 
 /**
- * True when a shell command runs `git push`, including inside bash -c or after && or ;.
+ * Joins backslash-newline continuations so a wrapped command reads as one line.
+ * @param {string} command
+ * @returns {string}
+ */
+function joinContinuations(command) {
+  return command.replace(/\\\r?\n/g, ' ');
+}
+
+/**
+ * The arguments after `push` for every push in the command, quotes and backslashes removed so that
+ * "main", 'main', ma""in and \main are all read as main. Other text on the same command line (a commit
+ * message, an echo) is not included.
+ * @param {string} command
+ * @returns {string[][]}
+ */
+export function pushSegments(command) {
+  const pushes = new RegExp(`${COMMAND_START}\\spush(?=[\\s"'\`);|&]|$)([^;&|\\n]*)`, 'g');
+  return [...joinContinuations(command).matchAll(pushes)].map((match) =>
+    (match[1] ?? '')
+      .replace(/["'\\]/g, '')
+      .split(/\s+/)
+      .filter((token) => token !== ''),
+  );
+}
+
+/**
+ * True when a shell command runs `git push`, including inside bash -c, after && or ;, or behind a
+ * wrapper such as env, command, time, nohup or xargs.
  * @param {string} command
  * @returns {boolean}
  */
 export function isPushCommand(command) {
-  return new RegExp(`${COMMAND_START}\\spush(?=[\\s"'\`);|&]|$)`).test(command);
+  return pushSegments(command).length > 0;
 }
 
 /**
- * True when the push names main or develop as its target, as in `HEAD:main` or `refs/heads/main`.
+ * True when the push names main or develop as its target, as in `HEAD:main`, `refs/heads/main`,
+ * `+main` or a quoted "main".
  * @param {string} command
  * @returns {boolean}
  */
 export function pushesToProtectedBranch(command) {
-  // Only the arguments after `push`, up to the next separator, are checked. Other text on the same
-  // command line (a commit message, an echo) must not count.
-  const pushes = new RegExp(`${COMMAND_START}\\spush(?=[\\s"'\`);|&]|$)([^;&|\\n]*)`, 'g');
-  for (const match of command.matchAll(pushes)) {
-    if (/(?:^|[\s:/])(?:main|develop)(?=[\s"']|$)/.test(match[1] ?? '')) return true;
-  }
-  return false;
+  return pushSegments(command).some((tokens) =>
+    tokens.some((token) => /(?:^|[:/+])(?:main|develop)$/.test(token)),
+  );
+}
+
+/**
+ * True when a push sends every branch (--all) or mirrors the repository (--mirror).
+ * @param {string} command
+ * @returns {boolean}
+ */
+export function pushesAllRefs(command) {
+  return pushSegments(command).some((tokens) =>
+    tokens.some((token) => token === '--all' || token === '--mirror'),
+  );
+}
+
+/**
+ * True when a push names no branch to send (at most a remote), so git pushes to the upstream.
+ * @param {string} command
+ * @returns {boolean}
+ */
+export function isBarePush(command) {
+  return pushSegments(command).some(
+    (tokens) => tokens.filter((token) => !token.startsWith('-')).length <= 1,
+  );
 }
 
 /**
