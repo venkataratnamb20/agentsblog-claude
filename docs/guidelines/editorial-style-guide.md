@@ -86,11 +86,11 @@ Each item says how it is checked. "By hand" means the editor reads or tests it a
 - [ ] Every image has alt text that says what it shows: `npm run check:content` for presence, by hand for quality.
 - [ ] Front-matter is valid and `draft: true`: `npm run check:content`.
 - [ ] Title is 70 characters or fewer and description is 160 or fewer: `npm run check:content` (the schema enforces it).
-- [ ] Tags follow the rule for the post format: by hand until the F2 enforcement exists, then `npm run check:content`.
+- [ ] Tags follow the rule for the post format: by hand until enforcement is built (PRD requirement F2), then `npm run check:content`.
 - [ ] Slug equals `slugify(title)`: by hand until enforced (compare with `src/lib/slugify.ts`).
 - [ ] All links work and each source has an access date: by hand, open each link.
 - [ ] The TL;DR matches the body: by hand, read the TL;DR after the body and compare each point.
-- [ ] SEO basics are done: run the `seo-audit` skill.
+- [ ] SEO basics are done, including internal links that go to related posts and use descriptive text: run the `seo-audit` skill. This item closes at stage 4.
 - [ ] No secrets, keys or personal data in text, code or images: `npm run secrets:scan` and by hand for images.
 - [ ] Headings are in order and link text is descriptive: by hand.
 - [ ] No em dashes: by hand or search for the character.
@@ -98,9 +98,9 @@ Each item says how it is checked. "By hand" means the editor reads or tests it a
 - [ ] No words from the avoid list in Voice and tone: by hand or search.
 - [ ] Original writing, with no copied passages: by hand, search one sentence from each paragraph and compare it to its source.
 - [ ] Quotes are attributed, short and quoted exactly: by hand against the source.
-- [ ] Code sample dependencies are pinned and the samples pass in CI: by hand until a CI job runs the samples. That job is not built yet. It is a requirement for the QA Engineer and Frontend Engineer, not a promise that it exists.
-- [ ] Internal links go to related posts and use descriptive text: by hand.
-- [ ] AI assistance is noted at the end of the post as set out in "AI assistance": by hand.
+- [ ] Code sample dependencies are pinned to exact versions: by hand, read the versions in each sample and in its install line.
+- [ ] Code samples are tested in CI: not available today, because no CI job runs post code samples. Write "not available" in the QA comment before ticking this item, until a job exists.
+- [ ] AI assistance is noted at the end of the post as set out in "AI assistance": by hand, and re-check it if Venkat changes the wording.
 - [ ] Approval is requested from Venkat in the Asana task, which is linked in the QA comment: by hand, open the task and confirm the request is there.
 
 ## AI assistance
@@ -108,9 +108,11 @@ Status: proposed wording.
 
 This blog is written with AI assistance. The policy is stated, not hidden. Every post carries a one-line note saying so at the end of the post. The proposed note is:
 
-> This post was drafted with AI assistance, checked against its sources and edited by a human reviewer before publication.
+> This post was drafted and edited with AI assistance, checked against its sources, and approved by the blog owner before publication.
 
-Venkat reviews every post before publication. The Technical Editor ticks the AI assistance item in the checklist. Sources and code are still checked by hand and by tests. An AI note does not make a claim true.
+The note says only what the process guarantees. Venkat reviews every post before publication, and that is the one human step, so the note does not claim a human editor. If a human edit is wanted, that is a process change for Venkat to decide.
+
+The Technical Editor ticks the AI assistance item in the checklist, and re-checks the note if Venkat changes the wording. Sources and code are still checked by hand and by tests. An AI note does not make a claim true.
 
 Decision for Venkat: whether to disclose on every post, and the exact wording of the note. Until he decides, use the proposed note.
 

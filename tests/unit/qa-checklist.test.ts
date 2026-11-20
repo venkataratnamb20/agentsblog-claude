@@ -15,7 +15,8 @@ const items = checklist.split('\n').filter((line) => line.startsWith('- [ ] '));
 const ASANA_ITEMS: ReadonlyArray<readonly [string, RegExp]> = [
   ['every factual claim cited to a primary source', /facts match the sources/i],
   ['code samples run and tested, with versions pinned', /pinned/i],
-  ['code samples tested in CI', /\bCI\b/],
+  ['code sample dependencies pinned', /dependencies are pinned/i],
+  ['code samples tested in CI', /tested in CI/i],
   ['original writing, no copied passages', /original writing/i],
   ['quotes attributed', /quotes? (are|is) attributed/i],
   ['images and diagrams have alt text', /alt text/i],
@@ -37,9 +38,25 @@ describe('the checklist covers every line of the Asana task', () => {
     for (const item of items) expect(item, item).toMatch(/: .{8,}/);
   });
 
-  it('is honest that tests in CI are by hand until a CI job runs the samples', () => {
-    const ci = items.find((item) => /\bCI\b/.test(item) && /sample/i.test(item)) ?? '';
-    expect(ci.toLowerCase()).toContain('by hand until');
+  it('says plainly that "tested in CI" is not available, and what to record', () => {
+    const ci = items.find((item) => /tested in CI/i.test(item)) ?? '';
+    expect(ci.toLowerCase()).toContain('not available');
+    expect(ci).toContain('QA comment');
+    expect(ci.toLowerCase()).toContain('no ci job');
+  });
+
+  it('names only npm scripts that exist in package.json', () => {
+    const scripts = Object.keys(JSON.parse(read('package.json')).scripts ?? {});
+    const named = [...checklist.matchAll(/npm run ([a-z:-]+)/g)].map((match) => match[1]);
+    expect(named.length).toBeGreaterThan(0);
+    for (const script of named) expect(scripts, script).toContain(script);
+  });
+
+  it('keeps at least 21 items and closes internal links with the SEO item', () => {
+    expect(items.length).toBeGreaterThanOrEqual(21);
+    const seo = items.find((item) => /SEO basics/.test(item)) ?? '';
+    expect(seo).toMatch(/internal links/i);
+    expect(items.filter((item) => /internal links/i.test(item))).toHaveLength(1);
   });
 
   it('still ends with the approval request, so it is the last thing done', () => {
@@ -69,6 +86,17 @@ describe('the AI assistance section', () => {
   it('gives a note that a post can use as written', () => {
     const note = policy.split('\n').find((line) => line.startsWith('> ')) ?? '';
     expect(note.length).toBeGreaterThan(20);
-    expect(note.toLowerCase()).toContain('ai');
+    expect(note).toMatch(/\bAI\b/);
+  });
+
+  it('claims only what the process guarantees: no human editor, the owner approves', () => {
+    const note = policy.split('\n').find((line) => line.startsWith('> ')) ?? '';
+    expect(note).not.toMatch(/human (reviewer|editor)/i);
+    expect(note.toLowerCase()).toContain('approved by the blog owner');
+    expect(policy.toLowerCase()).toContain('the one human step');
+  });
+
+  it('has the editor re-check the note if Venkat changes the wording', () => {
+    expect(policy).toMatch(/re-checks the note/);
   });
 });
