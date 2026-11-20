@@ -17,7 +17,7 @@ This calendar dates every stage of posts 1 to 10 and names the owner of each sta
 - No stage due date falls inside the holiday gap.
 - No two posts share a due date for the same owner at the same stage. Launch posts 1 to 3 are staggered by one working day per stage.
 - Venkat's approvals may be batched, as docs/guidelines/approval-gates.md allows.
-- Minimum stage lead times, in working days, are set here as post-workflow.md says:
+- post-workflow.md leaves timing to this calendar. The minimum stage lead times, in working days, are:
   - Brief to draft: 3.
   - Draft to tech edit: 2.
   - Tech edit to SEO: 1.
@@ -79,7 +79,7 @@ Posts 9 and 10 cannot keep two ahead, because only ten posts are planned. Monthl
 - The KPM "draft-to-publish cycle 5 days or less" fails for all ten posts as dated, not only for the buffered ones. Draft to publish is 11 to 13 days for posts 1 to 3 and 31 days for post 10. Proposal: measure it to "approval-ready" for every post. Decision for Venkat.
 - The KPM "weekly cadence hit rate 90%+" cannot be met. From 14 Dec to 15 Feb there are ten Mondays and eight have a post, which is 80%, because 21 and 28 Dec have none by design and posts 1 to 3 share one day. Decision for Venkat: exclude the gap weeks, or accept 80%.
 - The holiday gap needs Venkat's availability. Approvals for posts 4 to 6 are requested before the gap, all on 16 Dec 2026. These approvals will be several weeks old on the publish day. Venkat may ask for a re-check at publish. If Venkat is away, the default is to hold the post, because silence is not approval (docs/guidelines/approval-gates.md). Decision for Venkat: confirm the holiday gap dates and whether agents also pause during it.
-- Hypercare ends on 23 Dec 2026, inside the assumed holiday gap. This calendar plans no content work from 21 Dec to 1 Jan. Hypercare monitoring is outside it and belongs to the DevOps Engineer. Decision for Venkat: who covers 22 and 23 Dec.
+- Hypercare ends on 23 Dec 2026, inside the assumed holiday gap. This calendar plans no content work from 21 Dec to 1 Jan. Hypercare monitoring is outside it and belongs to the DevOps Engineer (uptime row in docs/seo-analytics-spec.md). Decision for Venkat: who covers 22 and 23 Dec.
 - Deploy, release tag and merge into main still need their own APPROVAL REQUEST on each publish day (docs/guidelines/approval-gates.md). Decision for Venkat: who publishes during and after the holiday gap.
 - Distribution dates assume Venkat approves each channel draft once the post is live and its URL is known. Nothing is posted or sent until he approves it, each time (docs/guidelines/approval-gates.md). Venkat posts the community shares himself (Asana task "Share posts in communities (HN, Reddit, LangChain forum)", drafted by agent, posted by Venkat). A late approval moves distribution, not the publish date.
 - Venkat's approvals are a single point of failure. After post 6, nothing is approved far ahead: post 7 is approved on 21 Jan, four days before publish, and posts 8 to 10 follow the same pattern. The target response time is 24 hours (docs/guidelines/approval-gates.md). A missed approval holds the post, not the date.

@@ -297,7 +297,7 @@ describe('the risks cover the review findings', () => {
     ['the default during the gap is to hold the post', /hold the post/i],
     ['the series fields are not built', /seriesOrder/],
     ['the draft: false PR is opened only on the publish day', /publish day/i],
-    ['posts 1 to 3 may be reviewed on the SEO date', /PR reviewer/i],
+    ['the PR reviewer is scheduled on or before the SEO date', /PR reviewer/i],
   ])('says: %s', (_name, pattern) => {
     expect(text, String(pattern)).toMatch(pattern);
   });
