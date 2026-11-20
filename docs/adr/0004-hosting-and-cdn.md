@@ -1,6 +1,6 @@
 # ADR 0004: Hosting and CDN
 
-- **Status:** Proposed: needs Venkat's approval (new platform and an account)
+- **Status:** Direction approved by Venkat, 20 Nov 2026 (Cloudflare Pages on the free tier). The account, the domain, DNS records and any paid plan still need his approval. Nothing is adopted yet.
 - **Date:** 2026-11-20
 - **Supersedes:** none
 - **Deciders:** Solution Architect Agent, Venkat (approver)
@@ -43,6 +43,8 @@ Per month. All figures are unverified estimates, check the vendor page before pu
 The domain name is a separate yearly cost. See ADR 0008.
 
 ## Decision
+Decision (Venkat, 20 Nov 2026): the direction is Cloudflare Pages on the free tier. There will be no custom staging domain. Staging uses the host's default address and access-controlled preview URLs, and stays noindex. Netlify and GitHub Pages stay documented as fallbacks. This approves the direction only. No account is open, no domain is bought, no registrar is chosen, no paid plan is approved and no DNS change is approved. The prices stay unverified estimates.
+
 Recommend Cloudflare Pages on its free tier for staging, previews and production. Reasons: per-PR previews, a headers file for security headers and caching, a global CDN, no server to run, and it pairs with free cookieless analytics (ADR 0006). Production sets `ALLOW_INDEXING=true`; staging does not.
 
 ### Deploys
@@ -58,7 +60,7 @@ Recommend Cloudflare Pages on its free tier for staging, previews and production
 Preview URLs are public by default (unverified). `PREVIEW_DRAFTS=true` on a public preview could leak drafts (threat-model R10). Rule: PR previews show drafts only if access control is on for them. If it is not available on the free tier, previews exclude drafts and drafts are reviewed locally. Staging and production always exclude drafts.
 
 ### Staging domain
-Custom domains may attach to the production branch only (unverified). Options: a second Pages project for staging with its own domain, or drop the custom staging domain and use the host's default staging address. Default: drop the custom staging domain. This is a pre-adoption check below.
+Custom domains may attach to the production branch only (unverified). Options: a second Pages project for staging with its own domain, or drop the custom staging domain and use the host's default staging address. Decision (Venkat, 20 Nov 2026): no custom staging domain. The pre-adoption check below still confirms that the host's default staging address and access-controlled previews are available.
 
 ### Headers
 Apply the full header set from `docs/threat-model.md` at the host: Content-Security-Policy (report-only on staging first, then enforced), Strict-Transport-Security (`max-age=31536000; includeSubDomains`, no `preload` without Venkat), X-Content-Type-Options `nosniff`, Referrer-Policy `strict-origin-when-cross-origin`, Permissions-Policy, frame-ancestors `'none'` with `X-Frame-Options: DENY`, and Cross-Origin-Opener-Policy `same-origin`. If a host cannot set these, it fails this ADR.

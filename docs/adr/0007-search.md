@@ -1,6 +1,6 @@
 # ADR 0007: Search
 
-- **Status:** Proposed: needs Venkat's approval (the free recommendation adds a dependency; the paid option needs an account)
+- **Status:** Direction approved by Venkat, 20 Nov 2026 (no search at launch, Pagefind after about 10 posts). Adding the Pagefind dependency later, and any account or paid plan, still need his approval. Nothing is adopted yet.
 - **Date:** 2026-11-20
 - **Supersedes:** none
 - **Deciders:** Solution Architect Agent, Venkat (approver)
@@ -33,6 +33,8 @@ Per month. All figures are unverified estimates, check the vendor page before pu
 | JSON plus library | 0 (unverified, check the library licence) |
 
 ## Decision
+Decision (Venkat, 20 Nov 2026): the direction is no search at launch, then Pagefind after about 10 posts. This approves the direction only.
+
 Recommend none at launch, then Pagefind once there are about 10 posts (target 15 Feb 2027). This keeps the launch simple and protects the SRS speed targets. Pagefind is free and keeps queries in the browser, so no consent or processor agreement is needed. Algolia is not recommended for this size.
 
 Venkat must approve: deferring search at launch, and adding Pagefind as a dependency later. No payment or account is needed for the recommended path.

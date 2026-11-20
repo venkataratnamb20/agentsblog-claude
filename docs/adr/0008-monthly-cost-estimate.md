@@ -1,6 +1,6 @@
 # ADR 0008: Monthly cost estimate
 
-- **Status:** Proposed: needs Venkat's approval (it lists every paid item and every account)
+- **Status:** Proposed: needs Venkat's approval (it lists every paid item and every account). Prices are unverified. On 20 Nov 2026 Venkat approved the directions in ADRs 0004 to 0007 only. No spend, account, domain or DNS change is approved.
 - **Date:** 2026-11-20
 - **Supersedes:** none
 - **Deciders:** Solution Architect Agent, Venkat (approver)
@@ -43,6 +43,8 @@ Yearly items, not monthly:
 | Domain email (mailbox or forwarding), needed for the sender address and security contact | Provider not chosen, so no figure. Unverified estimate, check the vendor page before purchase. Counted in the total once Venkat chooses. |
 
 ## Decision
+Venkat approved the directions in ADRs 0004 to 0007 on 20 Nov 2026: Cloudflare Pages (free tier, no custom staging domain), Buttondown, Cloudflare Web Analytics, and search later with Pagefind. He has not opened an account, bought a domain, chosen a registrar or approved any paid plan or DNS change. Every price here is still an unverified estimate.
+
 Recommend the set above. Expected running cost is zero per month plus the yearly domain fee, rising only if the newsletter outgrows its free tier. Re-check all prices at the January metrics review, and again before any purchase.
 
 What needs Venkat's approval:

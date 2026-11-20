@@ -59,7 +59,7 @@ Phase 1 excludes:
 - Paid ads.
 - Video and podcast.
 - Guest authors.
-- User accounts and logins. This is a PRD addition, not in the charter's Phase 1 out-of-scope list. Venkat to approve (see Approval).
+- User accounts and logins. Added to the list by Venkat's decision on 20 Nov 2026 (see Decisions).
 
 ## MVP features
 
@@ -240,20 +240,34 @@ Every post follows the content rules in `CLAUDE.md`: front-matter checks, a sour
 - Keep a buffer of two drafted posts ahead of the publish date (charter KPM: 2+ posts drafted ahead).
 - Posts 4 to 6 are drafted before the holiday gap (charter risk table).
 - Launch on 14 Dec 2026 with posts 1 to 3 (gate M5).
-- Whether the roundup counts toward the 10 posts for G2 is an open question below.
+- Monthly roundups count toward the 10 posts for G2 (decided 20 Nov 2026; see Decisions).
 - Posts are dated, and a monthly refresh check looks for stale posts.
+
+## Decisions
+
+Decided by Venkat, 20 Nov 2026 (chat):
+
+- G2: roundups count toward the 10 verified posts (Post 10 in Asana is a roundup).
+- User accounts and logins stay on the Out of scope list.
+- Site search is post-launch. ADR 0007: none at launch, Pagefind after about 10 posts. F4 stays P2 and post-launch.
+- `npm run check:content` must require an explicit `draft` field on every post. The schema default stays as it is.
+- Four optional front-matter fields are approved: `series`, `seriesOrder`, `author`, `canonical`.
+- Tag rule approved: non-roundup posts have 3 to 5 tags (pillar tag first, one format tag, up to 3 topic tags). Roundups have 3 or 4 tags and no pillar tag.
+- The navigation label is "Subscribe". The planned series and their order are approved as the starting plan.
+- Newsletter direction: Buttondown (double opt-in). Analytics direction: Cloudflare Web Analytics (cookieless, page views only; Plausible stays the upgrade path). Hosting direction: Cloudflare Pages on the free tier, with no custom staging domain.
+- These are directions only. No account, domain, registrar, paid plan or DNS change is approved.
 
 ## Approval
 
-Status: draft, awaiting Venkat's approval. Approval is part of gate M1 (24 Nov to 27 Nov 2026).
+Status: draft, awaiting Venkat's approval. His approval subtask in Asana is separate and still open. Approval is part of gate M1 (24 Nov to 27 Nov 2026).
 
-Open questions for Venkat:
+Questions for Venkat:
 
-1. Does the monthly research roundup count toward the 10 posts for G2, or are the 10 posts separate from roundups?
-2. Which newsletter provider may we use for F5? Any account or payment is yours to approve.
-3. Do you agree that search (F4) is post-launch, as ADR 0007 proposes (Pagefind after about 10 posts)?
-4. May we use cookieless analytics (F11), and is Cloudflare Web Analytics (ADR 0006) acceptable, or should analytics wait until after launch?
-5. Do you approve the five pillars, the tag rules and the planned series in `docs/prd/content-pillars.md`?
-6. Do you approve "User accounts and logins" as an out-of-scope item? It is a PRD addition, not in the charter list.
-7. Do you approve the proposed front-matter fields `series`, `seriesOrder`, `author` and `canonical`?
+1. Decided 20 Nov 2026: roundups count toward the 10 posts for G2.
+2. Direction decided 20 Nov 2026: Buttondown (double opt-in). Accounts, plans and any consent wording still need Venkat's approval.
+3. Decided 20 Nov 2026: search (F4) is post-launch (Pagefind after about 10 posts, ADR 0007).
+4. Direction decided 20 Nov 2026: Cloudflare Web Analytics (cookieless, page views only; Plausible stays the upgrade path). Accounts, plans and any consent wording still need Venkat's approval.
+5. Decided 20 Nov 2026: the tag rules and the planned series in `docs/prd/content-pillars.md` are approved as the starting plan. The five pillars themselves are not listed in the decisions, so they stay open.
+6. Decided 20 Nov 2026: "User accounts and logins" is out of scope.
+7. Decided 20 Nov 2026: the front-matter fields `series`, `seriesOrder`, `author` and `canonical` are approved.
 8. UX sign-off on navigation and the F4, F7 and F12 pages is still open. The UX/UI Designer has not reviewed this PRD.

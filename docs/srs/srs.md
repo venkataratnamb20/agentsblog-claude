@@ -283,14 +283,16 @@ Test notes for a tester. Automated: axe scan on the home, post, tag, pillar, ser
 
 ## Open questions
 
-1. Newsletter provider (FR-6, ADR 0005): which one may we use, and what retention period applies to unconfirmed addresses and to unsubscribed addresses?
+Decision (Venkat, 20 Nov 2026): assumptions approved as written; JSON-LD author is the site; HSTS has no `preload` at launch. The HSTS header uses a one-year max-age. Preload is considered after a few stable months.
+
+1. Newsletter provider (FR-6, ADR 0005): which one may we use? The retention periods are decided 20 Nov 2026 (assumptions approved as written).
 2. Analytics (FR-11, ADR 0006): may we use the cookieless tool the ADR names, or should analytics wait until after launch?
-3. Search (FR-5): do you approve adding search after launch, once there are about 10 posts, as ADR 0007 proposes?
-4. Series (FR-3): do you approve the planned series and the new optional `series` and `seriesOrder` front-matter fields?
-5. Scalability (NFR-11): is 10,000 monthly readers the right capacity target, or should another figure be used?
-6. Browser support (NFR-13): is the latest two versions of the main browsers acceptable?
+3. Decided 20 Nov 2026: search (FR-5) is post-launch, with Pagefind after about 10 posts (ADR 0007).
+4. Decided 20 Nov 2026: the planned series are approved as the starting plan, and the optional `series` and `seriesOrder` fields are approved (FR-3).
+5. Decided 20 Nov 2026: the capacity target of 10,000 monthly readers (NFR-11) is approved as written.
+6. Decided 20 Nov 2026: the browser support list (NFR-13) is approved as written.
 7. Residual risks R01, R02, R03 and R12: which do you accept for launch, and which must close first (SR-13 to SR-15)?
-8. HSTS preload: do you want to add `preload` (hard to undo), or leave it off?
+8. Decided 20 Nov 2026: HSTS has no `preload` at launch (one-year max-age).
 9. Open tools: may we select and cost an external uptime monitor (NFR-4), Google Search Console and a keyword tool? No ADR or cost estimate covers them yet.
-10. Drafts (FR-1): should the content check reject a missing `draft` field, or should the schema default become true?
+10. Decided 20 Nov 2026: the content check rejects a missing `draft` field (FR-1). The schema default stays as it is.
 11. Navigation routes (follow-up for the Product Strategist, UX review of 20 Nov 2026): `docs/prd/content-pillars.md` adds the `/posts/` archive, `/topics/`, `/series/` and `/series/<slug>/`, a `/tags/` index and a footer with the tags index. The FR list only has `/posts/<slug>/` and does not define `/posts/` as the archive. These routes and footer links are new requirements still to be added to the FR list. This review did not rewrite the FR list.

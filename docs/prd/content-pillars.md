@@ -164,6 +164,8 @@ Posts 1 to 3 launch on 14 Dec 2026. The order is a proposal. The Research Analys
 
 ## Tags and series
 
+**Decision (Venkat, 20 Nov 2026): the optional front-matter fields `series`, `seriesOrder`, `author` and `canonical` are approved. The tag rule is approved: non-roundup posts have 3 to 5 tags (pillar tag first, one format tag, up to 3 topic tags), and roundups have 3 or 4 tags with no pillar tag. The navigation label is "Subscribe". The series plan approved as the starting plan; series names and order may change before each series starts.**
+
 ### Tag naming rules
 
 - Tags are lowercase and hyphenated, for example `tool-calling`.
@@ -193,7 +195,7 @@ Every post has exactly one format tag. Every post has exactly one pillar tag, ex
 
 ### Planned series
 
-Assumption: series names and membership are proposals for Venkat to approve.
+The series names and membership are the approved starting plan (20 Nov 2026) and may change before each series starts.
 
 | Series | Posts | Notes |
 |---|---|---|
@@ -202,7 +204,7 @@ Assumption: series names and membership are proposals for Venkat to approve.
 | Production agents | 8 and 9 | Evaluation and guardrails. |
 | Research roundup | Monthly | One series, one post a month. |
 
-A series is declared in post front-matter. The current schema (`src/lib/postSchema.ts`) has no series field. Adding two optional fields, a flat `series` (string slug) and `seriesOrder` (number), is a proposal. Adding them is a requirement for the Frontend Engineer under PRD F2, to be agreed with the Solution Architect. Not yet agreed.
+A series is declared in post front-matter. The current schema (`src/lib/postSchema.ts`) has no series field. The two optional fields, a flat `series` (string slug) and `seriesOrder` (number), are approved (20 Nov 2026). Adding them is a requirement for the Frontend Engineer under PRD F2, to be agreed with the Solution Architect.
 
 ### Navigation
 
@@ -227,4 +229,4 @@ Navigation, as agreed with changes:
 - Breadcrumbs on post, pillar, series and tag pages use the BreadcrumbList helper in `src/lib/seo.ts`. They are a `nav` with an accessible name and `aria-current` on the last item.
 - The footer links to RSS, the `/tags/` index, the privacy notice and the newsletter form. It repeats the main navigation so a reader at the end of a long post can move on.
 - Current code gap: `src/layouts/BaseLayout.astro` has only a site-name link and `main`. It has no navigation, skip link or footer. This is new work for the Frontend Engineer.
-- Open for Venkat: the series names and order, and the Subscribe label. No reader testing has been done, so the labels are a design judgement.
+- Decided 20 Nov 2026: the series names and order are the approved starting plan, and the Subscribe label is approved. No reader testing has been done, so the labels are a design judgement.
