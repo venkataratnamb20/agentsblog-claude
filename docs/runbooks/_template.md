@@ -1,7 +1,7 @@
 # Runbook: <situation>
 
-- **Owner:** DevOps & SRE Agent
-- **Last verified:** <date> by <role>
+- **Owner:** DevOps & SRE
+- **Last verified:** <YYYY-MM-DD> by <role>
 
 ## When to use
 The symptom or trigger, and how to confirm it is this situation.
@@ -13,5 +13,8 @@ The symptom or trigger, and how to confirm it is this situation.
 ## Rollback
 How to undo each step, and how to confirm the system is back to normal.
 
-## Owner
-Who to ask, and who approves changes to this runbook.
+## Verification
+How to check the runbook still works (a dry run or a test environment), and how often.
+
+## Approver of changes
+Who approves edits to this runbook.

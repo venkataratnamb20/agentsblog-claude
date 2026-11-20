@@ -1,7 +1,7 @@
 ---
 title: <70 characters or fewer>
 description: <160 characters or fewer; what the reader will be able to do>
-date: 2026-01-01
+date: <YYYY-MM-DD>
 tags: [agents]
 draft: true
 ---

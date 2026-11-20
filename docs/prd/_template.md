@@ -1,7 +1,8 @@
 # PRD: <feature or topic>
 
 - **Status:** draft | in review | approved
-- **Owner:** Product Strategist Agent
+- **Owner:** Product Strategist
+- **Reviewer:** <role from docs/team.md>
 - **Approver:** Venkat
 - **Asana task:** <link>
 
