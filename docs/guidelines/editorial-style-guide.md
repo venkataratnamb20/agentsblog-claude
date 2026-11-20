@@ -104,9 +104,9 @@ Each item says how it is checked. "By hand" means the editor reads or tests it a
 - [ ] Approval is requested from Venkat in the Asana task, which is linked in the QA comment: by hand, open the task and confirm the request is there.
 
 ## AI assistance
-Status: proposed wording.
+Status: approved. Decided by Venkat, 20 Nov 2026, in chat: every post ends with the note below, in this wording.
 
-This blog is written with AI assistance. The policy is stated, not hidden. Every post carries a one-line note saying so at the end of the post. The proposed note is:
+This blog is written with AI assistance. The policy is stated, not hidden. Every post carries a one-line note saying so at the end of the post. The note is:
 
 > This post was drafted and edited with AI assistance, checked against its sources, and approved by the blog owner before publication.
 
@@ -114,7 +114,7 @@ The note says only what the process guarantees. Venkat reviews every post before
 
 The Technical Editor ticks the AI assistance item in the checklist, and re-checks the note if Venkat changes the wording. Sources and code are still checked by hand and by tests. An AI note does not make a claim true.
 
-Decision for Venkat: whether to disclose on every post, and the exact wording of the note. Until he decides, use the proposed note.
+Any change to the wording needs Venkat's approval.
 
 ## Who approves what
 - The Technical Editor checks the post and posts the QA comment.

@@ -78,9 +78,11 @@ describe('the AI assistance section', () => {
     expect(guide).toContain('Venkat alone approves `draft: false`');
   });
 
-  it('marks the disclosure wording as a decision for Venkat', () => {
-    expect(policy).toContain('Decision for Venkat');
-    expect(policy).toMatch(/Status: proposed|proposed wording/i);
+  it('records that Venkat decided the disclosure and its wording', () => {
+    expect(policy).toContain('Decided by Venkat, 20 Nov 2026');
+    expect(policy).toContain('Status: approved');
+    expect(policy).not.toMatch(/proposed wording|Decision for Venkat/);
+    expect(policy).toContain('needs Venkat');
   });
 
   it('gives a note that a post can use as written', () => {
