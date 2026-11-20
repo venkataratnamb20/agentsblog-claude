@@ -146,7 +146,7 @@ describe('the document states its rules, assumptions and risks', () => {
     ]) {
       expect(section(heading).length, heading).toBeGreaterThan(0);
     }
-    expect(doc).toMatch(/Status: draft/);
+    expect(doc).toMatch(/Status: (draft|approved)/);
     expect(doc).toContain('1220688744221503');
     expect(doc).toContain('docs/guidelines/post-workflow.md');
     expect(doc).toContain('docs/prd/topic-backlog.md');
@@ -300,6 +300,30 @@ describe('the risks cover the review findings', () => {
     ['the PR reviewer is scheduled on or before the SEO date', /PR reviewer/i],
   ])('says: %s', (_name, pattern) => {
     expect(text, String(pattern)).toMatch(pattern);
+  });
+});
+
+describe('the document records the decisions Venkat made on 20 Nov 2026', () => {
+  const decided = doc.split('Decided (Venkat, 20 Nov 2026)').length - 1;
+
+  it('is approved and records each decision with its date', () => {
+    expect(doc).toMatch(/Status: approved/);
+    expect(decided).toBeGreaterThanOrEqual(5);
+  });
+
+  it.each([
+    ['the holiday gap is confirmed and agents pause', /gap dates are confirmed and agents pause/i],
+    ['draft-to-publish is measured to approval-ready', /measured to "approval-ready"/],
+    ['the cadence rate excludes the gap weeks', /exclude the gap weeks/i],
+    ['the Frontend work lands before 14 Dec', /series and `seriesOrder` fields before 14 Dec/],
+  ])('says: %s', (_name, pattern) => {
+    expect(doc).toMatch(pattern);
+  });
+
+  it('still lists what Venkat has not decided', () => {
+    const risks = section('Risks and decisions for Venkat');
+    expect(risks).toContain('Decision for Venkat: which post moves');
+    expect(risks).toContain('Decision for Venkat: who covers 22 and 23 Dec');
   });
 });
 

@@ -1,6 +1,6 @@
 # Editorial calendar
 
-Status: draft, awaiting Product Strategist review and Venkat's approval.
+Status: approved. Approved by Venkat, 20 Nov 2026, in chat, with the decisions recorded under Assumptions. Open items are listed under Risks.
 Source: Asana task 1220688744221503
 
 This calendar dates every stage of posts 1 to 10 and names the owner of each stage. The stages and owners come from docs/guidelines/post-workflow.md. The topics and order come from docs/prd/topic-backlog.md.
@@ -26,7 +26,9 @@ This calendar dates every stage of posts 1 to 10 and names the owner of each sta
 - Distribution is on the publish day for posts 4 to 10. For posts 1 to 3 it is staggered over three days.
 
 ## Assumptions
-- The holiday gap is the two weeks 21 Dec 2026 to 1 Jan 2027. No document defines the holiday gap, so Venkat must confirm it.
+- The holiday gap is the two weeks 21 Dec 2026 to 1 Jan 2027. No document defines the holiday gap. Decided (Venkat, 20 Nov 2026): the gap dates are confirmed and agents pause during it.
+- Decided (Venkat, 20 Nov 2026): the draft-to-publish KPM is measured to "approval-ready", and the weekly cadence rate is calculated over weeks with the two gap weeks excluded. This calendar does not edit the charter text.
+- Decided (Venkat, 20 Nov 2026): the Frontend Engineer builds the series and `seriesOrder` fields before 14 Dec, as a stage 3 task.
 - Timings are in working days.
 - Venkat is available for approvals on the dates shown.
 - No keyword validation has run. The order may be revisited only with Venkat's approval.
@@ -76,9 +78,9 @@ Posts 9 and 10 cannot keep two ahead, because only ten posts are planned. Monthl
 
 ## Risks and decisions for Venkat
 - Post 10 publishes 15 Feb 2027, the same day as the G2 deadline. There is no slack. Any slip misses G2 unless a post is pulled forward. Post 10 is technically edited on 20 Jan, so it can move up if a week slips. Decision for Venkat: which post moves.
-- The KPM "draft-to-publish cycle 5 days or less" fails for all ten posts as dated, not only for the buffered ones. Draft to publish is 11 to 13 days for posts 1 to 3 and 31 days for post 10. Proposal: measure it to "approval-ready" for every post. Decision for Venkat.
-- The KPM "weekly cadence hit rate 90%+" cannot be met. From 14 Dec to 15 Feb there are ten Mondays and eight have a post, which is 80%, because 21 and 28 Dec have none by design and posts 1 to 3 share one day. Decision for Venkat: exclude the gap weeks, or accept 80%.
-- The holiday gap needs Venkat's availability. Approvals for posts 4 to 6 are requested before the gap, all on 16 Dec 2026. These approvals will be several weeks old on the publish day. Venkat may ask for a re-check at publish. If Venkat is away, the default is to hold the post, because silence is not approval (docs/guidelines/approval-gates.md). Decision for Venkat: confirm the holiday gap dates and whether agents also pause during it.
+- The KPM "draft-to-publish cycle 5 days or less" fails for all ten posts as dated, not only for the buffered ones. Draft to publish is 11 to 13 days for posts 1 to 3 and 31 days for post 10. Decided (Venkat, 20 Nov 2026): it is measured to "approval-ready" for every post.
+- The KPM "weekly cadence hit rate 90%+" cannot be met. From 14 Dec to 15 Feb there are ten Mondays and eight have a post, which is 80%, because 21 and 28 Dec have none by design and posts 1 to 3 share one day. Decided (Venkat, 20 Nov 2026): exclude the gap weeks, which gives 8 of 8.
+- The holiday gap needs Venkat's availability. Approvals for posts 4 to 6 are requested before the gap, all on 16 Dec 2026. These approvals will be several weeks old on the publish day. Venkat may ask for a re-check at publish. If Venkat is away, the default is to hold the post, because silence is not approval (docs/guidelines/approval-gates.md). Decided (Venkat, 20 Nov 2026): the gap dates are confirmed and agents pause during it.
 - Hypercare ends on 23 Dec 2026, inside the assumed holiday gap. This calendar plans no content work from 21 Dec to 1 Jan. Hypercare monitoring is outside it and belongs to the DevOps Engineer (uptime row in docs/seo-analytics-spec.md). Decision for Venkat: who covers 22 and 23 Dec.
 - Deploy, release tag and merge into main still need their own APPROVAL REQUEST on each publish day (docs/guidelines/approval-gates.md). Decision for Venkat: who publishes during and after the holiday gap.
 - Distribution dates assume Venkat approves each channel draft once the post is live and its URL is known. Nothing is posted or sent until he approves it, each time (docs/guidelines/approval-gates.md). Venkat posts the community shares himself (Asana task "Share posts in communities (HN, Reddit, LangChain forum)", drafted by agent, posted by Venkat). A late approval moves distribution, not the publish date.
@@ -86,7 +88,7 @@ Posts 9 and 10 cannot keep two ahead, because only ten posts are planned. Monthl
 - Venkat's load peaks on three days. On 10 Dec he gives three final reviews, the day after the M4 gate on 9 Dec, with 11 Dec as a spill day. On 14 Dec the three launch posts add their `draft: false` approvals and the deploy, tag and merge requests. On 4 Jan post 4 adds the same plus a distribution approval, and distribution may move to 5 Jan. Posts 1 to 3 approvals are batched on 10 Dec, after the M4 gate. Venkat to confirm this is acceptable.
 - The Technical Writer drafts posts 4 to 6 on 7, 8 and 9 Dec, and the Technical Editor edits them on 9 to 11 Dec. Each post needs its code samples run and a passing `npm run build`. The Research Analyst writes six briefs between 25 Nov and 2 Dec. A late brief or edit moves the next stage.
 - The PR reviewer's approval is scheduled on or before each SEO date (see Rules). A late PR review holds stage 5.
-- The series box and series pages need the `series` and `seriesOrder` fields, which are not built yet (docs/prd/content-pillars.md). Posts 1 and 2 are in a series and launch on 14 Dec, so the Frontend Engineer's schema work must land before then. Decision for Venkat: otherwise the series start after posts 1 to 3.
+- The series box and series pages need the `series` and `seriesOrder` fields, which are not built yet (docs/prd/content-pillars.md). Posts 1 and 2 are in a series and launch on 14 Dec, so the Frontend Engineer's schema work must land before then. Decided (Venkat, 20 Nov 2026): the Frontend work lands first. If it does not, the series start after posts 1 to 3.
 - The Asana criterion "every post task has dated, owned subtasks" is not met until the subtasks exist. The task stays open until Venkat approves this calendar and the 70 subtasks are created.
 - Dates for posts 7 to 10 are not fixed by the charter beyond their publish days. They may move with Venkat's approval.
 
