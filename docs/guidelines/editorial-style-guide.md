@@ -79,18 +79,24 @@ Length guidance by format. The PRD sets the formats but no word counts, so these
 ## Content QA checklist
 The Technical Editor ticks every item before asking Venkat to approve. Link the Asana task in the QA comment.
 
-- [ ] Facts are checked against the sources in the research brief.
-- [ ] Every code sample was run, and versions and run date are recorded.
-- [ ] Every image has alt text that says what it shows.
-- [ ] Front-matter is valid (`npm run check:content` passes) and `draft: true`.
-- [ ] Tags follow the rule for the post format.
-- [ ] Title is 70 characters or fewer and description is 160 or fewer.
-- [ ] All links work and each source has an access date.
-- [ ] The TL;DR matches the body.
-- [ ] SEO basics are done: slug, headings, description (`seo-audit` skill).
-- [ ] No secrets, keys or personal data in text, code or images.
-- [ ] Headings are in order and link text is descriptive.
-- [ ] Approval is requested from Venkat in Asana.
+Each item says how it is checked. "By hand" means the editor reads or tests it and says so in the QA comment.
+
+- [ ] Facts match the sources: by hand, open each source in the research brief and compare every claim, number and date.
+- [ ] Every code sample was run, and versions and run date are recorded: by hand, run it from a clean checkout and paste the output into the QA comment.
+- [ ] Every image has alt text that says what it shows: `npm run check:content` for presence, by hand for quality.
+- [ ] Front-matter is valid and `draft: true`: `npm run check:content`.
+- [ ] Title is 70 characters or fewer and description is 160 or fewer: `npm run check:content` (the schema enforces it).
+- [ ] Tags follow the rule for the post format: by hand until the F2 enforcement exists, then `npm run check:content`.
+- [ ] Slug equals `slugify(title)`: by hand until enforced (compare with `src/lib/slugify.ts`).
+- [ ] All links work and each source has an access date: by hand, open each link.
+- [ ] The TL;DR matches the body: by hand, read the TL;DR after the body and compare each point.
+- [ ] SEO basics are done: run the `seo-audit` skill.
+- [ ] No secrets, keys or personal data in text, code or images: `npm run secrets:scan` and by hand for images.
+- [ ] Headings are in order and link text is descriptive: by hand.
+- [ ] No em dashes: by hand or search for the character.
+- [ ] British spelling is used throughout (code, API names and quotes excepted): by hand.
+- [ ] No words from the avoid list in Voice and tone: by hand or search.
+- [ ] Approval is requested from Venkat in the Asana task, which is linked in the QA comment.
 
 ## Who approves what
 - The Technical Editor checks the post and posts the QA comment.
