@@ -56,7 +56,7 @@ Acceptance criteria:
 
 Traceability: PRD F2. Goals G2, G4.
 
-The site shall support ordered series. A post shall join a series through two optional front-matter fields: `series` (a string slug) and `seriesOrder` (a number). Both are proposals for the Solution Architect to confirm. A series page shall list its posts in order, and each post in a series shall link to the previous and next post.
+The site shall support ordered series. A post shall join a series through two optional front-matter fields: `series` (a string slug) and `seriesOrder` (a number). Venkat approved both fields on 20 Nov 2026, together with `author` and `canonical`. All four live in the Zod front-matter schema (`docs/architecture.md` front-matter table, and `src/lib/postSchema.ts` once added). A series page shall list its posts in order, and each post in a series shall link to the previous and next post.
 
 Required work: `src/lib/postSchema.ts` has no series fields today. Adding them is new work.
 
@@ -188,6 +188,78 @@ Acceptance criteria:
 - Given any page, When the footer is read, Then it links to RSS, the newsletter signup and the privacy notice.
 - Given the privacy notice, When it is read, Then it states what newsletter data is stored, why, for how long (Assumption: retention to be set by Venkat) and how to ask for deletion.
 
+### FR-13 Main navigation and footer
+
+Traceability: PRD F12. Goal G4.
+
+The site shall show a main navigation on every page with five items in this order: Posts (`/posts/`), Topics (`/topics/`), Series (`/series/`), About and Subscribe. The site name is the Home link, so Home is not a navigation item. Subscribe links to the newsletter form. On a 320 px wide screen the navigation shall be a visible row of links that wraps, with no hidden menu and no script. The link for the current page shall carry `aria-current="page"` and a style that is not colour alone (for example an underline or a heavier weight). The footer shall repeat the main navigation and add the `/tags/` index and the privacy notice. The footer links named in FR-12 (RSS, the newsletter and the privacy notice) stay as FR-12 states. Search is post-launch (FR-5), so it is NOT in the launch navigation. When search ships, it is added as a sixth item. Tags are not in the main navigation. Navigation rules for accessibility are in AR-11 and AR-12. Source: `docs/prd/content-pillars.md`, UX review of 20 Nov 2026.
+
+Acceptance criteria:
+
+- Given any page, When the main navigation is read, Then it lists Posts, Topics, Series, About and Subscribe in that order, and the site name links to the home page.
+- Given any page, When the main navigation is read, Then it has no Home item and no search item, because search is post-launch.
+- Given a 320 px wide viewport, When any page is rendered, Then all five links are visible without opening a menu, the row wraps without horizontal scroll.
+- Given JavaScript disabled, When the page loads, Then the navigation is fully visible and usable. Checked by Playwright with JavaScript off.
+- Given the Posts page, When its navigation is read, Then the Posts link has `aria-current="page"` and no other navigation link has it.
+- Given the current page link, When it is checked with axe or a computed style assertion, Then the current page marker differs from the other links by more than colour, for example an underline or weight.
+- Given any page, When the footer is read, Then it contains the five main navigation links, the `/tags/` index link and the privacy notice link.
+- Given any two pages, When their main navigation is compared, Then the items and their order are the same.
+
+### FR-14 Posts archive
+
+Traceability: PRD F12 and F1. Goal G4.
+
+The site shall render `/posts/` as the archive. It shall list every published post, newest first, with title, description and date. It shall exclude every post with `draft: true` under the staging and production rule in FR-1. The archive is the way to browse all posts without search.
+
+Acceptance criteria:
+
+- Given several published posts, When `/posts/` is rendered, Then every one is listed, newest first.
+- Given a post with `draft: true`, When the site is built for staging or production, Then `/posts/` does not list it.
+- Given a post, When `/posts/` is rendered, Then its entry shows the title, description and date and links to `/posts/<slug>/`.
+
+### FR-15 Topics and pillar pages
+
+Traceability: PRD F2. Goals G2, G4.
+
+The site shall render `/topics/` with an entry for each of the five pillars, each with its audience need and post count, and one extra entry named "Research roundups" that links to the `research-roundup` tag page (roundups have no pillar, see FR-2). Each pillar shall have a curated page with a short intro (the audience need), any series in that pillar, then its posts newest first. The pillar page URL is `/topics/<pillar-slug>/`. The pillar slug equals the pillar tag in `docs/prd/content-pillars.md`, for example `architectures`. The Solution Architect adds this route to `docs/architecture.md`. Pillar pages are the only pages that map to a pillar. On a post page, the pillar tag shall link to its pillar page, not to a tag page. The other tags link to their tag pages (FR-2 and FR-17). Pillar names and the pillar to tag map are in `docs/prd/content-pillars.md`.
+
+Acceptance criteria:
+
+- Given the built site, When `/topics/` is rendered, Then it lists the five pillars with audience need and post count, plus a "Research roundups" entry.
+- Given the "Research roundups" entry, When a reader selects it, Then they reach `/tags/research-roundup/`.
+- Given a pillar page, When it is rendered, Then it shows the intro, then any series in that pillar, then its posts newest first (the pillar listing rule in FR-2 applies).
+- Given a post with a pillar tag, When its page is rendered, Then the pillar tag links to the pillar page.
+- Given a post with a topic tag, When its page is rendered, Then that tag links to `/tags/<tag>/`.
+- Given a draft post, When the site is built for staging or production, Then no pillar page counts or lists it.
+
+### FR-16 Series index and series pages
+
+Traceability: PRD F2. Goals G2, G4.
+
+The site shall render `/series/` as an index of all series with their post counts, and `/series/<slug>/` for each series. A post joins a series through the optional `series` and `seriesOrder` front-matter fields approved on 20 Nov 2026 (FR-3). A series page shall list its posts in an ordered list (`ol`) so the order is exposed to screen readers, and each item shall show "Part N of M" as text. M is the number of published posts in the series, so drafts do not count towards M. The series display name is derived from the `series` slug: replace hyphens with spaces and capitalise the first letter. No new field is proposed. A post in a series shall show a series box with the series name, "Part N of M" and links to the previous and next post, named by the post title and not by "previous" or "next" alone. The order and the previous and next rules in FR-3 apply.
+
+Acceptance criteria:
+
+- Given three published posts in one series, When `/series/<slug>/` is rendered, Then they are in an `ol` in `seriesOrder` and the items read "Part 1 of 3", "Part 2 of 3" and "Part 3 of 3" as text.
+- Given a series with two published posts and one draft, When the site is built for staging or production, Then the series page shows "of 2" and does not list the draft.
+- Given the second post of a series, When its page is rendered, Then the series box shows the series name and "Part 2 of 3" and links to the first and third posts by their titles.
+- Given the first post of a series, When its page is rendered, Then the series box has a next link named by title and no previous link.
+- Given two or more series, When `/series/` is rendered, Then each series is listed with its post count and links to `/series/<slug>/`.
+
+### FR-17 Tags index and tag pages
+
+Traceability: PRD F2. Goals G2, G4.
+
+The site shall render `/tags/` as an index of all tags in use, A to Z, with a post count for each. It shall render each `/tags/<tag>/` page (FR-2) as a plain, automatic list of published posts with that tag, with no intro. The tag name is the `h1` (AR-8) and the page shows the post count. The `/tags/` index is linked from the footer (FR-13) and the 404 page (FR-12) and is not in the main navigation. The `research-roundup` tag has a tag page like any other tag. Tag pages exist for every tag in use, including each pillar tag. A pillar tag page is listed in the `/tags/` index and may repeat the pillar's posts. On a post, the pillar tag links to its pillar page (FR-15) and the other tags link to their tag pages.
+
+Acceptance criteria:
+
+- Given posts with several tags, When `/tags/` is rendered, Then every tag in use is listed A to Z with its post count.
+- Given a tag page, When it is rendered, Then the tag name is the only `h1` and the post count is shown.
+- Given a tag page, When it is rendered, Then it lists its published posts automatically and has no intro text.
+- Given a draft post, When the site is built for staging or production, Then no tag page or count includes it.
+- Given any page, When the footer is read, Then it links to `/tags/`, and the main navigation does not.
+
 ## Non-functional requirements
 
 Web Vitals targets apply at the 75th percentile on mobile. Lab checks use Lighthouse on a production-like build with `ALLOW_INDEXING=true`, on the home page, a post page and a tag page (the page types in `docs/test-strategy.md`). The 404 page is excluded from all Lighthouse scores and is checked by the axe scan in NFR-8. Field checks start after launch. Stage 4 tasks come from `progress/06-4-quality-security-performance-gates.md`.
@@ -258,7 +330,7 @@ UX review (20 Nov 2026): agreed with changes. This is a design review by the UX/
 - AR-16 Content rules for authors (New). Every post has a meaningful alt text on informative images and empty alt on decorative ones (AR-4). Diagrams that carry meaning have a text description nearby. Headings in posts follow AR-8. Link text follows AR-12. Posts do not rely on colour, or on video or audio without a transcript or captions. The Technical Editor and `npm run check:content` check these where a tool can, and the rest by hand. Checked by: axe (images), manual checklist.
 - AR-17 Pointer and dragging (New). Nothing needs a path-based gesture or dragging. Anything done on hover also works on focus, and hover content can be dismissed and stays visible while pointed at (WCAG content on hover or focus). Controls do not change context on focus alone. Checked by: Playwright keyboard test, manual checklist (axe cannot check this).
 
-Test notes for a tester. Automated: axe scan on the home, post, tag, pillar, series, About, privacy and 404 pages in both themes (NFR-8). Lighthouse covers only the home page, a post and a tag page (NFR-6). The 404 page is excluded from Lighthouse scores and is covered by axe (`docs/test-strategy.md`). Playwright runs the scripted keyboard checks (skip link to footer, focus, newsletter form) and the 320 px reflow check. Manual checklist, per page type: a screen reader pass on the navigation and the newsletter form, a check at 200% zoom, a check with reduced motion set, and a contrast check of the colour tokens.
+Test notes for a tester. Automated: axe scan on the home, post, archive, topics, tag, tags index, pillar, series, series index, About, privacy and 404 pages in both themes (NFR-8). Lighthouse covers only the home page, a post and a tag page (NFR-6). The 404 page is excluded from Lighthouse scores and is covered by axe (`docs/test-strategy.md`). Playwright runs the scripted keyboard checks (skip link to footer, focus, newsletter form) and the 320 px reflow check. Manual checklist, per page type: a screen reader pass on the navigation and the newsletter form, a check at 200% zoom, a check with reduced motion set, and a contrast check of the colour tokens.
 
 ## Traceability
 
@@ -276,6 +348,11 @@ Test notes for a tester. Automated: axe scan on the home, post, tag, pillar, ser
 | FR-10 SEO metadata | F9 | G1, G4 |
 | FR-11 Privacy-respecting analytics | F11 | G3, G4 |
 | FR-12 About page and basic site pages | F12 | G4 |
+| FR-13 Main navigation and footer | F12 | G4 |
+| FR-14 Posts archive | F12, F1 | G4 |
+| FR-15 Topics and pillar pages | F2 | G2, G4 |
+| FR-16 Series index and series pages | F2 | G2, G4 |
+| FR-17 Tags index and tag pages | F2 | G2, G4 |
 | No FR (F10 Performance and accessibility baseline): covered by NFR-1 to NFR-8 and AR-1 to AR-17 | F10 | G1 |
 | NFR-4 | Charter KPI: 99.9%+ uptime | G1 |
 | NFR-9, NFR-10, SR-1 to SR-18 | Threat model, F5, F11 | G1, G3 |
@@ -295,4 +372,5 @@ Decision (Venkat, 20 Nov 2026): assumptions approved as written; JSON-LD author 
 8. Decided 20 Nov 2026: HSTS has no `preload` at launch (one-year max-age).
 9. Open tools: may we select and cost an external uptime monitor (NFR-4), Google Search Console and a keyword tool? No ADR or cost estimate covers them yet.
 10. Decided 20 Nov 2026: the content check rejects a missing `draft` field (FR-1). The schema default stays as it is.
-11. Navigation routes (follow-up for the Product Strategist, UX review of 20 Nov 2026): `docs/prd/content-pillars.md` adds the `/posts/` archive, `/topics/`, `/series/` and `/series/<slug>/`, a `/tags/` index and a footer with the tags index. The FR list only has `/posts/<slug>/` and does not define `/posts/` as the archive. These routes and footer links are new requirements still to be added to the FR list. This review did not rewrite the FR list.
+11. Resolved 20 Nov 2026: the navigation routes from the UX review are added as FR-13 to FR-17.
+12. Add a series metadata file for display names and descriptions later? Until then the display name is derived from the `series` slug (FR-16).
