@@ -95,6 +95,7 @@ Stop and ask Venkat before any action on the list in `docs/guidelines/approval-g
 - Code quality: `docs/guidelines/code-quality.md`
 - Git workflow: `docs/guidelines/git-workflow.md`
 - Capability matrix: `docs/agents/capability-matrix.md`
+- Editorial style guide: docs/guidelines/editorial-style-guide.md
 
 ## Claude Code setup
 Subagents for all 14 roles are in `.claude/agents/` (reviewers are read-only); skills `new-post`, `review-pr`, `security-check`, `seo-audit`, `gate-check`, `release`, `hotfix`; commands `/status` and `/handoff`; hooks `block-secrets`, `pre-commit-gate`, `log-actions`. Use the reviewer subagents for reviews.
