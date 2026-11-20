@@ -52,6 +52,20 @@ describe('SRS, pillars and SEO spec record their decisions', () => {
     }
   });
 
+  it('pillars: five pillars, roundup exception and launch order approved', () => {
+    expect(pillars).toContain(`Approved by ${WHO}`);
+    expect(pillars).not.toContain('awaiting Venkat');
+    expect(pillars).not.toContain('Venkat to confirm');
+    expect(pillars).toContain('roundup exception is confirmed');
+    expect(pillars).toContain('launch order is approved');
+  });
+
+  it('ADR 0008 is accepted as direction only, with no spend approved', () => {
+    const text = read('docs/adr/0008-monthly-cost-estimate.md');
+    expect(text).toContain(`Accepted by ${WHO} as direction only`);
+    expect(text.toLowerCase()).toContain('no spend');
+  });
+
   it('SEO spec: JSON-LD author is the site Agents Blog', () => {
     expect(seo).toContain(`Decision (${WHO})`);
     expect(seo).toContain('Agents Blog');
