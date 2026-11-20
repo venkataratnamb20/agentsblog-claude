@@ -183,6 +183,126 @@ describe('the document keeps the approved plan and names its risks', () => {
   });
 });
 
+// Added after the Product Strategist review: lead times in working days, a buffer table that is checked,
+// topic and series per post, the subtask names, and the risks the first draft missed.
+const workingDays = (from: string, to: string) => {
+  let count = 0;
+  for (let t = day(from) + 86_400_000; t <= day(to); t += 86_400_000) {
+    const weekday = new Date(t).getUTCDay();
+    if (weekday !== 0 && weekday !== 6) count++;
+  }
+  return count;
+};
+
+const LEADS = [
+  ['brief', 'draft', 3],
+  ['draft', 'edit', 2],
+  ['edit', 'seo', 1],
+  ['seo', 'approval', 1],
+  ['approval', 'publish', 1],
+] as const;
+
+describe('the calendar keeps its stated lead times and distribution rule', () => {
+  it('meets every minimum lead time, in working days', () => {
+    for (const row of rows) {
+      for (const [from, to, min] of LEADS) {
+        const days = workingDays(row[from], row[to]);
+        expect(days, `post ${row.post} ${from} to ${to}`).toBeGreaterThanOrEqual(min);
+      }
+    }
+  });
+
+  it('states those minimums in the Rules section', () => {
+    const rules = section('Rules');
+    for (const text of ['Brief to draft: 3', 'Draft to tech edit: 2', 'Approval to publish: 1']) {
+      expect(rules, text).toContain(text);
+    }
+  });
+
+  it('distributes on the publish day for posts 4 to 10 and one day apart for posts 1 to 3', () => {
+    for (const row of rows) {
+      const gap = (day(row.distribute) - day(row.publish)) / 86_400_000;
+      expect(gap, `post ${row.post}`).toBe(row.post <= 3 ? row.post - 1 : 0);
+    }
+  });
+});
+
+describe('the buffer table is computed from the calendar', () => {
+  it('lists the later posts that are tech-edited by each publish date', () => {
+    const table = section('Buffer check')
+      .split('\n')
+      .filter((line) => /^\| Post \d+ \|/.test(line))
+      .map(cells);
+    expect(table.map((row) => row[0])).toEqual(['Post 4', 'Post 5', 'Post 6', 'Post 7', 'Post 8']);
+    for (const row of table) {
+      const owner = rows.find((r) => `Post ${r.post}` === row[0]);
+      const ahead = rows.filter(
+        (r) => r.post > (owner?.post ?? 99) && day(r.edit) <= day(row[1] ?? ''),
+      );
+      expect(row[1], row[0]).toBe(owner?.publish);
+      expect(row[2], row[0]).toBe(ahead.map((r) => r.post).join(', '));
+      expect(row[3], row[0]).toBe(String(ahead.length));
+    }
+  });
+});
+
+const SERIES: Record<number, string> = {
+  1: 'Agents from first principles',
+  2: 'Agents from first principles',
+  3: 'Agent tooling',
+  4: 'Agents from first principles',
+  5: 'Agent tooling',
+  6: 'none',
+  7: 'none',
+  8: 'Production agents',
+  9: 'Production agents',
+  10: 'Research roundup',
+};
+const subtaskNames = (text: string) =>
+  text
+    .split('\n')
+    .map((line) => /^\d\. `(\[.+?\] .+?)`/.exec(line)?.[1])
+    .filter((name): name is string => Boolean(name));
+
+describe('topics, series and subtasks', () => {
+  it('shows a topic and the planned series for every post', () => {
+    const table = section('Calendar')
+      .split('\n')
+      .filter((line) => /^\| \d+ \| \d{4}-/.test(line))
+      .map(cells);
+    expect(table.length).toBe(10);
+    for (const row of table) {
+      expect((row[8] ?? '').length, `post ${row[0]} topic`).toBeGreaterThan(5);
+      expect(row[9], `post ${row[0]} series`).toBe(SERIES[Number(row[0])]);
+    }
+  });
+
+  it('lists the same seven Asana subtasks as the post workflow, in order', () => {
+    const planned = subtaskNames(doc);
+    expect(planned).toHaveLength(7);
+    expect(planned).toEqual(subtaskNames(workflow));
+  });
+});
+
+describe('the risks cover the review findings', () => {
+  const text = `${section('Assumptions')}\n${section('Risks and decisions for Venkat')}`;
+
+  it.each([
+    ['M1 is complete, so stage 6 work is unblocked', /M1 .{0,40}complete/i],
+    ['the hypercare window overlaps the holiday gap', /hypercare/i],
+    ['the weekly cadence KPM cannot reach 90% with a two-week gap', /80%/],
+    ['the draft-to-publish KPM fails for all ten posts', /all ten posts/i],
+    ['Venkat is a single point of failure for approvals', /single point of failure/i],
+    ['the approval response target is 24 hours', /24 hours/],
+    ['the default during the gap is to hold the post', /hold the post/i],
+    ['the series fields are not built', /seriesOrder/],
+    ['the draft: false PR is opened only on the publish day', /publish day/i],
+    ['posts 1 to 3 may be reviewed on the SEO date', /PR reviewer/i],
+  ])('says: %s', (_name, pattern) => {
+    expect(text, String(pattern)).toMatch(pattern);
+  });
+});
+
 describe('owners per stage match the post workflow', () => {
   const owners = section('Owners per stage')
     .split('\n')

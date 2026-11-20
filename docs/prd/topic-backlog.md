@@ -1,6 +1,6 @@
 # Topic backlog
 
-Status: draft, awaiting SEO & Analytics review and Venkat's confirmation.
+Status: approved. Venkat approved the backlog on 20 Nov 2026, in chat. Demand is still not measured, so SEO & Analytics must still validate it with a keyword tool.
 
 Source: Asana task 1220688744221501
 
@@ -118,6 +118,8 @@ These are recommendations only. They name ideas that could compete for the same 
 ## Reconciliation with the planned posts
 
 The launch order of posts 1 to 3 is approved (Venkat, 20 Nov 2026, recorded in `docs/prd/content-pillars.md`). This backlog does not change it.
+
+Decision (Venkat, 20 Nov 2026): keep posts 4 to 10 as planned. The unplanned top 10 ideas stay in the backlog as proposals and are not scheduled. The tie at ranks 9 and 10 is therefore settled for now in favour of the planned posts.
 
 Planned posts in the top 10: Post 1 (T01), Post 2 (T02), Post 3 (T03) and Post 4 (T04).
 
