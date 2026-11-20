@@ -206,11 +206,25 @@ A series is declared in post front-matter. The current schema (`src/lib/postSche
 
 ### Navigation
 
-UX sign-off is still open. The UX/UI Designer has not reviewed this section, so nothing here is agreed. Proposal only:
+**UX review (20 Nov 2026): agreed with changes.** This is a design review by the UX/UI Designer agent. It is not Venkat's approval, and his approval stays open. Changes made in this section:
 
-- Main navigation: Home, Posts, Topics (the five pillars), Series, Newsletter, About.
-- Topics page lists the five pillars. Each pillar page has its audience need and its posts.
-- Tag pages are at `/tags/<tag>/`. Tags appear on each post and link to their tag page. Tags are not in the main navigation.
-- Series pages list posts in order. A post in a series shows a series box with previous and next links.
-- Breadcrumbs on post and tag pages use the BreadcrumbList helper in `src/lib/seo.ts`.
-- The footer links to RSS and the newsletter form.
+- Changed: the site name is the Home link, so "Home" leaves the main navigation. Main navigation is now Posts, Topics, Series, About, Subscribe (five items).
+- Changed: "Posts" is the archive at `/posts/`, a full list of all posts, newest first. It is the way to browse without search. Search is post-launch, so nothing in the navigation depends on it. When search ships it is added as a sixth item.
+- Changed: "Newsletter" is renamed "Subscribe". It links to the newsletter form (a section on the home page, and the footer form).
+- Added: mobile. At 320 px the navigation is a visible, wrapping row of links with no hidden menu and no script. Each link is at least 24 by 24 CSS px, and 44 px high is the target.
+- Added: the current page is marked in the navigation with `aria-current="page"` and a style that is not colour alone.
+- Added: pillar pages and tag pages have different roles (see below).
+- Added: series order is shown in text and in list order (see below).
+- Added: roundups have no pillar, so the Topics page has a "Research roundups" entry that links to the `research-roundup` tag page.
+
+Navigation, as agreed with changes:
+
+- Main navigation: Posts (archive), Topics (the five pillars), Series, About, Subscribe. The site name links to Home.
+- Topics page (`/topics/`) lists the five pillars, each with its audience need and post count, plus the Research roundups entry. Each pillar page is a curated entry point: a short intro (the audience need), any series in that pillar, then its posts newest first. Pillar pages are the only pages that map to a pillar (see the pillar to tag map).
+- Tag pages are at `/tags/<tag>/`. A tag page is a plain, automatic list of posts with that tag, with the tag name as the `h1` and a post count. It has no intro. A `/tags/` index lists all tags A to Z and is linked from the 404 page and the footer. Tags are not in the main navigation. Tags appear on each post and link to their tag page. The pillar tag on a post links to the pillar page, not to a tag page.
+- Series pages (`/series/<slug>/`) list posts in an ordered list (`ol`), so the order is exposed to screen readers. Each item shows "Part 2 of 3" as text. A post in a series shows a series box with the series name, "Part N of M", and previous and next links named by post title, not "previous" alone. A `/series/` index lists the series with their post counts.
+- Draft posts in a series do not appear, and the "of M" count only counts published posts. Assumption: the Frontend Engineer confirms this when the `series` and `seriesOrder` fields are added.
+- Breadcrumbs on post, pillar, series and tag pages use the BreadcrumbList helper in `src/lib/seo.ts`. They are a `nav` with an accessible name and `aria-current` on the last item.
+- The footer links to RSS, the `/tags/` index, the privacy notice and the newsletter form. It repeats the main navigation so a reader at the end of a long post can move on.
+- Current code gap: `src/layouts/BaseLayout.astro` has only a site-name link and `main`. It has no navigation, skip link or footer. This is new work for the Frontend Engineer.
+- Open for Venkat: the series names and order, and the Subscribe label. No reader testing has been done, so the labels are a design judgement.

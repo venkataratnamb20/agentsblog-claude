@@ -201,7 +201,7 @@ Web Vitals targets apply at the 75th percentile on mobile. Lab checks use Lighth
 | NFR-5 | Lighthouse Performance | 90 or more on the home page, a post page and a tag page (404 page excluded) | Lighthouse CI, median of three mobile runs per page type | Performance testing and budgets (Core Web Vitals) |
 | NFR-6 | Lighthouse Accessibility | 95 or more on the home page, a post page and a tag page (404 page excluded; it is covered by the axe scan in NFR-8) | Lighthouse CI, median of three runs per page type, plus the audit in NFR-8 | Accessibility audit (WCAG 2.2 AA) |
 | NFR-7 | Lighthouse SEO | 100 on the home page, a post page and a tag page; 404 page excluded | Lighthouse CI on a production-like build with `ALLOW_INDEXING=true`, median of three runs per page type; the `seo-audit` skill before each post goes to review | SEO audit |
-| NFR-8 | Accessibility standard | WCAG 2.2 AA on every page template; axe reports 0 serious or critical violations on every page type | axe (`@axe-core/playwright`) scan per page type, keyboard-only pass and screen reader pass on each template (see AR-1 to AR-11) | Accessibility audit (WCAG 2.2 AA) |
+| NFR-8 | Accessibility standard | WCAG 2.2 AA on every page template; axe reports 0 serious or critical violations on every page type | axe (`@axe-core/playwright`) scan per page type, keyboard-only pass and screen reader pass on each template (see AR-1 to AR-17) | Accessibility audit (WCAG 2.2 AA) |
 | NFR-9 | Security, OWASP-aligned | Headers in SR-1 on every response; supply-chain policy in SR-3 and SR-4; no high-severity audit finding; OWASP Top 10 (2021) items mapped in `docs/threat-model.md` | Request staging and production and compare each header; `npm audit --audit-level=high` exit code 0; ASVS Level 1 checklist | Security and vulnerability checklist; caching and CDN configuration |
 | NFR-10 | Privacy: UK GDPR and PECR | No non-essential cookie or tracking before consent; email plus consent record only; deletion route; working unsubscribe link | Clean-profile load test; subscribe, confirm, unsubscribe and delete with a test address | Privacy and compliance check |
 | NFR-11 | Scalability | Under a load test at 10 times the G4 goal (about 10,000 monthly readers, Assumption, to be confirmed in ADR 0004), Lighthouse Performance and LCP stay within 10% of the unloaded result; build time under 5 minutes at 50 posts (Assumption) | CDN cache-hit ratio from host logs; timed CI build with 50 generated posts | Caching and CDN configuration; Performance testing and budgets |
@@ -236,19 +236,29 @@ Coverage check: R01 to R17 are each covered by at least one SR above.
 
 ## Accessibility requirements
 
-Standard: WCAG 2.2 AA. UX Designer to confirm details (Assumption for all AR items until confirmed). The Accessibility audit task in stage 4 checks them.
+Standard: WCAG 2.2 AA. The Accessibility audit task in stage 4 checks them.
 
-- AR-1 Contrast. Normal text shall have a contrast ratio of at least 4.5:1, large text and interface parts at least 3:1, in both themes.
-- AR-2 Keyboard. Every function shall work with the keyboard alone, with no keyboard trap, including the theme switch, the newsletter form and the code copy button (and search once it exists).
-- AR-3 Focus. Focus shall always be visible with an outline of at least 3:1 contrast, and shall not be hidden by sticky headers (WCAG 2.2 focus not obscured).
-- AR-4 Alt text. Every image shall have alt text, enforced by `npm run check:content`, which fails on images without it. Decorative images shall use empty alt text.
-- AR-5 Dark mode contrast. Dark mode shall meet AR-1 on its own. Code highlighting colours shall meet 4.5:1 in both themes.
-- AR-6 Reduced motion. The site shall respect `prefers-reduced-motion` and shall not animate when it is set.
-- AR-7 Skip link. Every page shall have a skip-to-content link as the first focusable item.
-- AR-8 Headings. Each page shall have one `h1`, and headings shall not skip levels.
-- AR-9 Targets and forms. Touch targets shall be at least 24 by 24 CSS px (WCAG 2.2). Form fields shall have visible labels and errors shall be described in text.
-- AR-10 Reflow and zoom. Pages shall reflow at 320 px wide and work at 200% zoom without loss of content.
-- AR-11 Language and landmarks. Pages shall set the `lang` attribute and use header, nav, main and footer landmarks.
+UX review (20 Nov 2026): agreed with changes. This is a design review by the UX/UI Designer agent, not Venkat's approval, which stays open. AR-1 to AR-11 are kept and sharpened. AR-12 to AR-17 are new. Items marked "New" or "Changed" are the review's changes. Assumption: the exact colour values and the final audit result are not confirmed until the design tokens exist and the Accessibility audit task runs. Accessible authentication (WCAG 2.2 3.3.8) does not apply, because the site has no login. No automated tool proves full conformance, so the audit also needs a manual keyboard and screen reader pass.
+
+- AR-1 Contrast. Normal text shall have a contrast ratio of at least 4.5:1, large text and interface parts at least 3:1, in both themes. Changed: interface parts include input borders, icons that carry meaning, the focus ring and the current-page marker. Placeholder text and disabled-looking text still meet 4.5:1 if it carries meaning. Checked by: axe, Lighthouse (home, post and tag pages only), manual checklist for token pairs.
+- AR-2 Keyboard. Every function shall work with the keyboard alone, with no keyboard trap, including the theme switch, the newsletter form and the code copy button (and search once it exists). Changed: focus order follows reading order, and scrollable code blocks are reachable by keyboard (see AR-13). Checked by: Playwright keyboard test.
+- AR-3 Focus. Focus shall always be visible with an outline of at least 3:1 contrast, and shall not be hidden by sticky headers (WCAG 2.2 focus not obscured). The 3:1 contrast comes from WCAG 1.4.11 (AA). Changed: the outline is at least 2 CSS px thick and sits against both the element and its background at 3:1, in both themes. The 2 px thickness is a project rule that goes beyond AA, because WCAG 2.4.13 Focus Appearance is AAA in WCAG 2.2. Anchor jumps use `scroll-margin-top` so a sticky header never covers the target. Checked by: Playwright keyboard test, manual checklist.
+- AR-4 Alt text. Every image shall have alt text, enforced by `npm run check:content`, which fails on images without it. Decorative images shall use empty alt text. Checked by: axe, `npm run check:content`.
+- AR-5 Dark mode contrast. Dark mode shall meet AR-1 on its own. Code highlighting colours shall meet 4.5:1 in both themes. Checked by: axe in both themes, manual checklist for code colours.
+- AR-6 Reduced motion. The site shall respect `prefers-reduced-motion` and shall not animate when it is set. Changed: this includes smooth scrolling and the theme transition. Nothing flashes more than three times a second. Checked by: manual checklist with reduced motion set.
+- AR-7 Skip link. Every page shall have a skip-to-content link as the first focusable item. Changed: it is visible when focused, links to `main` and moves focus there. Current code gap: `src/layouts/BaseLayout.astro` has none. Checked by: Playwright keyboard test.
+- AR-8 Headings. Each page shall have one `h1`, and headings shall not skip levels. Changed: the site name is not an `h1` on inner pages. Post content starts at `h2`. A tag page uses the tag name as its `h1`. Checked by: axe, Lighthouse (home, post and tag pages only).
+- AR-9 Targets and forms. Touch targets shall be at least 24 by 24 CSS px (WCAG 2.2 target size minimum), unless spacing or an inline link exception applies. Form fields shall have visible labels and errors shall be described in text. Changed: see AR-14 for the newsletter form. Checked by: axe (target size and labels), manual checklist.
+- AR-10 Reflow and zoom. Pages shall reflow at 320 px wide and work at 200% zoom without loss of content. Changed: no two-direction scrolling except inside code blocks and tables (see AR-13), and text can be resized to 200% and spaced out (WCAG text spacing) without clipping. Checked by: Playwright 320 px reflow check, manual checklist for 200% zoom.
+- AR-11 Language and landmarks. Pages shall set the `lang` attribute and use header, nav, main and footer landmarks. Changed: `lang="en"` is already set in `src/layouts/BaseLayout.astro`. Each `nav` has an accessible name, such as "Main" and "Breadcrumb", because a page has more than one. Checked by: axe.
+- AR-12 Links and navigation (New). Link text shall make sense out of context, so no bare "read more" or "click here". Links are told apart from text by more than colour (an underline in body text). The current page is marked with `aria-current="page"`. The main navigation, the order of items and the footer links are the same on every page (WCAG consistent navigation). Navigation follows `docs/prd/content-pillars.md`. Checked by: axe (link names and `aria-current` use), Playwright keyboard test (same navigation on every page), manual checklist (consistent navigation, link text).
+- AR-13 Code blocks and tables (New). A code block that scrolls sideways shall be focusable (`tabindex="0"`), have a role and an accessible name, and scroll with the arrow keys. Its focus outline meets AR-3. Syntax colours meet AR-5. The copy button has an accessible name and a polite status message on success. Tables have header cells and scroll in a container, not the page. Checked by: axe, Playwright keyboard test.
+- AR-14 Newsletter form (New). The email field has a visible `label` tied to it with `for` and `id`, and `autocomplete="email"`. Placeholder text is not the label. A required field is marked in text. Errors are written in text next to the field, say what is wrong and how to fix it, and are tied to the field with `aria-describedby`. Colour is never the only cue. On submit the result (success or error) is announced in a live region. Focus moves to the first error. The consent text is a real label for its checkbox. Entering the email again is not required (WCAG redundant entry). The form works with the keyboard alone (AR-2). Checked by: axe (labels), Playwright keyboard test (live region text and focus move), manual checklist (screen reader).
+- AR-15 Theme switch (New). The theme switch is a real button with an accessible name and a state (for example `aria-pressed`) that does not rely on an icon alone. The default follows the system setting. A saved choice is kept. Both themes meet AR-1 and AR-5. Checked by: Playwright keyboard test, manual checklist (axe cannot judge the state).
+- AR-16 Content rules for authors (New). Every post has a meaningful alt text on informative images and empty alt on decorative ones (AR-4). Diagrams that carry meaning have a text description nearby. Headings in posts follow AR-8. Link text follows AR-12. Posts do not rely on colour, or on video or audio without a transcript or captions. The Technical Editor and `npm run check:content` check these where a tool can, and the rest by hand. Checked by: axe (images), manual checklist.
+- AR-17 Pointer and dragging (New). Nothing needs a path-based gesture or dragging. Anything done on hover also works on focus, and hover content can be dismissed and stays visible while pointed at (WCAG content on hover or focus). Controls do not change context on focus alone. Checked by: Playwright keyboard test, manual checklist (axe cannot check this).
+
+Test notes for a tester. Automated: axe scan on the home, post, tag, pillar, series, About, privacy and 404 pages in both themes (NFR-8). Lighthouse covers only the home page, a post and a tag page (NFR-6). The 404 page is excluded from Lighthouse scores and is covered by axe (`docs/test-strategy.md`). Playwright runs the scripted keyboard checks (skip link to footer, focus, newsletter form) and the 320 px reflow check. Manual checklist, per page type: a screen reader pass on the navigation and the newsletter form, a check at 200% zoom, a check with reduced motion set, and a contrast check of the colour tokens.
 
 ## Traceability
 
@@ -266,10 +276,10 @@ Standard: WCAG 2.2 AA. UX Designer to confirm details (Assumption for all AR ite
 | FR-10 SEO metadata | F9 | G1, G4 |
 | FR-11 Privacy-respecting analytics | F11 | G3, G4 |
 | FR-12 About page and basic site pages | F12 | G4 |
-| No FR (F10 Performance and accessibility baseline): covered by NFR-1 to NFR-8 and AR-1 to AR-11 | F10 | G1 |
+| No FR (F10 Performance and accessibility baseline): covered by NFR-1 to NFR-8 and AR-1 to AR-17 | F10 | G1 |
 | NFR-4 | Charter KPI: 99.9%+ uptime | G1 |
 | NFR-9, NFR-10, SR-1 to SR-18 | Threat model, F5, F11 | G1, G3 |
-| AR-1 to AR-11 | F10, F7, F6 | G1, G4 |
+| AR-1 to AR-17 | F10, F7, F6 | G1, G4 |
 
 ## Open questions
 
@@ -283,3 +293,4 @@ Standard: WCAG 2.2 AA. UX Designer to confirm details (Assumption for all AR ite
 8. HSTS preload: do you want to add `preload` (hard to undo), or leave it off?
 9. Open tools: may we select and cost an external uptime monitor (NFR-4), Google Search Console and a keyword tool? No ADR or cost estimate covers them yet.
 10. Drafts (FR-1): should the content check reject a missing `draft` field, or should the schema default become true?
+11. Navigation routes (follow-up for the Product Strategist, UX review of 20 Nov 2026): `docs/prd/content-pillars.md` adds the `/posts/` archive, `/topics/`, `/series/` and `/series/<slug>/`, a `/tags/` index and a footer with the tags index. The FR list only has `/posts/<slug>/` and does not define `/posts/` as the archive. These routes and footer links are new requirements still to be added to the FR list. This review did not rewrite the FR list.
