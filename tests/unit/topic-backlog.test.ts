@@ -24,6 +24,8 @@ interface Idea {
   effort: number;
   score: string;
   status: string;
+  source: string;
+  keyword: string;
 }
 
 const section = (heading: string) => doc.split(`## ${heading}`)[1]?.split('\n## ')[0] ?? '';
@@ -38,7 +40,8 @@ function parseIdeas(): Idea[] {
     .split('\n')
     .filter((line) => /^\| T\d\d \|/.test(line))
     .map((line) => {
-      const [id, title, pillar, value, demand, effort, score, status] = cells(line);
+      const [id, title, pillar, value, demand, effort, score, status, source, keyword] =
+        cells(line);
       return {
         id: id ?? '',
         title: title ?? '',
@@ -48,6 +51,8 @@ function parseIdeas(): Idea[] {
         effort: Number(effort),
         score: score ?? '',
         status: status ?? '',
+        source: source ?? '',
+        keyword: keyword ?? '',
       };
     });
 }
@@ -95,12 +100,14 @@ describe('the scoring rules are honest about demand', () => {
 
   it('says search demand is a judgement that has not been measured', () => {
     expect(rules.toLowerCase()).toContain('not measured');
-    expect(doc).not.toMatch(/\d[\d,]*\s*(searches|\/mo\b|per month)/i);
+    expect(doc).not.toMatch(
+      /\d[\d,.]*\s*k?\s*(searches|volume|monthly|\/mo\b|per month)|\bKD\s*\d/i,
+    );
   });
 
   it('names the source and the review status', () => {
     expect(doc).toContain('1220688744221501');
-    expect(doc).toMatch(/Status: draft/);
+    expect(doc).toMatch(/Status: (draft|approved)/);
   });
 });
 
@@ -129,5 +136,101 @@ describe('the top 10 and the planned posts', () => {
       expect(found, `post ${n}`).toBe(true);
     }
     expect(section('Reconciliation with the planned posts').length).toBeGreaterThan(0);
+  });
+});
+
+// Added after the SEO review: complete rows, coverage of the pillars file, a real tie-break, and a
+// reconciliation that names what it compares.
+const pillarsDoc = read('docs/prd/content-pillars.md');
+
+function pillarIdeaCounts(): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const block of pillarsDoc.split('### Pillar ').slice(1)) {
+    if (!/^\d+: /.test(block)) continue;
+    const name = block.split('\n')[0]?.split(': ')[1]?.trim() ?? '';
+    const ideas = block.split('**Topic ideas**')[1]?.split('**Target keywords**')[0] ?? '';
+    counts[name] = ideas.split('\n').filter((line) => line.startsWith('- ')).length;
+  }
+  return counts;
+}
+
+describe('every backlog row is complete', () => {
+  it('has a real source plan and a candidate keyword on every row', () => {
+    for (const idea of ideas) {
+      expect(idea.source.length, `${idea.id} source`).toBeGreaterThan(8);
+      expect(idea.source, `${idea.id} source`).not.toMatch(/^none yet\.?$/i);
+      expect(idea.keyword.length, `${idea.id} keyword`).toBeGreaterThan(2);
+    }
+  });
+
+  it('covers every idea listed in the pillars file', () => {
+    const wanted = pillarIdeaCounts();
+    expect(Object.keys(wanted).sort()).toEqual([...PILLARS].sort());
+    for (const pillar of PILLARS) {
+      const own = ideas.filter((idea) => idea.pillar === pillar).length;
+      const roundups =
+        pillar === 'Evals and safety' ? ideas.filter((i) => i.pillar === 'Roundup') : [];
+      expect(own + roundups.length, pillar).toBeGreaterThanOrEqual(wanted[pillar] ?? 99);
+    }
+  });
+});
+
+describe('the top 10 matches the backlog and the tie-break', () => {
+  const top = section('Top 10')
+    .split('\n')
+    .filter((line) => /^\| \d+ \|/.test(line))
+    .map(cells);
+
+  it('uses each idea once and copies its title and score from the backlog', () => {
+    expect(new Set(top.map((row) => row[1])).size).toBe(10);
+    for (const row of top) {
+      const idea = ideas.find((candidate) => candidate.id === row[1]);
+      expect(row[2], `${row[1]} title`).toBe(idea?.title);
+      expect(row[3], `${row[1]} score`).toBe(idea?.score);
+    }
+  });
+
+  it('breaks ties by lower effort, then lower ID', () => {
+    const ranked = [...ideas].sort(
+      (a, b) =>
+        Number(b.score) - Number(a.score) || a.effort - b.effort || a.id.localeCompare(b.id),
+    );
+    expect(top.map((row) => row[1])).toEqual(ranked.slice(0, 10).map((idea) => idea.id));
+  });
+
+  it('says plainly that near scores are ties that Venkat decides', () => {
+    const text = section('Top 10').toLowerCase();
+    expect(text).toContain('tie');
+    expect(text).toContain('decision for venkat');
+  });
+});
+
+describe('the reconciliation and the SEO findings', () => {
+  const recon = section('Reconciliation with the planned posts');
+  const topIds = section('Top 10')
+    .split('\n')
+    .map((line) => /^\| \d+ \| (T\d\d) \|/.exec(line)?.[1])
+    .filter((id): id is string => Boolean(id));
+
+  it('names every planned post outside the top 10 and every unplanned idea inside it', () => {
+    for (const idea of ideas) {
+      const planned = /planned post (\d+)/.exec(idea.status)?.[1];
+      const inTop = topIds.includes(idea.id);
+      if (planned && !inTop) expect(recon, `Post ${planned}`).toContain(`Post ${planned}`);
+      if (!planned && inTop) expect(recon, idea.id).toContain(idea.id);
+    }
+  });
+
+  it('records the overlaps, the ratings most at risk and the keyword validation', () => {
+    const overlaps = section('Overlaps');
+    for (const id of ['T01', 'T11', 'T18', 'T30', 'T04', 'T21', 'T22']) {
+      expect(overlaps, id).toContain(id);
+    }
+    expect(section('Ratings most at risk').toLowerCase()).toContain('keyword tool');
+    expect(recon.toLowerCase()).toContain('keyword validation');
+  });
+
+  it('says the approved launch order stands', () => {
+    expect(recon).toMatch(/launch order of posts 1 to 3 is approved/i);
   });
 });
