@@ -414,3 +414,18 @@ describe('the review checklist exists once in the guide and once in the PR templ
     expect(read('docs/guidelines/code-quality.md')).toContain('.github/pull_request_template.md');
   });
 });
+
+describe('vitest timeouts suit a loaded machine (vitest.config.ts)', () => {
+  const text = read('vitest.config.ts');
+  const value = (name: string) =>
+    Number(new RegExp(`${name}: *([0-9_]+)`).exec(text)?.[1]?.replace(/_/g, '') ?? 0);
+
+  it('gives tests and hooks at least 30 seconds, because many spawn git, node or PowerShell', () => {
+    expect(value('testTimeout')).toBeGreaterThanOrEqual(30000);
+    expect(value('hookTimeout')).toBeGreaterThanOrEqual(30000);
+  });
+
+  it('says why in a comment', () => {
+    expect(text).toContain('loaded');
+  });
+});
