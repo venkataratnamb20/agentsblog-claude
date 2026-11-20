@@ -60,3 +60,31 @@ describe('docs/srs/srs.md non-functional requirements', () => {
     expect(srs).toContain('## Accessibility requirements');
   });
 });
+
+describe('docs/srs/srs.md navigation routes (UX review follow-up, decided 20 Nov 2026)', () => {
+  const functional = srs.split('## Functional requirements')[1]?.split('\n## ')[0] ?? '';
+  const ROUTES = ['/posts/', '/topics/', '/series/', '/series/<slug>/', '/tags/', '/tags/<tag>/'];
+
+  it.each(ROUTES)('defines the route %s as a functional requirement', (route) => {
+    expect(functional, route).toContain(route);
+  });
+
+  it('defines the main navigation items and the footer links', () => {
+    for (const part of ['Posts', 'Topics', 'Series', 'About', 'Subscribe', 'footer']) {
+      expect(functional, part).toContain(part);
+    }
+  });
+
+  it('keeps search out of the launch navigation', () => {
+    const nav = functional.split('### FR-13')[1]?.split('\n### ')[0] ?? '';
+    expect(nav.toLowerCase()).toContain('post-launch');
+  });
+
+  it('traces the new requirements to the PRD and no longer lists them as open', () => {
+    const trace = srs.split('## Traceability')[1]?.split('\n## ')[0] ?? '';
+    expect(trace).toMatch(/FR-1[3-9]/);
+    expect(srs.split('## Open questions')[1] ?? '').not.toContain(
+      'are new requirements still to be added',
+    );
+  });
+});
