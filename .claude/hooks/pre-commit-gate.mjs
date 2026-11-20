@@ -51,6 +51,11 @@ function runTests(cwd) {
 async function main() {
   const lib = await import('./lib/secrets.mjs');
   const command = String((await readInput())?.tool_input?.command ?? '');
+  if (lib.usesGitAlias(command)) {
+    block(
+      'git aliases can hide a commit from this gate. Run git commit directly, without an alias.',
+    );
+  }
   if (!lib.isCommitCommand(command)) process.exit(0);
   if (lib.usesNoVerify(command)) {
     block('--no-verify (or -n) skips the secret scan and the format check. Commit without it.');

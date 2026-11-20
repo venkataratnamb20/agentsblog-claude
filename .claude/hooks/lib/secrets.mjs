@@ -22,6 +22,28 @@ const PATTERNS = [
     'generic-api-key',
     /\b(?:api[_-]?key|secret|token|password)\b\s*[:=]\s*["'][A-Za-z0-9_\-/+=]{24,}["']/i,
   ],
+  // Evasion forms found by the Security Engineer review: credentials in a url, secret-bearing headers,
+  // unquoted passwords, all-hex values and lowercase key names. Placeholders and code are not matched.
+  [
+    'url-credentials',
+    /\b[a-z][a-z0-9+.-]*:\/\/[^\s/:@<>]+:(?!(?:pass(?:word)?|secret|xxx+|\*+|replace-me|changeme|example)\b)[^\s/@<>{}$]{6,}@[^\s/]+/i,
+  ],
+  [
+    'auth-header',
+    /\b(?:x-api-key|x-auth-token|api-key|authorization)\s*:\s*(?:basic\s+|token\s+)?(?=[A-Za-z0-9._~+/=-]*[0-9])[A-Za-z0-9._~+/=-]{20,}/i,
+  ],
+  [
+    'password-assignment',
+    /\b(?:password|passwd|pwd)\b\s*[:=]\s*(?![<{$"'`]|replace-me|changeme|process\.|env\.|z\.)(?=[^\s"'`]*\d)(?=[^\s"'`]*[A-Za-z])[^\s"'`]{8,}/i,
+  ],
+  [
+    'hex-secret',
+    /\b[A-Za-z0-9_]*(?:secret|token|password|passwd|api[_-]?key|apikey)[A-Za-z0-9_]*\s*[:=]\s*["']?[0-9a-f]{32,}\b/i,
+  ],
+  [
+    'lowercase-key',
+    /\b(?:api[_-]?key|apikey|access[_-]?token|auth[_-]?token|client[_-]?secret|secret[_-]?key)\s*[:=]\s*["']?(?![<{$])(?=[A-Za-z0-9_\-/+=.]*\d)[A-Za-z0-9_\-/+=.]{20,}/i,
+  ],
 ];
 
 /**
@@ -40,6 +62,45 @@ export function findSecrets(text) {
  */
 export function isCommitCommand(command) {
   return /\bgit\b[^;&|\n]*\scommit(?=[\s"'`);|&]|$)/.test(command);
+}
+
+// A git command only counts when it starts a command, so `echo git push` is not a push.
+const COMMAND_START = String.raw`(?:^|[;&|(\`"'\n])\s*(?:\w+=\S+\s+)*git\b[^;&|\n]*`;
+
+/**
+ * True when a shell command runs `git push`, including inside bash -c or after && or ;.
+ * @param {string} command
+ * @returns {boolean}
+ */
+export function isPushCommand(command) {
+  return new RegExp(`${COMMAND_START}\\spush(?=[\\s"'\`);|&]|$)`).test(command);
+}
+
+/**
+ * True when the push names main or develop as its target, as in `HEAD:main` or `refs/heads/main`.
+ * @param {string} command
+ * @returns {boolean}
+ */
+export function pushesToProtectedBranch(command) {
+  // Only the arguments after `push`, up to the next separator, are checked. Other text on the same
+  // command line (a commit message, an echo) must not count.
+  const pushes = new RegExp(`${COMMAND_START}\\spush(?=[\\s"'\`);|&]|$)([^;&|\\n]*)`, 'g');
+  for (const match of command.matchAll(pushes)) {
+    if (/(?:^|[\s:/])(?:main|develop)(?=[\s"']|$)/.test(match[1] ?? '')) return true;
+  }
+  return false;
+}
+
+/**
+ * True when a git command defines an alias (`git -c alias.x=...` or `git config alias.x`). An alias
+ * can hide a `git commit` from the commit gate, so aliases are not allowed.
+ * @param {string} command
+ * @returns {boolean}
+ */
+export function usesGitAlias(command) {
+  const inline = new RegExp(`${COMMAND_START}\\s-c\\s*["']?alias\\.`);
+  const config = new RegExp(`${COMMAND_START}\\sconfig\\b[^;&|\\n]*\\balias\\.`);
+  return inline.test(command) || config.test(command);
 }
 
 /**
