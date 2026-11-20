@@ -227,10 +227,11 @@ describe('review follow-ups', () => {
     expect(existsSync('research/.gitkeep')).toBe(false);
   });
 
-  it('the package is marked unlicensed and the README says no licence is granted yet', () => {
+  it('the package and the README say the project is under the Apache License 2.0', () => {
     const pkg = JSON.parse(read('package.json')) as { license?: string };
-    expect(pkg.license).toBe('UNLICENSED');
-    expect(read('README.md')).toContain('all rights reserved');
+    expect(pkg.license).toBe('Apache-2.0');
+    expect(read('README.md')).toContain('Apache License 2.0');
+    expect(read('README.md')).not.toContain('all rights reserved');
   });
 
   it('the README documents public/, loose docs files and the PowerShell execution policy', () => {
@@ -269,5 +270,93 @@ describe('CI covers format, clean and the dependency audit', () => {
     const text = read('.github/workflows/ci.yml');
     expect(text).toContain('node scripts/task.mjs audit');
     expect(text).toContain('continue-on-error: true');
+  });
+});
+
+describe('LICENSE (Apache License 2.0, chosen by Venkat on 20 Nov 2026)', () => {
+  const text = existsSync('LICENSE') ? read('LICENSE') : '';
+
+  it('is the unmodified standard text', () => {
+    expect(text).toContain('Apache License');
+    expect(text).toContain('Version 2.0, January 2004');
+    expect(text).toContain('TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION');
+    expect(text).toContain('APPENDIX: How to apply the Apache License to your work.');
+  });
+
+  it('is mentioned by CONTRIBUTING so contributors know what they agree to', () => {
+    expect(read('CONTRIBUTING.md')).toContain('Apache License 2.0');
+  });
+});
+
+describe('document templates and the research index', () => {
+  it.each([
+    ['docs/prd/_template.md', ['## Problem', '## Goals', '## Non-goals', '## Requirements']],
+    [
+      'docs/adr/0000-template.md',
+      ['## Context', '## Options considered', '## Decision', '## Consequences'],
+    ],
+    [
+      'docs/runbooks/_template.md',
+      ['## When to use', '## Steps', '## Rollback', '## Approver of changes'],
+    ],
+    [
+      '.claude/skills/new-post/post-template.md',
+      ['draft: true', 'title:', 'description:', 'tags:'],
+    ],
+    [
+      'research/README.md',
+      ['## Reference index', '| Source |', 'research/sources/', 'research/briefs/'],
+    ],
+  ])('%s exists with its required sections', (path, sections) => {
+    expect(existsSync(path), path).toBe(true);
+    const content = read(path);
+    for (const section of sections) expect(content, `${path}: ${section}`).toContain(section);
+  });
+
+  it('the new-post skill points at its template', () => {
+    expect(read('.claude/skills/new-post/SKILL.md')).toContain('post-template.md');
+  });
+
+  it('the post template is not inside content/posts, where it would be built as a post', () => {
+    expect(existsSync('content/posts/_template.md')).toBe(false);
+  });
+});
+
+describe('template fixes from the Solution Architect review', () => {
+  it('the ADR template has date, reviewers, supersedes and a cost prompt', () => {
+    const text = read('docs/adr/0000-template.md');
+    for (const part of ['**Date:**', '**Reviewers:**', '**Supersedes:**', 'Cost (money']) {
+      expect(text, part).toContain(part);
+    }
+  });
+
+  it('the PRD template names owner, reviewer and approver, like the Asana task fields', () => {
+    const text = read('docs/prd/_template.md');
+    for (const part of ['**Owner:**', '**Reviewer:**', '**Approver:**']) {
+      expect(text, part).toContain(part);
+    }
+  });
+
+  it('the runbook template verifies itself and names who approves changes', () => {
+    const text = read('docs/runbooks/_template.md');
+    expect(text).toContain('## Verification');
+    expect(text).toContain('## Approver of changes');
+    expect(text).not.toContain('## Owner');
+  });
+
+  it('the post template has no committable sample date', () => {
+    const text = read('.claude/skills/new-post/post-template.md');
+    expect(text).toContain('date: <YYYY-MM-DD>');
+    expect(text).not.toContain('2026-01-01');
+  });
+
+  it('the licence is stated the same way in LICENSE, package.json, README and ADR 0003', () => {
+    expect(read('LICENSE')).toContain('Apache License');
+    expect(read('package.json')).toContain('"license": "Apache-2.0"');
+    expect(read('README.md')).toContain('Apache License 2.0');
+    const adr = read('docs/adr/0003-licence.md');
+    for (const part of ['Apache License 2.0', 'CC BY 4.0', '## Cost and reversibility', 'Venkat']) {
+      expect(adr, part).toContain(part);
+    }
   });
 });

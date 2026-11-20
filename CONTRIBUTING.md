@@ -17,6 +17,10 @@ Thank you for helping. This project is built by AI agents with a human owner; pe
 - Never commit secrets. See `SECURITY.md`.
 - The pull request links its task and fills in the checklist in the template.
 
+## Licence
+
+This project is under the Apache License 2.0 (see `LICENSE`). By contributing you agree that your contribution is licensed the same way.
+
 ## For AI agents
 
 `CLAUDE.md` is the rules file. Read it first.
