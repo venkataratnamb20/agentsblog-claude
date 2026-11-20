@@ -70,6 +70,6 @@ Install Git, make and Node.js 22 from your package manager, or use nvm.
 | `test-bdd` | BDD feature tests; available after the task "Automated test suite: unit, integration, E2E & visual regression" |
 | `release` | Cut a release with the `release` skill; available after the task "Production deployment & DNS cutover" |
 
-Note: `audit` currently reports advisories in the Astro toolchain, so it can exit non-zero; the decision is tracked in Asana.
+The site targets a Linux server (static output, Node 22 in CI). `audit` fails on high-severity advisories and runs in CI on every pull request.
 
 A target that cannot work yet exits with a clear message instead of doing nothing. The decision behind the runner: [docs/adr/0002-task-runner.md](docs/adr/0002-task-runner.md).
