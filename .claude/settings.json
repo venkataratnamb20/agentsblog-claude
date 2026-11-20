@@ -143,7 +143,32 @@
       "Bash(git branch -m*)",
       "Bash(git branch*--delete*)",
       "Bash(npx*--config*)",
-      "Bash(npx*--plugin*)"
+      "Bash(npx*--plugin*)",
+      "Bash(npm*--config*)",
+      "Bash(npm*--plugin*)",
+      "Bash(grep*.env*)",
+      "Bash(sed*.env*)",
+      "Bash(awk*.env*)",
+      "Bash(findstr*.env*)",
+      "Bash(Select-String*.env*)",
+      "Bash(less*.env*)",
+      "Bash(more*.env*)",
+      "Bash(node -e*.env*)",
+      "Bash(python*.env*)",
+      "Read(~/.netrc)",
+      "Read(~/.npmrc)",
+      "Read(~/.git-credentials)",
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Read(./**/.env.*.local)",
+      "Read(./**/.env.prod*)",
+      "Edit(~/.netrc)",
+      "Edit(~/.npmrc)",
+      "Edit(~/.git-credentials)",
+      "Edit(~/.ssh/**)",
+      "Edit(~/.aws/**)",
+      "Edit(./**/.env.*.local)",
+      "Edit(./**/.env.prod*)"
     ]
   },
   "hooks": {
@@ -163,6 +188,10 @@
           {
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/pre-commit-gate.mjs\""
+          },
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/push-guard.mjs\""
           }
         ]
       }

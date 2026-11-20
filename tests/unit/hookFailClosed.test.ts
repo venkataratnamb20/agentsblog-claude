@@ -49,3 +49,22 @@ describe('guard hooks fail closed on an unexpected crash', () => {
     expect(result.status).not.toBe(2);
   });
 });
+
+describe('pre-commit-gate refuses git aliases that could hide a commit', () => {
+  const gate = (command: string) =>
+    spawnSync('node', [resolve('.claude/hooks/pre-commit-gate.mjs')], {
+      input: JSON.stringify({ tool_input: { command } }),
+      encoding: 'utf8',
+      env: { ...process.env, CLAUDE_GATE_RUNNING: '1' },
+    });
+
+  it.each(['git -c alias.x=commit x', 'git config alias.ci commit'])('blocks %s', (command) => {
+    const result = gate(command);
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain('alias');
+  });
+
+  it('still allows ordinary non-commit git commands', () => {
+    expect(gate('git status').status).toBe(0);
+  });
+});

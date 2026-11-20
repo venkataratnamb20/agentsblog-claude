@@ -309,3 +309,56 @@ describe('settings deny parity (security review round)', () => {
     }
   });
 });
+
+const SHELL_READ_DENIES = [
+  'Bash(grep*.env*)',
+  'Bash(sed*.env*)',
+  'Bash(awk*.env*)',
+  'Bash(findstr*.env*)',
+  'Bash(Select-String*.env*)',
+  'Bash(less*.env*)',
+  'Bash(more*.env*)',
+  'Bash(node -e*.env*)',
+  'Bash(python*.env*)',
+];
+const HOME_READ_DENIES = [
+  'Read(~/.netrc)',
+  'Read(~/.npmrc)',
+  'Read(~/.git-credentials)',
+  'Read(~/.ssh/**)',
+  'Read(~/.aws/**)',
+];
+const MORE_ENV_DENIES = ['Read(./**/.env.*.local)', 'Read(./**/.env.prod*)'];
+
+describe('settings close the gaps from the deferred security findings (R03)', () => {
+  it.each(SHELL_READ_DENIES)('denies the shell read %s', (rule) => {
+    expect(settings.permissions.deny).toContain(rule);
+  });
+
+  it('denies npm runs that load a config or plugin from the command line', () => {
+    for (const rule of ['Bash(npm*--config*)', 'Bash(npm*--plugin*)']) {
+      expect(settings.permissions.deny).toContain(rule);
+    }
+  });
+
+  it.each([...HOME_READ_DENIES, ...MORE_ENV_DENIES])('denies reading %s', (rule) => {
+    expect(settings.permissions.deny).toContain(rule);
+  });
+
+  it('denies editing every file it denies reading, including the new ones', () => {
+    const edits = new Set(
+      settings.permissions.deny.filter((r) => r.startsWith('Edit(')).map((r) => r.slice(5)),
+    );
+    const reads = settings.permissions.deny
+      .filter((r) => r.startsWith('Read('))
+      .map((r) => r.slice(5));
+    expect(reads.filter((path) => !edits.has(path))).toEqual([]);
+  });
+
+  it('registers the push guard on Bash and the file exists', () => {
+    const entry = settings.hooks.PreToolUse.find((e) => e.matcher === 'Bash');
+    const commands = (entry?.hooks ?? []).map((h) => h.command);
+    expect(commands.some((c) => c.includes('push-guard.mjs'))).toBe(true);
+    expect(existsSync('.claude/hooks/push-guard.mjs')).toBe(true);
+  });
+});

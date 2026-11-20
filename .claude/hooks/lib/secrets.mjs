@@ -22,6 +22,28 @@ const PATTERNS = [
     'generic-api-key',
     /\b(?:api[_-]?key|secret|token|password)\b\s*[:=]\s*["'][A-Za-z0-9_\-/+=]{24,}["']/i,
   ],
+  // Evasion forms found by the Security Engineer review: credentials in a url, secret-bearing headers,
+  // unquoted passwords, all-hex values and lowercase key names. Placeholders and code are not matched.
+  [
+    'url-credentials',
+    /\b[a-z][a-z0-9+.-]*:\/\/[^\s/:@<>]+:(?!(?:pass(?:word)?|secret|xxx+|\*+|replace-me|changeme|example)\b)[^\s/@<>{}$]{6,}@[^\s/]+/i,
+  ],
+  [
+    'auth-header',
+    /\b(?:x-api-key|x-auth-token|api-key|authorization)\s*:\s*(?:basic\s+|token\s+)?(?=[A-Za-z0-9._~+/=-]*[0-9])[A-Za-z0-9._~+/=-]{20,}/i,
+  ],
+  [
+    'password-assignment',
+    /\b(?:password|passwd|pwd)\b\s*[:=]\s*(?![<{$"'`]|replace-me|changeme|process\.|env\.|z\.)(?=[^\s"'`]*\d)(?=[^\s"'`]*[A-Za-z])[^\s"'`]{8,}/i,
+  ],
+  [
+    'hex-secret',
+    /\b[A-Za-z0-9_]*(?:secret|token|password|passwd|api[_-]?key|apikey)[A-Za-z0-9_]*\s*[:=]\s*["']?[0-9a-f]{32,}\b/i,
+  ],
+  [
+    'lowercase-key',
+    /\b(?:api[_-]?key|apikey|access[_-]?token|auth[_-]?token|client[_-]?secret|secret[_-]?key)\s*[:=]\s*["']?(?![<{$])(?=[A-Za-z0-9_\-/+=.]*\d)[A-Za-z0-9_\-/+=.]{20,}/i,
+  ],
 ];
 
 /**
@@ -40,6 +62,93 @@ export function findSecrets(text) {
  */
 export function isCommitCommand(command) {
   return /\bgit\b[^;&|\n]*\scommit(?=[\s"'`);|&]|$)/.test(command);
+}
+
+// A git command only counts when it starts a command, so `echo git push` is not a push. Common
+// wrappers (env, command, time, nohup, exec, sudo, nice, xargs) may sit in front of git.
+const WRAPPERS = String.raw`(?:(?:env|command|time|nohup|exec|sudo|nice|xargs)\s+(?:-\S+\s+|\w+=\S+\s+)*)*`;
+const COMMAND_START = String.raw`(?:^|[;&|(\`"'\n])\s*(?:\w+=\S+\s+)*${WRAPPERS}git\b[^;&|\n]*`;
+
+/**
+ * Joins backslash-newline continuations so a wrapped command reads as one line.
+ * @param {string} command
+ * @returns {string}
+ */
+function joinContinuations(command) {
+  return command.replace(/\\\r?\n/g, ' ');
+}
+
+/**
+ * The arguments after `push` for every push in the command, quotes and backslashes removed so that
+ * "main", 'main', ma""in and \main are all read as main. Other text on the same command line (a commit
+ * message, an echo) is not included.
+ * @param {string} command
+ * @returns {string[][]}
+ */
+export function pushSegments(command) {
+  const pushes = new RegExp(`${COMMAND_START}\\spush(?=[\\s"'\`);|&]|$)([^;&|\\n]*)`, 'g');
+  return [...joinContinuations(command).matchAll(pushes)].map((match) =>
+    (match[1] ?? '')
+      .replace(/["'\\]/g, '')
+      .split(/\s+/)
+      .filter((token) => token !== ''),
+  );
+}
+
+/**
+ * True when a shell command runs `git push`, including inside bash -c, after && or ;, or behind a
+ * wrapper such as env, command, time, nohup or xargs.
+ * @param {string} command
+ * @returns {boolean}
+ */
+export function isPushCommand(command) {
+  return pushSegments(command).length > 0;
+}
+
+/**
+ * True when the push names main or develop as its target, as in `HEAD:main`, `refs/heads/main`,
+ * `+main` or a quoted "main".
+ * @param {string} command
+ * @returns {boolean}
+ */
+export function pushesToProtectedBranch(command) {
+  return pushSegments(command).some((tokens) =>
+    tokens.some((token) => /(?:^|[:/+])(?:main|develop)$/.test(token)),
+  );
+}
+
+/**
+ * True when a push sends every branch (--all) or mirrors the repository (--mirror).
+ * @param {string} command
+ * @returns {boolean}
+ */
+export function pushesAllRefs(command) {
+  return pushSegments(command).some((tokens) =>
+    tokens.some((token) => token === '--all' || token === '--mirror'),
+  );
+}
+
+/**
+ * True when a push names no branch to send (at most a remote), so git pushes to the upstream.
+ * @param {string} command
+ * @returns {boolean}
+ */
+export function isBarePush(command) {
+  return pushSegments(command).some(
+    (tokens) => tokens.filter((token) => !token.startsWith('-')).length <= 1,
+  );
+}
+
+/**
+ * True when a git command defines an alias (`git -c alias.x=...` or `git config alias.x`). An alias
+ * can hide a `git commit` from the commit gate, so aliases are not allowed.
+ * @param {string} command
+ * @returns {boolean}
+ */
+export function usesGitAlias(command) {
+  const inline = new RegExp(`${COMMAND_START}\\s-c\\s*["']?alias\\.`);
+  const config = new RegExp(`${COMMAND_START}\\sconfig\\b[^;&|\\n]*\\balias\\.`);
+  return inline.test(command) || config.test(command);
 }
 
 /**
