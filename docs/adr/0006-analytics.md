@@ -1,6 +1,6 @@
 # ADR 0006: Privacy-friendly analytics
 
-- **Status:** Proposed: needs Venkat's approval (new account or tool)
+- **Status:** Direction approved by Venkat, 20 Nov 2026 (Cloudflare Web Analytics). The account, the script in production and any paid plan still need his approval. Nothing is adopted yet.
 - **Date:** 2026-11-20
 - **Supersedes:** none
 - **Deciders:** Solution Architect Agent, SEO & Analytics Agent, Venkat (approver)
@@ -41,6 +41,8 @@ Per month. All figures are unverified estimates, check the vendor page before pu
 | GoatCounter | 0 for non-commercial use (unverified estimate, check the vendor page before purchase) |
 
 ## Decision
+Decision (Venkat, 20 Nov 2026): the direction is Cloudflare Web Analytics, cookieless, page views only, with no custom events. Plausible stays the upgrade path. This approves the direction only. No account is open and no paid plan is approved. The prices stay unverified estimates.
+
 Recommend Cloudflare Web Analytics for launch if ADR 0004 is accepted, because it is free, cookieless and adds no new vendor. If ADR 0004 picks another host, or events are needed, use Plausible hosted instead (a paid plan, needs approval). Cloudflare Web Analytics has no custom events. Conversion and subscriber counts come from the newsletter provider's report plus page views: confirmed subscribers divided by unique readers. If events are needed, Plausible is the upgrade.
 
 No consent banner at launch. Conditions: no cookie or local storage identifier, no cross-site tracking, no personal data export to an advertiser. The SEO & Analytics Agent checks the chosen tool's documentation, and Venkat confirms the position (ICO guidance, or advice) before the script goes live. The privacy notice must list the provider and the data it sees.

@@ -1,6 +1,6 @@
 # Architecture
 
-Status: proposed. Venkat approves this document and ADRs 0004 to 0008 as one batch with M1, because they are M1 exit items. This document describes the system, its data flows, the content model, the environments and the integration points. The choices behind it are in ADR 0001 (stack) and ADRs 0004 to 0008 (hosting, newsletter, analytics, search, cost). Names of services below are options only. No account for any of them exists yet.
+Status: proposed. Venkat approves this document and ADRs 0004 to 0008 as one batch with M1, because they are M1 exit items. This document describes the system, its data flows, the content model, the environments and the integration points. The choices behind it are in ADR 0001 (stack) and ADRs 0004 to 0008 (hosting, newsletter, analytics, search, cost). On 20 Nov 2026 Venkat approved the direction of ADRs 0004 to 0007 (Cloudflare Pages, Buttondown, Cloudflare Web Analytics, search later with Pagefind). No account for any service exists yet, and no domain, DNS change or paid plan is approved.
 
 ## Architecture diagram
 
@@ -60,22 +60,22 @@ Posts are Markdown or MDX files in `content/posts/`. The Astro content collectio
 | `tags` | array of strings | Optional. Defaults to an empty array. |
 | `draft` | boolean | Optional in the schema, defaults to `false`. Project rule: new posts start as `draft: true`. |
 
-Gap: the schema default for `draft` is `false` in `src/lib/postSchema.ts`, but the project rule in `CLAUDE.md` and threat-model risk R10 assume every new post starts as `draft: true`. A post that forgets the field would be published. I have not changed code. Requirement for the Frontend Engineer: either make `npm run check:content` fail on any post with no explicit `draft` field, or change the schema default to `true`. Either way needs a failing test first. Venkat decides which.
+Gap: the schema default for `draft` is `false` in `src/lib/postSchema.ts`, but the project rule in `CLAUDE.md` and threat-model risk R10 assume every new post starts as `draft: true`. A post that forgets the field would be published. Decision (Venkat, 20 Nov 2026): `npm run check:content` must fail on any post with no explicit `draft` field. Requirement for the Frontend Engineer: implement it with a failing test first. I have not changed code.
 
-### Proposals (not in the schema yet)
+### Approved fields (not in the schema yet)
 
-These need Venkat's approval and a schema change with a test first. Each is optional so existing posts stay valid.
+Decision (Venkat, 20 Nov 2026): these four fields are approved. They still need a schema change with a test first. Each is optional so existing posts stay valid.
 
 | Field | Type | Why |
 |---|---|---|
 | `series` | string slug (flat, no nesting) | Group posts in one series. |
 | `seriesOrder` | number, optional, used with `series` | Order inside a series, for previous and next links. |
-| `author` | string, key into a small `authors` data file | Byline and JSON-LD author. Defaults to the site name. Needed only if guest authors arrive (out of scope in Phase 1). |
+| `author` | string, key into a small `authors` data file | Byline. Defaults to the site name. The JSON-LD author is the site, Agents Blog (decision, Venkat, 20 Nov 2026). Needed only if guest authors arrive (out of scope in Phase 1). |
 | `canonical` | URL string, validated as `https` only | Set when a post first appeared elsewhere. SEO then uses it instead of the page URL. The schema must reject `http`, `javascript:` and other schemes. |
 
-Tags rule (proposal): 3 to 5 tags per post. The first is one pillar tag, then one format tag, then up to 3 topic tags. Tags are lower case and hyphenated. One tag page per tag is generated at build time.
+Tags rule (approved by Venkat, 20 Nov 2026): non-roundup posts have 3 to 5 tags, roundups have 3 or 4. The first is one pillar tag, then one format tag, then up to 3 topic tags. Tags are lower case and hyphenated. One tag page per tag is generated at build time.
 
-Structured data: each post page emits JSON-LD of type `BlogPosting`, built from `title`, `description`, `date`, `updated` and the author byline.
+Structured data: each post page emits JSON-LD of type `BlogPosting`, built from `title`, `description`, `date`, `updated` and the author, which is the site Agents Blog.
 
 ## Environments
 
@@ -83,7 +83,7 @@ Structured data: each post page emits JSON-LD of type `BlogPosting`, built from 
 |---|---|---|---|---|---|
 | local | Development on a laptop with `make dev` | `http://localhost:4321` | noindex | Shown in dev | A gitignored `.env` with placeholders only |
 | preview | One build per same-repo pull request, to review a change. Fork PRs get no token and no preview. | A per-PR URL from the host (name depends on ADR 0004) | noindex | Shown only with `PREVIEW_DRAFTS=true`, and only if the preview is behind access control. Without access control, previews exclude drafts (threat-model R10). | A preview and staging deploy token with no production rights, held as a GitHub environment secret for the deploy job only. No other secrets. |
-| staging | Built from `develop`. Feature-complete check at gate M3. | A staging address on the host. A custom staging domain may not be possible, see ADR 0004. | noindex unless `ALLOW_INDEXING=true`, which staging never sets | Excluded (`src/config.ts`) | The preview and staging deploy token (GitHub environment secret) and build-time variables for a test newsletter list and a test analytics site, if used. Variables live in a GitHub environment. |
+| staging | Built from `develop`. Feature-complete check at gate M3. | The host's default staging address. No custom staging domain (decision, Venkat, 20 Nov 2026, ADR 0004). | noindex unless `ALLOW_INDEXING=true`, which staging never sets | Excluded (`src/config.ts`) | The preview and staging deploy token (GitHub environment secret) and build-time variables for a test newsletter list and a test analytics site, if used. Variables live in a GitHub environment. |
 | production | The live blog, built from `main` | The custom domain, launch 14 Dec 2026 | Indexed. Only production sets `ALLOW_INDEXING=true`. | Excluded (`src/config.ts`) | A separate production deploy token and build-time variables, in a protected GitHub environment that Venkat approves. Venkat holds the host logins. |
 
 How deploys work:

@@ -103,7 +103,7 @@ Notes on the policy:
 
 Other headers:
 
-- Strict-Transport-Security: `max-age=31536000; includeSubDomains`. Add `preload` only with Venkat's approval, as it is hard to undo.
+- Strict-Transport-Security: `max-age=31536000; includeSubDomains`. Decision (Venkat, 20 Nov 2026): no `preload` at launch, because it is hard to undo. Consider it after a few stable months, with his approval.
 - X-Content-Type-Options: `nosniff`.
 - Referrer-Policy: `strict-origin-when-cross-origin`.
 - Permissions-Policy: `camera=(), microphone=(), geolocation=(), payment=(), interest-cohort=()`.
@@ -147,7 +147,7 @@ Ratings: High means fix or accept before launch. Test (stage 4) is the check the
 | R16 | Domain or certificate expires | Medium | Auto-renew, expiry alerts, stage 8 runbook | Confirm auto-renew is on and an alert exists for 30 days before expiry | DevOps and SRE |
 | R17 | Local action log is not an audit trail | Low | Use git history, PRs, Asana comments and the GitHub audit log as the record | Confirm approvals and outcomes appear as Asana comments for the release tasks | PM Orchestrator |
 
-Residual risks accepted for now and reviewed at each gate: R01, R02, R03 and R12. Venkat decides when each is closed or accepted.
+Accepted by Venkat, 20 Nov 2026 (chat): R01 and R02, until the M4 production gate, when the shared credential moves to a GitHub App or per-agent accounts if one exists. Still open: R03 (the guardrail hardening task, due 27 Nov, to be fixed before launch) and R12 (private vulnerability reporting is off; Venkat to enable it in the repository settings). Accepted risks are reviewed at each gate.
 
 ## Security and privacy requirements for the SRS
 

@@ -119,6 +119,8 @@ Items marked **Exists** are already provided by `src/lib/seo.ts`, `src/layouts/B
 
 ### BlogPosting JSON-LD
 
+Decision (Venkat, 20 Nov 2026): the JSON-LD author is the site, Agents Blog; no personal name is published.
+
 `articleJsonLd()` in `src/lib/seo.ts` emits an `Article` today. Change the type to `BlogPosting`, which is the more specific type for blog posts. This is a **New** change to `src/lib/seo.ts`, owned by the Frontend Engineer and test-first.
 
 | Field | Status | Source |
@@ -129,7 +131,7 @@ Items marked **Exists** are already provided by `src/lib/seo.ts`, `src/layouts/B
 | `datePublished` | Exists | `date` |
 | `dateModified` | Exists | `updated`, else `date` |
 | `mainEntityOfPage` | Exists | Canonical URL |
-| `author` | Exists as an `Organization` | Decision for Venkat: keep the site as author, or name a person |
+| `author` | Exists as an `Organization` | Decided 20 Nov 2026: the site is the author |
 | `publisher` with `logo` | New | Site name and logo |
 | `image` | New | Same image as `og:image` |
 | `keywords` | New | From `tags` |
@@ -229,6 +231,6 @@ Custom events below need an events tool. With Cloudflare Web Analytics only, dro
 ## Open items for Venkat
 
 - Approve the analytics tool and the uptime monitor (ADR 0006, ADR 0004). Until then nothing here is enabled.
-- Decide the JSON-LD author: the site as an organisation, or a named person.
+- Decided 20 Nov 2026: the JSON-LD author is the site (see Metadata and schema.org).
 - Approve Search Console access for the production domain.
 - Approve a keyword tool, or agree to rely on Search Console data after launch.

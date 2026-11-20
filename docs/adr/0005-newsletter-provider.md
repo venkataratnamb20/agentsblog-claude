@@ -1,6 +1,6 @@
 # ADR 0005: Newsletter provider
 
-- **Status:** Proposed: needs Venkat's approval (new account, possible paid plan)
+- **Status:** Direction approved by Venkat, 20 Nov 2026 (Buttondown with double opt-in). The account, the plan, the sender domain records and any paid plan still need his approval. Nothing is adopted yet.
 - **Date:** 2026-11-20
 - **Supersedes:** none
 - **Deciders:** Solution Architect Agent, Venkat (approver)
@@ -43,6 +43,8 @@ Per month. All figures are unverified estimates, check the vendor page before pu
 | Self-hosted | Server and sending service fees (unverified estimate, check the vendor page before purchase) plus Venkat's time |
 
 ## Decision
+Decision (Venkat, 20 Nov 2026): the direction is Buttondown with double opt-in. This approves the direction only. No account is open, no plan is approved and no DNS record is approved. The prices stay unverified estimates.
+
 Recommend Buttondown. It is simple, Markdown-friendly, and double opt-in. Our own accessible form posts to the provider's public subscribe or embed endpoint with no key. Verify that this endpoint exists for the chosen provider before adoption. It is not verified. The goal of 100 subscribers may sit near the free tier limit, so Venkat should expect a possible paid plan in Jan or Feb 2027.
 
 Venkat must approve: opening the account, the plan, the sender address and domain records (SPF, DKIM, DMARC, which are DNS changes), and the consent text on the form. Agents do not send any issue. Sending needs Venkat's approval each time until he says otherwise.
